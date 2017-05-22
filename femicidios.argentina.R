@@ -2,29 +2,24 @@ library(rgdal)
 library(leaflet)
 library(plyr)
 
-tmp <- tempdir()
+source("utils.loadShapeFileFromUrl.R")
+source("utils.loadCsvFileFromUrl.R")
+
+tmp.path <- tempdir()
+data.path = file.path(getwd(),"data")
 
 ##################################################################################################
 # Descarga del Shapefile de Argentina
 ##################################################################################################
-url <- "http://biogeo.ucdavis.edu/data/diva/adm/ARG_adm.zip"
-file <- basename(url)
-if (!file.exists(file)) {
-  download.file(url, file)
-}
-unzip(file, exdir = tmp)
-argentina <- readOGR(dsn = tmp, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8')
+argentina <- loadShapeFileFromUrl(url = "http://biogeo.ucdavis.edu/data/diva/adm/ARG_adm.zip",
+                           layer = "ARG_adm1",
+                           path = data.path)
 
 ##################################################################################################
 # Descarga del registro de femicidio
 ##################################################################################################
-url <- "http://datos.jus.gob.ar/dataset/27bb9b2c-521b-406c-bdf9-98110ef73f34/resource/9a06c428-8552-42fe-86e1-487bca9b712c/download/registro-de-femicidios.csv"
-file <- basename(url)
-if (!file.exists(file)) {
-  download.file(url, file)
-}
-# Carga el Csv a un data.frame
-femicidios <- read.table(file = file, header = TRUE, sep = ',', encoding = 'latin1')
+femicidios <- loadCsvFileFromUrl(url="http://datos.jus.gob.ar/dataset/27bb9b2c-521b-406c-bdf9-98110ef73f34/resource/9a06c428-8552-42fe-86e1-487bca9b712c/download/registro-de-femicidios.csv",path = data.path )
+
 head(femicidios)
 
 # Población
