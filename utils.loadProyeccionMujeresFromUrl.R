@@ -6,32 +6,32 @@ loadProyeccionMujeresFromUrl <- function(url, path, year) {
 Ciudad de Buenos Aires,	1
 Buenos Aires, 2
 Catamarca, 3
-CÃ³rdoba, 4
+Córdoba, 4
 Corrientes, 5
 Chaco,6
 Chubut,	7
-Entre RÃ­os, 8
+Entre Ríos, 8
 Formosa, 9
 Jujuy, 10
 La Pampa, 11
 La Rioja, 12
 Mendoza, 13
 Misiones, 14
-NeuquÃ©n, 15
-RÃ­o Negro, 16
+Neuquén, 15
+Río Negro, 16
 Salta, 17
 San Juan, 18
 San Luis, 19
 Santa Cruz, 20
 Santa Fe, 21
 Santiago del Estero, 22
-TucumÃ¡n, 23
+Tucumán, 23
 Tierra del Fuego, 24"
 
-    provincias = as.data.frame(read.table(textConnection(list), header=TRUE, sep=','))
+    provincias <- as.data.frame(read.table(textConnection(list), header=TRUE, sep=','))
     
     #############################################################9#####################################
-    # ProyecciÃ³n de la PoblaciÃ³n de Argentina
+    # Proyección de la Población de Argentina
     ##################################################################################################
     file <- file.path(path,'proyeccion.poblacion.argentina.xls')
     if (!file.exists(file)) {
@@ -48,3 +48,8 @@ Tierra del Fuego, 24"
     df <- join(df,provincias,by="Provincia")
     return(df)
 }
+
+
+mujeres <- loadProyeccionMujeresFromUrl(url="http://www.indec.gov.ar/bajarCuadroEstadistico.asp?idc=3E17DD2F9318063AAD3E51B564F230E791554FEA85602E9F50376F709AD5B8BFC4CE2FBEFAFA354A",
+                                        path=file.path(getwd(),"data"),
+                                        year=2017)

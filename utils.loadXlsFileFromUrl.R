@@ -24,8 +24,8 @@ loadXlsFileFromUrl <- function(url, path, filename='', encoding='latin1', separa
         fileext = filename
     }
     
-    file = tools::file_path_sans_ext(fileext)
-    data.file = file.path(path,fileext)
+    file <- tools::file_path_sans_ext(fileext)
+    data.file <- file.path(path,fileext)
     
     if (!file.exists(data.file) || force.download) {
         file <- file.path(data.path,fileext)

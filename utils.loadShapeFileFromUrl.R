@@ -17,19 +17,15 @@ require(rgdal)
 
 loadShapeFileFromUrl <- function(url, layer, path, force.download = FALSE) {
     
-    fileext = basename(url)
-    zipfile = file.path(path,fileext)
-    data.file = file.path(path,tools::file_path_sans_ext(fileext))
+    fileext <- basename(url)
+    zipfile <- file.path(path, fileext)
+    datapath <- file.path(path, tools::file_path_sans_ext(fileext))
     
-    if (!file.exists(data.file) || force.download) {
+    if (!file.exists(datapath) || force.download) {
         if (!file.exists(zipfile) || force.download) {
             download.file(url, zipfile)
         }
-        unzip(zipfile, exdir = data.file)
+        unzip(zipfile, exdir = datapath)
     }
-    return(readOGR(dsn = data.file, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8'))
+    return(readOGR(dsn = datapath, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8'))
 }
-
-argentina <- loadShapeFileFromUrl(url = "http://biogeo.ucdavis.edu/data/diva/adm/ARG_adm.zip",
-                                  layer = "ARG_adm1",
-                                  path = data.path)
