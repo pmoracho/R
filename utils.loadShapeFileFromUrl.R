@@ -14,20 +14,19 @@
 #' loadShapeFileFromUrl(url = "http://biogeo.ucdavis.edu/data/diva/adm/ARG_adm.zip")
 
 require(rgdal)
+
 loadShapeFileFromUrl <- function(url, layer, path, force.download = FALSE) {
-    tmp.path <- tempdir()
+    
     fileext = basename(url)
     file = tools::file_path_sans_ext(fileext)
-    data.file = file.path(path,fileext)
+    data.file = file.path(path,file)
     
     if (!file.exists(data.file) || force.download) {
         file <- file.path(data.path,fileext)
         if (!file.exists(file) || force.download) {
             download.file(url, data.file)
         }
-        unzip(data.file, exdir = tmp)
-        return(readOGR(dsn = tmp, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8'))
-    } else {
-        return(readOGR(dsn = tmp, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8'))
+        unzip(file, exdir = data.file)
     }
+    return(readOGR(dsn = data.file, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8'))
 }
