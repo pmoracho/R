@@ -8,7 +8,7 @@ source("utils.loadCsvFileFromUrl.R")
 source("utils.loadProyeccionMujeresFromUrl.R")
 
 tmp.path <- tempdir()
-data.path = file.path(getwd(),"data")
+data.path <- file.path(getwd(),"data")
 
 ##################################################################################################papa
 # Descarga del Shapefile de Argentina
@@ -24,17 +24,17 @@ femicidios <- loadCsvFileFromUrl(url="http://datos.jus.gob.ar/dataset/27bb9b2c-5
                                  path = data.path )
 
 ##################################################################################################
-# Proyección de la Población de Argentina
+# Proyección de la PoblaciÃ³n de Argentina
 ##################################################################################################
 mujeres <- loadProyeccionMujeresFromUrl(url="http://www.indec.gov.ar/bajarCuadroEstadistico.asp?idc=3E17DD2F9318063AAD3E51B564F230E791554FEA85602E9F50376F709AD5B8BFC4CE2FBEFAFA354A",
                                         path=data.path,
                                         year=2017)
 
-# Estandarización de los nombres de provincias
+# EstandarizaciÃ³n de los nombres de provincias
 femicidios$lugar_hecho <- gsub('CABA', 'Ciudad de Buenos Aires', femicidios$lugar_hecho)
-femicidios$lugar_hecho <- gsub('Entre Rios', 'Entre Ríos', femicidios$lugar_hecho)
-femicidios$lugar_hecho <- gsub('Santa Fé', 'Santa Fe', femicidios$lugar_hecho)
-femicidios$lugar_hecho <- gsub('Tucuman', 'Tucumán', femicidios$lugar_hecho)
+femicidios$lugar_hecho <- gsub('Entre Rios', 'Entre RÃ�os', femicidios$lugar_hecho)
+femicidios$lugar_hecho <- gsub('Santa FÃ©', 'Santa Fe', femicidios$lugar_hecho)
+femicidios$lugar_hecho <- gsub('Tucuman', 'TucumÃ¡n', femicidios$lugar_hecho)
 femicidios_x_provincia <- as.data.frame(table(femicidios$lugar_hecho))
 
 # Renombrara columnas para hacer merge
@@ -53,7 +53,7 @@ state_popup <- paste0("<strong>Provincia: </strong>",
                       argentina$femPob,
                       " <strong>personas</strong>")
 
-leaflet(data = argentina) %>%
+m <- leaflet(data = argentina) %>%
   addProviderTiles("CartoDB.Positron") %>%
   addPolygons(fillColor = ~pal(femPob), 
               fillOpacity = 0.8, 
@@ -61,3 +61,6 @@ leaflet(data = argentina) %>%
               weight = 1, 
               popup = state_popup)
 
+
+library(htmlwidgets)
+saveWidget(m, file="m.html")
