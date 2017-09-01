@@ -1,39 +1,44 @@
-add_image_to_color <- function(imgmagick_path, area_img_file, out_file, plot1, plot2){
+add_image_to_color <- function(imgmagick_path = NA, 
+                               area_img_file, 
+                               out_file, 
+                               plot1, 
+                               plot2, 
+                               width=20, 
+                               height=10, 
+                               units=c("cm"),
+                               dpi=300){
     
-    file1 <- paste0(tempfile(),"_file1.png")
-    file2 <- paste0(tempfile(),"_file2.png")
-    file3 <- paste0(tempfile(),"_file3.png")
-    file4 <- paste0(tempfile(),"_file4.png")
-    file5 <- paste0(tempfile(),"_file5.png")
+    plot_file <- tempfile(pattern="plot_", fileext=".png")
+    plot_file_negate <- tempfile(pattern="plot_negate_", fileext=".png")
+    mask_file <- tempfile(pattern="mask_", fileext=".png")
+    area_file <- tempfile(pattern="area_", fileext=".png")
     
     convert <- ifelse(!is.na(imgmagick_path),file.path(imgmagick_path, "convert"), "convert")
-    
-    ggsave(file1, plot = plot1, scale = 1, width = 10, height = NA, units = c("in", "cm", "mm"), dpi = 300)
-    ggsave(file2, plot = plot2, scale = 1, width = 10, height = NA, units = c("in", "cm", "mm"), dpi = 300)
+
+    # Salvamos las dos versiones de los plots    
+    ggsave(plot_file, plot = plot1, scale = 1, width = width, height = height, units = units, dpi = dpi)
+    ggsave(plot_file_negate, plot = plot2, scale = 1, width = width, height = height, units = units, dpi = dpi)
     
     # Negar imagen
-    cmd <- paste(convert , file2, "-negate", file2)
+    cmd <- paste(convert , plot_file_negate, "-negate", plot_file_negate)
     system(cmd)
 
     # Flat: me quedo solo con el area
-    cmd <- paste(convert, file1, file2, " -evaluate-sequence add -colorspace gray -auto-level -threshold 90% -negate ", file3)
+    cmd <- paste(convert, plot_file, plot_file_negate, "-compose LinearBurn -composite -colorspace gray -auto-level -negate", mask_file)
     system(cmd)
     
     # Largo y ancho del plot
-    cmd <- paste0(convert, " ", file1, ' -format "%wx%h" info: ')
+    cmd <- paste0(convert, " ", plot_file, ' -format "%wx%h" info: ')
     pplot_dim <- unlist(lapply(strsplit(system(cmd, intern = TRUE), "x"), as.integer))
     
-    # Redimensiono máscara
-    cmd <- paste(convert, area_img_file, "-resize", paste0(pplot_dim[1],"x",pplot_dim[2], "!"), file4 )
+    # Redimensiono la imagen del area
+    cmd <- paste(convert, area_img_file, "-resize", paste0(pplot_dim[1],"x",pplot_dim[2], "!"), area_file )
     system(cmd)
     
     # Combinar capas para armar el area con la imagen y el fondo transparente
-    cmd <- paste(convert, "-gravity Center -geometry +0+0", file4,  "\\(", file3, "-gravity Center -geometry +0+0 \\)", "-set colorspace RGB -alpha off -geometry +0+0 -compose copy_opacity -composite -set colorspace sRGB", file5)
+    cmd <- paste(convert, "-composite", area_file, plot_file, "( -blur 1x65000 )", mask_file, out_file)
     system(cmd)
     
-    # Combinación final, el grafico original con la imagen superpuesta en el area
-    cmd <- paste(convert, file1, file5, "-flatten -blur 1x65000", out_file)
-    system(cmd)        
 }
 
 library(datasets)
@@ -46,6 +51,7 @@ data(airquality)
 area_img_file <- file.path(getwd(),"dolar.jpg")
 out_file <- file.path(getwd(), "final.png")
 imgmagick_path <- NA
+imgmagick_path <- "D:/pm/bin/ImageMagick-7.0.6-10"
 
 # Genero la grafica
 plot1 <- ggplot(airquality, aes(x = Ozone)) +
@@ -61,7 +67,6 @@ plot2 <- plot1 + geom_density(fill = "#CC6666", colour = "#CC6666", alpha = 1)
 add_image_to_color(imgmagick_path, area_img_file, out_file, plot1, plot2)
 
 
-
 set.seed(1234)
 df <- data.frame(
     sex=factor(rep(c("F", "M"), each=200)),
@@ -70,12 +75,12 @@ df <- data.frame(
 )
 
 plot1 <- ggplot(df, aes(x=weight)) +
-    geom_area(stat = "bin", fill = "lightblue", color="darkblue")+
+    geom_area(stat = "bin", fill = "lightblue", color="darkblue", bins=30)+
     geom_vline(aes(xintercept=mean(weight)),
                color="blue", linetype="dashed", size=1)
 
 plot2 <- ggplot(df, aes(x=weight)) +
-    geom_area(stat = "bin", fill = "red", color="darkblue")+
+    geom_area(stat = "bin", fill = "red", color="darkblue", bins=30)+
     geom_vline(aes(xintercept=mean(weight)),
                color="blue", linetype="dashed", size=1)
 
@@ -92,9 +97,9 @@ type <-c(rep("eggs", 12))
 mydata <-data.frame(months, values)
 
 plot1 <-ggplot(mydata, aes(months, values)) +
-    geom_bar(stat = "identity", fill="red", color="darkblue", aes(fill = type)) 
+    geom_bar(stat = "identity", fill="lightblue", color="darkblue", aes(fill = type)) 
 
 plot2 <-ggplot(mydata, aes(months, values)) +
     geom_bar(stat = "identity", fill="darkblue", color="darkblue", aes(fill = type)) 
 
-add_image_to_color(imgmagick_path, area_img_file, out_file, plot1, plot2)
+add_image_to_color(imgmagick_path, area_img_file, out_file, plot1, plot2, width = 30, height = 15)
