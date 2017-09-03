@@ -1,3 +1,19 @@
+#' Agregar una imagen en cualquier área de un ggplot
+#'
+#' Permite sobreimponer una imagen sobre cualquier área de un ggplot
+#' Funciona a partir de dos gráficas idénticas pero que solo difieren en el color 
+#' del área. 
+#' @param imgmagick_path Path a la herramienta imagemagick (solo si no está en el path)
+#' @param area_img_file Path al archivo de la imagen a incorporar
+#' @param out_file Path y nombre del archivo final a generar
+#' @param plot1 La versión 1 del plot
+#' @param plot2 La versión 2 del mismo plot (solo debe ser distinto el color del área)
+#' @param width Ancho del gráfico final (en units)
+#' @param height Altura del gráfico final (en units)
+#' @param units Unidade para determinar el tamaño de la imagen
+#' @param dpi Reolución (dots per inch)
+#' @export
+
 add_image_to_color <- function(imgmagick_path = NA, 
                                area_img_file, 
                                out_file, 
@@ -36,9 +52,12 @@ add_image_to_color <- function(imgmagick_path = NA,
     system(cmd)
     
     # Combinar capas para armar el area con la imagen y el fondo transparente
-    cmd <- paste(convert, "-composite", area_file, plot_file, "( -blur 1x65000 )", mask_file, out_file)
+    if (Sys.info()[['sysname']] == "Linux") {
+        cmd <- paste(convert, "-composite", area_file, plot_file, "\\( -blur 1x65000 \\)", mask_file, out_file)
+    } else {
+        cmd <- paste(convert, "-composite", area_file, plot_file, "( -blur 1x65000 )", mask_file, out_file)
+    }       
     system(cmd)
-    
 }
 
 library(datasets)
@@ -48,7 +67,7 @@ rm(list = ls())
 
 data(airquality)
 
-area_img_file <- file.path(getwd(),"dolar.jpg")
+area_img_file <- file.path(getwd(),"ozono.jpg")
 out_file <- file.path(getwd(), "final.png")
 imgmagick_path <- NA
 imgmagick_path <- "D:/pm/bin/ImageMagick-7.0.6-10"
@@ -64,7 +83,7 @@ plot1 <- ggplot(airquality, aes(x = Ozone)) +
 
 plot2 <- plot1 + geom_density(fill = "#CC6666", colour = "#CC6666", alpha = 1)
 
-add_image_to_color(imgmagick_path, area_img_file, out_file, plot1, plot2)
+add_image_to_color(imgmagick_path, area_img_file, out_file, plot1, plot2, width = 15, height = 7)
 
 
 set.seed(1234)
@@ -102,4 +121,4 @@ plot1 <-ggplot(mydata, aes(months, values)) +
 plot2 <-ggplot(mydata, aes(months, values)) +
     geom_bar(stat = "identity", fill="darkblue", color="darkblue", aes(fill = type)) 
 
-add_image_to_color(imgmagick_path, area_img_file, out_file, plot1, plot2, width = 30, height = 15)
+add_image_to_color(imgmagick_path, area_img_file, out_file, plot1, plot2, width = 15, height = 7)
