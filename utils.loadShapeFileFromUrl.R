@@ -27,5 +27,5 @@ loadShapeFileFromUrl <- function(url, layer, path, force.download = FALSE) {
         }
         unzip(zipfile, exdir = datapath)
     }
-    return(readOGR(dsn = datapath, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8'))
+    return(readOGR(dsn = datapath, layer = layer, use_iconv=TRUE, encoding='UTF-8'))
 }
