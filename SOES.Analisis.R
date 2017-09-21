@@ -6,7 +6,7 @@ require(xml2)
 rm(list=ls())
 posts.xml = "C:/Tmp/soes.data/Posts.xml"
 doc <- read_xml(posts.xml)
-rows <- xml_nodes(doc, "row")
+rows <- xml_find_all(doc, "row")
 
 timfmt <- "%Y-%m-%dT%H:%M:%OS"
 posts <- data.frame(
@@ -34,6 +34,7 @@ save(posts,file = "Posts.Rda")
 rm(doc)
 rm(rows)
 rm(posts.xml)
+
 
 
 require(ggplot2)
