@@ -4,8 +4,8 @@ library("dplyr") # for `inner_join()`, `filter()`, `summarise()`, and the pipe o
 library("ggplot2") # for `fortify()` and for plotting
 library("sp") # for `point.in.polygon()` and `spDists()`
 library("tidyr") # for `gather()`
-library("readr") # for `write_tsv()`
 library("ggmap")
+library("geosphere")
 
 fortify.shape <- function(x){
     x@data$id <- rownames(x@data)
@@ -53,14 +53,20 @@ especies <-data.frame("specie"=c(1:11,1:11),
                "lat"=c(25.945235,25.945235, 25.945235,25.945235,25.945235,25.945235, 19.744471,18.832071, 19.084574,19.067172, 19.497018,22.216136,18.744251, 21.581057, 20.064758,21.536391,18.85821,18.570462, 18.962724, 21.476433,20.849696,21.170029), 
                "lon"=c(-97.135846, -97.135846,-97.135846, -97.135846, -97.135846, -97.135846, -96.380597, -95.8098,-95.993928,-91.317076,-90.793455,-97.769741, -95.650379,-87.112519,-90.525326,-87.478007,-91.473585,-93.121531,-91.252631, -87.542452,-86.750701,-86.772236))
 
-dist <- function(y) which.min(apply(especies[1, ], 1, function(x) min(distp1p2(x,y))))
-apply(dat.coast.mex[, 1:2], 1, dist)
-dist(dat.coast.mex)
-
-distp1p2(especies[1, ],dat.coast.mex[2, 1:2])
-
-area <- make_bbox(lon=x$lon, lat=x$lat, f=0.1)
+area <- make_bbox(lon=especies$lon, lat=especies$lat, f=0.1)
 dat.coast.mex <- subset.shape(dat.coast, area) 
+
+##############################################################################################
+# Obtenemos punto inicial y final de la especie 1
+##############################################################################################
+dat.coast.mex$distp1 <- sqrt((dat.coast.mex[, 1]-especies[1, 2])^2+(dat.coast.mex[, 2]-especies[1, 3])^2)
+dat.coast.mex$distp2 <- sqrt((dat.coast.mex[, 1]-especies[12, 2])^2+(dat.coast.mex[, 2]-especies[12, 3])^2)
+
+especie <- 4
+inicial <- which.min(spDistsN1(as.matrix(dat.coast.mex[,c(1,2)]), as.matrix(especies[c(especie,11+especie), c(3,2)][1,])))
+final <- which.min(spDistsN1(as.matrix(dat.coast.mex[,c(1,2)]), as.matrix(especies[c(especie,11+especie), c(3, 2)][2,])))
+
+dat.coast_especie1 <- dat.coast.mex[c(inicial:final),]
 
 xlims <- as.numeric(area[c(1,3)])
 ylims <- as.numeric(area[c(2,4)])
@@ -70,7 +76,7 @@ ylims <- as.numeric(area[c(2,4)])
 ##############################################################################################
 map <- get_map(location=area, maptype="satellite", source="google")
 p0 <- ggmap(map) + 
-    geom_path(data = dat.coast.mex, aes(x = long, y = lat, group = group), color = "blue", size = 1) + 
+    geom_path(data = dat.coast_especie1, aes(x = long, y = lat, group = group), color = "blue", size = 1) + 
     coord_map(projection = "mercator") + 
     scale_x_continuous(limits = xlims, expand = c(0, 0)) + 
     scale_y_continuous(limits = ylims, expand = c(0, 0)) + 
