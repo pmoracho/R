@@ -3,6 +3,7 @@
 #' Permite sobreimponer una imagen sobre cualquier área de un ggplot
 #' Funciona a partir de dos gráficas idénticas pero que solo difieren en el color 
 #' del área. 
+#' 
 #' @param imgmagick_path Path a la herramienta imagemagick (solo si no está en el path)
 #' @param area_img_file Path al archivo de la imagen a incorporar
 #' @param out_file Path y nombre del archivo final a generar
@@ -72,7 +73,7 @@ out_file <- file.path(getwd(), "final.png")
 imgmagick_path <- NA
 imgmagick_path <- "D:/pm/bin/ImageMagick-7.0.6-10"
 
-# Genero la grafica
+set.seed(1234)# Genero la grafica
 plot1 <- ggplot(airquality, aes(x = Ozone)) +
     geom_density(fill = "#4271AE", colour = "#CC6666", alpha = 1) +
     scale_x_continuous(name = "Promedio de Ozono en\npartes por billones",
@@ -85,8 +86,6 @@ plot2 <- plot1 + geom_density(fill = "#CC6666", colour = "#CC6666", alpha = 1)
 
 add_image_to_color(imgmagick_path, area_img_file, out_file, plot1, plot2, width = 15, height = 7)
 
-
-set.seed(1234)
 df <- data.frame(
     sex=factor(rep(c("F", "M"), each=200)),
     weight=round(c(rnorm(200, mean=55, sd=5),
