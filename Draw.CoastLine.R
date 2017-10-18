@@ -21,11 +21,6 @@ subset.shape <- function(x, domain){
     x.subset
 }
 
-distp1p2 <- function(p1,p2) {
-    dst <- sqrt((p1[1]-p2[1])^2+(p1[2]-p2[2])^2)
-    return(dst)
-}
-
 ##############################################################################################
 # Descargar y descomprimir el shapefile de líneas costeras
 # desde: http://www.naturalearthdata.com/downloads/10m-physical-vectors/
@@ -55,6 +50,20 @@ especies <-data.frame("specie"=c(1:11,1:11),
 
 area <- make_bbox(lon=especies$lon, lat=especies$lat, f=0.1)
 dat.coast.mex <- subset.shape(dat.coast, area) 
+
+linea3<-data.frame()
+for(i in 1:11){
+    linea2<-mutate(dat.coast.mex,dist1=sqrt((long-especies$lon[i])^2+(lat-especies$lat[i])^2),
+                   dist2=sqrt((long-especies$lon[i+11])^2+(lat-especies$lat[i+11])^2))
+    linea2<-dat.coast.mex[which.min(linea2$dist1):which.min(linea2$dist2),]
+    linea2$specie<-i
+    linea2$lon<-linea2$long+i*0.1
+    linea2$lat<-linea2$lat+i*0.1
+    linea3<-rbind(linea3,linea2)
+}
+
+map <- get_map(location=area, maptype="satellite", source="google")
+ggmap(map) + geom_path(data = linea3, mapping = aes(x = linea3$lon, y = linea3$lat, group=linea3$specie), color = linea3$specie, size=1.2)
 
 ##############################################################################################
 # Obtenemos punto inicial y final de la especie 1
