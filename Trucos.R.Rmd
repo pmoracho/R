@@ -1,0 +1,95 @@
+---
+title: "Algunos trucos en R"
+author: "Patricio Moracho"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+## Un `Group by` más un `having`
+
+```{r fig.width=6, fig.height=6, fig.align='center'}
+dt <- read.table(text = "advertisementID   Payout  
+ 1              10  
+ 2              3  
+ 1              10  
+ 2              4 
+ 3              5
+ 3              4",
+ header = TRUE)
+
+dt
+
+## Agrupamos por Payout y solo retornamos los que tiene un único Payout
+## Algo así como GROUP BY Payout y HAVING COUNT(*) = 1
+subset(aggregate(Payout ~ advertisementID, dt, unique), lengths(Payout)==1)
+```
+**Herramientas**: `subset()`, `aggregate()`, `lengths()`
+
+## Definir grupos a partir de un determinado registro
+
+Tenemos un `data.frame` como el siguiente
+
+```{r fig.width=6, fig.height=6, fig.align='center'}
+df<-data.frame(a=c("a1","a2","a3","a4","b1","b2","b3","b4","a1","a2","a3","a4","b1","b2","b3","b4"), 
+               b=c("x1","x2","x3","total","x1","x2","x3","total", "x1","x2","x3","total","x1","x2","x3","total"), 
+               reg=c("A","A","A","A","A","A","A","A","B", "B","B","B","B","B","B","B"), c=c(1:16))
+df
+```
+
+La fila dónde `df$b == 'Total'` indica el fin de un grupo, lo que se busca es calcular el porcentaje de `c` con relación al total de dicha columna para el grupo
+
+```{r fig.width=6, fig.height=6, fig.align='center'}
+totals <- data.frame(To=df[df$b=='total',4])         # establecemos el hasta de cada grupo
+totals$from <- c(1, totals$To[1:nrow(totals)-1]+1)   # establecemos el desde, 1 y cada hasta - 1
+totals
+
+# Encontramos a que grupo pertenece cada fila
+df$NEW = df$c/totals[findInterval(x=df$c, vec=c(rbind(totals$from, totals$to))), 1]
+df
+```
+**Herramientas**: `findInterval()`, `rbind()`
+
+## Gráficar un mapa en colores
+
+```{r fig.width=6, fig.height=6, fig.align='center', knitr::opts_chunk$set(cache = TRUE)}
+library(sp)
+library(rgdal)
+library(leaflet)
+
+tmp <- tempdir()
+url <- "http://personal.tcu.edu/kylewalker/data/mexico.zip"
+file <- file.path(tempdir(),basename(url))
+download.file(url, file)
+unzip(file, exdir = tmp)
+
+mexico <- readOGR(dsn = tmp, layer = "mexico", encoding = "UTF-8")
+
+pts <- data.frame(x=runif(100000, mexico@bbox[1,],mexico@bbox[3]), 
+                  y=runif(100000, mexico@bbox[2,],mexico@bbox[4])
+)
+
+coordinates(pts) <- ~x+y  # pts needs to be a data.frame for this to work
+proj4string(pts) <- proj4string(mexico)
+estados <- as.integer(over(pts, mexico)$id)      # matching de las coordenadas con los estados
+
+estados <- estados[!is.na(estados)]  # Borramos Na (puntos fuera de cualquier estado)
+mexico@data$random <- as.integer(unlist(aggregate(estados, by=list(estados), FUN=sum)[2]))
+
+pal <- colorQuantile("Blues", NULL, n = 10)
+state_popup <- paste0("<strong>Estado: </strong>", 
+                      mexico$name, 
+                      "<br><strong>Valores random para cada estado: </strong>", 
+                      mexico$random)
+
+m <- leaflet(data = mexico) %>%
+    addProviderTiles("CartoDB.Positron") %>%
+    addPolygons(fillColor = ~pal(random), 
+                fillOpacity = 0.8, 
+                color = "#BDBDC3", 
+                weight = 1, 
+                popup = state_popup)
+m
+```
