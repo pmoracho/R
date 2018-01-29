@@ -1,0 +1,71 @@
+---
+title: "Presupuesto de cobranza usando ML"
+author: "Patricio Moracho"
+date: "29 de enero de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(digits=9)
+```
+
+## Introducción
+
+Vamos a trabajar con un set de datos real de los meses Agosto a Diciembre de 2017. Por una cuestión de legibilidad, achicamos los nombres de las columnas de la siguiente forma:
+
+* **P**: PeriodoId
+* **M**: Numero de mes (Ej Enero=1)
+* **CC**: Concepto cuenta (Loc$, LocUs, Ext)
+* **D**: Departamento (LEG, MAR, PAT)
+* **COB**: Cobranza Total
+* **Fn**: Facturación real (periodos 1 (el anterior al actual) a 5)
+* **N**: Número correlativo del período por origen
+
+```{r loaddata}
+load("cobranza.Rda")
+cob <- df[, c(1,2,3,4,6,8,9,10,11,12,13)]
+colnames(cob) <- c("P","M","CC", "D", "COB", "F1", "F2", "F3", "F4", "F5", "T")
+cob <- cob[order(cob$CC,cob$P),]
+periodos <- unique(cob$P)
+cob$N <- match(cob$P, periodos)
+cob$CC <- as.factor(cob$CC)
+levels(cob$CC) <- c("Loc$","LocUs","Ext")
+head(cob, n=9)
+```
+
+## Regresión lineal simple sobre un determinado origen
+
+Por ejemplo sobre Legales / Local $. en primer lugar filtramos solos estos registros, solo información real, luego la idea es: dado un determinado mes, vamos a "entrenar" nuestra regresión con los datos de los últimos 3 años para atras, contando desde el mes anterior al evaluar, por ejemplo, si estuvieramos en agosto/2017, nuestro set de entrenamiento debiera ser: Agosto/2014 a Julio/2017. Para hacer la selección de los datos podemos hacer lo siguiente:
+
+```{r selllp, echo=TRUE}
+periodo_actual <- 201708
+train_data <- cob[cob$CC=="Loc$" & 
+                  cob$D=="LEG" & 
+                  cob$T=="R" &
+                  cob$P %in% head(periodos[periodos < periodo_actual], n=12*3),
+                 ]
+head(train_data)
+```
+Ahora si generamos un modelo de regresión lineal simple
+
+```{r modelo, echo=TRUE}
+modelo <-lm(COB ~ N + F1 + F2 + F3 + F4 + F5, train_data)
+
+test_data <- cob[cob$CC=="Loc$" & 
+                 cob$D=="LEG" & 
+                 cob$T=="P" &
+                 cob$P == periodo_actual,
+                 ]
+cob_proyectada <- predict(modelo, test_data)
+real_data <- cob[cob$CC=="Loc$" & 
+                 cob$D=="LEG" & 
+                 cob$T=="R" &
+                 cob$P == periodo_actual,
+                 ]
+
+resultados <- rbind(c(ADM=test_data$COB, MODELO=cob_proyectada, REAL=real_data$COB))    
+resultados
+```
+
+El valor de la cobranza proyectada es de `r cob_proyectada` el valor real.
