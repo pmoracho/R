@@ -1,0 +1,94 @@
+---
+title: "Curso introductorio a R"
+author: "Patricio Moracho"
+date: "23 de noviembre de 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## R Markdown
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
+## Como cometer errores
+
+- La estadística nos puede facilmente inducir a conclusiones erróneas
+- Hay que profundizar siempre el análisis
+- Hay que poner a prueba siempre nuestras hipótesis
+
+## Caso de estudio
+**¿Es la universidad de Berkeley "sexista"?**
+
+```{r berkeley, echo = TRUE}
+ucba <- data.frame(UCBAdmissions)
+head(ucba)
+```
+
+En `ucba` tenemos un `data.frame` que muestra los ingresos y rechazos por departamento y por sexo. 
+
+##
+
+Vamos a usar `xtabs()` para analizar como es el comportamiento general en la admisión de hombres y mujeres.
+
+```{r berkeley2, echo = TRUE}
+cross <- xtabs(Freq ~ Gender + Admit, data = ucba)
+cross
+```
+
+## ¿cuál es la tasa de admisión y rechazo por sexo?
+
+```{r berkeley3, echo = TRUE}
+prop.table(x=cross, margin=1) # margin = 1 corresponde a Gender
+```
+Es decir más de un 44% de hombres es admitido versus un 30% de mujeres. La diferencia parece significativa. ¿Podemos inferir que la **UCB** usa criterios sexistas para determinar la admisión?
+
+## ¿Que pasa a nivel departamento?
+
+```{r berkeley4, echo = TRUE}
+Dept <- aggregate(cbind(Admitted=ifelse(Admit=="Admitted",Freq,0), 
+                        Rejected=ifelse(Admit=="Rejected",Freq,0),
+                        FemaleAdmitted=ifelse(Admit=="Admitted" & Gender=="Female",Freq,0),
+                        FemaleRejected=ifelse(Admit=="Rejected" & Gender=="Female",Freq,0),
+                        MaleAdmitted=ifelse(Admit=="Admitted" & Gender=="Male",Freq,0),
+                        MaleRejected=ifelse(Admit=="Rejected" & Gender=="Male",Freq,0)
+                )~Dept, ucba, sum)
+
+Dept$DeptRel <- Dept$Admitted/Dept$Rejected
+Dept$FemaleRel <- Dept$FemaleAdmitted/Dept$FemaleRejected
+Dept$MaleRel <- Dept$MaleAdmitted/Dept$MaleRejected
+```
+##
+
+```{r berkeley5, echo = TRUE}
+Dept[, c(1, 8, 9, 10)]
+```
+
+
+## Enlaces interesantes:
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.

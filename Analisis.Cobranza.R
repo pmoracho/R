@@ -80,28 +80,29 @@ time.taken
 
 save(df, file="cobranza.Rda")
 load("cobranza.Rda")
-
 df <- read.csv("cobranza.mom.csv", as.is=T)
 
 # ##################################################################################################################################
-# CARET
+# CARET Prueba generica de todos los mejores modelos
 # ##################################################################################################################################
 library("caret")
 
-models <- c("rpart", "rpart2", "qrf", "treebag", "gbm")
-#models <- c("rpart")
-model.formula <- CobTotal ~ np + Fact0 + Fact1 + Fact2 + Fact3 + Fact4 + Fact5
+models <- c("rpart", "rpart2", "qrf", "treebag", "gbm", "lm")
+models <- c("lm")
+model.formula <- CobTotal ~ np + Fact1 + Fact2 + Fact3 + Fact4 + Fact5
 model.grid <- expand.grid(pp=c(201708, 201709, 201710, 201711, 201712),
                   #cc=c(3013,3014,3015),
-                  cc=c(3015),
+                  cc=c(3013),
                   depto=c("LEG", "MAR", "PAT"),
                   modelo=models,
-                  cant=4,
+                  cant=3,
                   ff=Reduce(paste, deparse(model.formula)))
 resultados <- test.models(df, model.grid)
 
 
-
+# ##################################################################################################################################
+# Modelos especificos (mejores) por cada grupo
+# ##################################################################################################################################
 model.grid <- as.data.frame(rbind(cbind("qrf", 3013, "LEG"),
                                   cbind("rpart", 3013, "MAR"),
                                   cbind("treebag", 3013, "PAT"),
@@ -118,60 +119,13 @@ model.grid$cant = 5
 model.grid$ff=Reduce(paste, deparse(model.formula))
 
 resultados <- test.models(df, model.grid)
-resultados2 <- resultados
 
 colSums(resultados[resultados$cc==3015,c("MontoDesvioADM","MontoDesvioNuevo")])
 colSums(resultados[resultados$cc!=3015,c("MontoDesvioADM","MontoDesvioNuevo")])
 
 aggregate(cbind(MontoDesvioADM,MontoDesvioNuevo, MontoDesvioADM-MontoDesvioNuevo) ~ ifelse(cc==3015, "Exterior","Local"), resultados, sum)
-
 modres <- aggregate(cbind(MontoDesvioADM,MontoDesvioNuevo) ~ modelo + cc + depto, resultados, sum)
 modres$status <- ifelse(modres$MontoDesvioADM>modres$MontoDesvioNuevo, '*', '')
 modres
 
-modres4 <- modres
 
-df[df$ConceptoCuentaId==3015 & df$Departamento=="LEG",]
-
-
-library("corrplot")
-
-ndf <- head(df[df$Tipo == "R" &
-            df$PeriodoId < 201801 &
-            df$ConceptoCuentaId == 3013 &
-            df$Departamento == "LEG",
-            c(1,2,6,7,8,9,10,11,12)], 12*5)
-
-
-plot(ndf[, c("nper", "CobTotal")]) +
-abline(lm(CobTotal ~ nper, ndf))
-
-m <- cor(ndf[, -c(1,2)])
-corrplot(m, method="number")
-
-
-
-ndf <- ndf[order(ndf[,1]),]
-rownames(ndf) <- 1:nrow(ndf)
-ndf$nper <- 1:nrow(ndf)
-+
-
-plot
-+ Fact1
-
-m <- cor(ndf)
-corrplot(m, method="number")
-head(df)
-
-l.model <- lm(CobTotal ~ Fact0, ndf)
-summary(l.model)
-
-predict(l.model, data.frame(Fact0=417609.2))
-
-library("rpart")
-
-data = cob.filter(df, 201708, 3015, "LEG")
-data$train.df <- head(data$train.df,12)
-model <- rpart(model.formula, data=data$train.df)
-data$test.df$CobTotal <- predict(model, newdata=data$test.df)
-data$test.df
