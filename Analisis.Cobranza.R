@@ -26,6 +26,7 @@ test.models <- function(df, model.grid) {
     resultados <- data.frame()
     for (i in 1:nrow(model.grid)) {
         mt <- model.grid[i,]
+        mt
         print(paste("Processing", mt$modelo, "pass", i, "of", nrow(model.grid)))
         data = cob.filter(df, mt$pp, mt$cc, mt$depto, mt$cant)
         ff <- as.formula(as.character(mt$ff))
@@ -79,7 +80,7 @@ time.taken <- end.time - start.time
 time.taken
 
 save(df, file="cobranza.Rda")
-load("cobranza.Rda")
+load("data/cobranza.Rda")
 df <- read.csv("cobranza.mom.csv", as.is=T)
 
 # ##################################################################################################################################
@@ -87,15 +88,15 @@ df <- read.csv("cobranza.mom.csv", as.is=T)
 # ##################################################################################################################################
 library("caret")
 
-models <- c("rpart", "rpart2", "qrf", "treebag", "gbm", "lm")
-models <- c("lm")
+models <- c("rpart", "qrf", "treebag", "gbm", "lm")
+#models <- c("lm")
 model.formula <- CobTotal ~ np + Fact1 + Fact2 + Fact3 + Fact4 + Fact5
 model.grid <- expand.grid(pp=c(201708, 201709, 201710, 201711, 201712),
-                  #cc=c(3013,3014,3015),
-                  cc=c(3013),
+                  cc=c(3013,3014,3015),
+                  #cc=c(3013),
                   depto=c("LEG", "MAR", "PAT"),
                   modelo=models,
-                  cant=3,
+                  cant=5,
                   ff=Reduce(paste, deparse(model.formula)))
 resultados <- test.models(df, model.grid)
 
@@ -103,7 +104,7 @@ resultados <- test.models(df, model.grid)
 # ##################################################################################################################################
 # Modelos especificos (mejores) por cada grupo
 # ##################################################################################################################################
-model.grid <- as.data.frame(rbind(cbind("qrf", 3013, "LEG"),
+model.grid <- as.data.frame(rbind(cbind("gbm", 3013, "LEG"),
                                   cbind("rpart", 3013, "MAR"),
                                   cbind("treebag", 3013, "PAT"),
                                   cbind("qrf", 3014, "LEG"),
@@ -113,6 +114,7 @@ model.grid <- as.data.frame(rbind(cbind("qrf", 3013, "LEG"),
                                   cbind("gbm", 3015, "MAR"),
                                   cbind("gbm", 3015, "PAT")
 ))
+model.formula <- CobTotal ~ np + Fact1 + Fact2 + Fact3 + Fact4 + Fact5
 model.grid <- merge(x=model.grid, y=c(201708, 201709, 201710, 201711, 201712))
 names(model.grid) = c("modelo", "cc", "depto", "pp")
 model.grid$cant = 5
