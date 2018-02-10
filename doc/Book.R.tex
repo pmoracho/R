@@ -143,9 +143,9 @@ comandos del sistema. Esto producirá una ventana de consola o hará que
 \textbf{R} se inicie como un programa interactivo en la ventana del terminal
 actual. 
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
   \includegraphics[width=\linewidth]{rwin.png}
-  \caption{A boat.}
+  \caption{Captura de patalla de R Windows.}
   \label{fig:rwin}
 \end{figure}
 
@@ -371,5 +371,116 @@ serán:
 [6] 5.444444
 \end{lstlisting}
 
+Como este comando es bastante similar al anterior, es conveniente introducirlo
+editando el comando anterior. En la mayoría de los sistemas que ejecutan
+\textbf{R}, el comando anterior se puede recuperar con la tecla de flecha hacia
+arriba. 
+
+La suma de las desviaciones cuadradas se obtiene del mismo modo con
+
+\begin{lstlisting}[language=R]
+> sum((weight - xbar)^2)
+[1] 1189.333
+\end{lstlisting}
+
+Y entonces la desviación estándar:
+
+\begin{lstlisting}[language=R]
+> sqrt(sum((weight - xbar)^2)/(length(weight) - 1))
+[1] 15.42293
+\end{lstlisting}
+
+Por supuesto, como \textbf{R} es un programa estadístico, estos cálculos ya
+están incorporados en el programa, y se obtienen los mismos resultados
+simplemente de esta forma:
+
+\begin{lstlisting}[language=R]
+> mean(weight)
+[1] 74.33333
+> sd(weight)
+[1] 15.42293
+\end{lstlisting}
+
+\subsection{Procedimientos comunes}
+
+Como ejemplo de algo un poco más complicado de lo que \textbf{R} es capaz de
+hacer, considere lo siguiente: La regla general es que el IMC (Índice de masa
+corporal) para un individuo de peso normal debería estar entre 20 y 25, y
+queremos saber si nuestros datos se desvían sistemáticamente de eso. Se puede
+utilizar una prueba t de una muestra para evaluar si el IMC de las seis
+personas puede considerarse que tiene una media de 22,5, dado que proviene de
+una distribución normal. Para ello, puede utilizar la función \texttt{t.test}. (Podría
+no conocer la teoría de la prueba t todavía. El ejemplo se incluye aquí
+principalmente para dar una indicación de cómo es la producción estadística
+"real". En el capítulo 5 se ofrece una descripción detallada de \texttt{t.test})
+
+\begin{lstlisting}[language=R]
+> t.test(bmi, mu=22.5)
+One Sample t-test
+data: bmi
+t = 0.3449, df = 5, p-value = 0.7442
+alternative hypothesis: true mean is not equal to 22.5
+95 percent confidence interval:
+18.41734 27.84791
+sample estimates:
+mean of x
+23.13262
+\end{lstlisting}
+
+El parametro \texttt{mu=22.5} define el valor de \texttt{mu}, que representa la
+letra griega $\mu$ usada convencionalmente para el definir teoricamente la
+media. Si este valor no se inidca, \texttt{t.test} usaría  \texttt{mu=0} por
+defecto, que no es de interés aquí.  
+
+Para una test como este, obtenemos una salida más extensa que en los ejemplos
+anteriores. Los detalles se explican en el capítulo 5, pero es importante poner
+el foco en el \texttt{p.value} que se utiliza para probar la hipótesis de que
+la media es de 22,5. El valor de \texttt{p.value} no es pequeño, lo que indica
+que no es en absoluto improbable obtener datos como los observados si el
+promedio fuera de hecho de 22,5. (Hablando de forma poco académica: en realidad
+\texttt{p} es la probabilidad de obtener un valor \texttt{t} mayor que 0.3449 o
+menor que -0.3449.) Sin embargo, también se puede observar el intervalo de
+confianza del 95\% para la media real. Este intervalo es bastante amplio, lo que
+indica que tenemos muy poca información sobre el verdadero promedio.
+
+\subsection{Gráficos}
+
+Uno de los aspectos más importantes de la presentación y análisis de datos es
+la generación de gráficos adecuados. \texttt{R} - como antes \texttt{S} - tiene un modelo
+para construir gráficos que permite la producción simple de gráficos estándar,
+así como el control fino sobre los componentes del mismo. 
+
+Si quieres investigar la relación entre  \texttt{weight} y \texttt{height}, una
+primer aproximación es contrastarlos uno con el otro en una gráfica. Esto se
+hace mediante 
+
+\begin{lstlisting}[language=R]
+> plot(height,weight)
+\end{lstlisting}
+
+Ver la figura 1.2.
+
+Puede modificar el grafico de múltiples formas. Para ello, hay una enorme
+cantidad de parámetros que se pueden establecer. Como ejemplo, intentemos
+cambiar el símbolo para gráficar cada punto usando la palabra clave
+\texttt{pch} ("plotting character") de esta manera:
+
+\begin{lstlisting}[language=R]
+> plot(height, weight, pch=2)
+\end{lstlisting}
+
+\begin{figure}[!ht]
+  \includegraphics[width=\linewidth]{figure-1-2.png}
+  \caption{Figura 1.2. Un simple gráfico x-y}
+  \label{fig:figure.1.2}
+\end{figure}
+
+Esto da la gráfica en la Figura 1.3, con los puntos marcados ahora con pequeños
+triángulos.
+
+La idea detrás del cálculo del IMC es que este valor debe ser independiente de
+la estatura de la persona, dándole así un número único como indicación de si
+una persona tiene sobrepeso y en qué medida. Dado que un IMC normal debe ser de
+aproximadamente 22.5, usted esperaría ese peso? 
 
 \end{document}
