@@ -7,6 +7,14 @@
 \usepackage{graphicx}
 \usepackage{babel}
 \usepackage{listings}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{graphicx}
+\usepackage[capitalise]{cleveref}
+
+\crefdefaultlabelformat{\textbf{#2#1#3}}
+\crefname{figure}{\textbf{Fig.}}{\textbf{Figures}} 
+
 \geometry{verbose}
 \makeatletter
 \numberwithin{equation}{section}
@@ -14,6 +22,7 @@
 \makeatother
 \addto\shorthandsspanish{\spanishdeactivate{~<>}}
 \renewcommand{\lstlistingname}{Listado de código}
+
 \title{Introducción a las estadísticas con R}
 \date{2018-01-20}
 \author{Peter Daalgard}
@@ -143,13 +152,13 @@ comandos del sistema. Esto producirá una ventana de consola o hará que
 \textbf{R} se inicie como un programa interactivo en la ventana del terminal
 actual. 
 
-\begin{figure}[!ht]
-  \includegraphics[width=\linewidth]{rwin.png}
+\begin{figure}[H]
+  \includegraphics[width=\linewidth]{fig-1.png}
   \caption{Captura de patalla de R Windows.}
-  \label{fig:rwin}
+  \label{fig:fig-1}
 \end{figure}
 
-Figura \ref{fig:rwin} Captura de patalla de R Windows.
+Figura \ref{fig:fig-1} Captura de patalla de R Windows.
 
 En cualquier caso, R funciona fundamentalmente según el modelo de
 preguntas y respuestas:
@@ -183,14 +192,14 @@ lo que \textbf{R} puede hacer, intente escribir lo siguiente:
 
 Este comando dibuja 1000 números al azar a partir de la distribución normal
 (rnorm = \emph{r}andom \emph{norm}al) y los dibuja en una ventana emergente de
-gráficos. El resultado en una máquina Windows se puede ver en la Figura 1.1.
-Por supuesto, en este momento no esperamos que adivine que obtendría este
-resultado de esa forma en particular. Elegimos este ejemplo porque muestra
-varios componentes de la interfaz de usuario en acción. Antes de que el estilo
-de comandos sea natural para usted, es necesario introducir algunos conceptos y
-convenciones a través de ejemplos más simples. Bajo Windows, la ventana de
-gráficos tomará el enfoque del teclado en este punto. Haga clic en la consola
-para que acepte más comandos.
+gráficos. El resultado en una máquina Windows se puede ver en la Figura
+\ref{fig:fig-1}.  Por supuesto, en este momento no esperamos que adivine que
+obtendría este resultado de esa forma en particular. Elegimos este ejemplo
+porque muestra varios componentes de la interfaz de usuario en acción. Antes de
+que el estilo de comandos sea natural para usted, es necesario introducir
+algunos conceptos y convenciones a través de ejemplos más simples. Bajo
+Windows, la ventana de gráficos tomará el enfoque del teclado en este punto.
+Haga clic en la consola para que acepte más comandos.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Una calculadora gigante
@@ -257,8 +266,6 @@ seguido por \textquotedbl{}menos\textquotedbl{} (¡a la inversa, omitir el
 espacio al comparar una variable con un número negativo tiene consecuencias
 inesperadas!). 
 
-\rule[0.5ex]{1\columnwidth}{0pt}
-
 No hay un resultado inmediatamente visible, pero a partir de ahora,
 \texttt{x} tiene el valor 2 y puede ser utilizado en las siguientes
 expresiones aritméticas.
@@ -278,8 +285,6 @@ deben evitarse. Un nombre de variable típico podría ser \texttt{height.1yr},
 que podría utilizarse para describir la altura de un niño a la edad de 1 año.
 Los nombres son sensibles a mayúsculas y minúsculas: \texttt{WT} y \texttt{wt}
 no se refieren a la misma variable.
-
-\rule[0.5ex]{1\columnwidth}{0pt}
 
 El sistema ya utiliza algunos nombres. Esto puede causar cierta confusión si
 los utiliza para otros fines. Los peores casos son los nombres de una sola
@@ -442,6 +447,7 @@ promedio fuera de hecho de 22,5. (Hablando de forma poco académica: en realidad
 menor que -0.3449.) Sin embargo, también se puede observar el intervalo de
 confianza del 95\% para la media real. Este intervalo es bastante amplio, lo que
 indica que tenemos muy poca información sobre el verdadero promedio.
+\newpage
 
 \subsection{Gráficos}
 
@@ -458,7 +464,7 @@ hace mediante
 > plot(height,weight)
 \end{lstlisting}
 
-Ver la figura 1.2.
+Ver la figura \ref{fig:fig-2}.
 
 Puede modificar el grafico de múltiples formas. Para ello, hay una enorme
 cantidad de parámetros que se pueden establecer. Como ejemplo, intentemos
@@ -469,18 +475,72 @@ cambiar el símbolo para gráficar cada punto usando la palabra clave
 > plot(height, weight, pch=2)
 \end{lstlisting}
 
-\begin{figure}[!ht]
-  \includegraphics[width=\linewidth]{figure-1-2.png}
-  \caption{Figura 1.2. Un simple gráfico x-y}
-  \label{fig:figure.1.2}
+\begin{figure}[H]
+  \includegraphics[width=\linewidth]{fig-2.png}
+  \caption{Un simple gráfico x-y}
+  \label{fig:fig-2}
 \end{figure}
 
-Esto da la gráfica en la Figura 1.3, con los puntos marcados ahora con pequeños
-triángulos.
+Esto da la gráfica en la Figura \ref{fig:fig-2}, con los puntos marcados ahora
+con pequeños triángulos.
 
 La idea detrás del cálculo del IMC es que este valor debe ser independiente de
-la estatura de la persona, dándole así un número único como indicación de si
-una persona tiene sobrepeso y en qué medida. Dado que un IMC normal debe ser de
-aproximadamente 22.5, usted esperaría ese peso? 
+la estatura de la persona, dando así un número único como indicación de si una
+persona tiene sobrepeso y en qué medida. Dado que un IMC normal debe ser de
+aproximadamente 22.5, podriamos esperar que $weight \approx 22.5 * height^2$.
+De acuerdo a esto podríamos sobreponer una curva del peso esperado para un IMC
+de 22.5 de la siguiente forma:
+
+\begin{lstlisting}[language=R]
+> hh <- c(1.65, 1.70, 1.75, 1.80, 1.85, 1.90)
+> lines(hh, 22.5 * hh^2)
+\end{lstlisting}
+
+Lo podremos verificar en la Figura 1.4. La función \texttt{lines} sumará los
+valores \texttt{(x, y))} para terminar generando una reecta ene el gráfico
+actual.
+
+La razón para definir una nueva variable (\texttt{hh}) para las alturas en
+lugar de utilizar el vector original (\texttt{height}) es doble. En primer
+lugar, la relación entre altura y peso es cuadrática y por lo tanto no lineal,
+aunque puede ser difícil de ver en el gráfico. Puesto que estamos aproximando
+una curva no lineal con una curva lineal a intervalos, será mejor utilizar
+puntos que estén repartidos uniformemente a lo largo del eje \textit{x} que
+confiar en la distribución de los datos originales. En segundo lugar, puesto
+que los valores de \texttt{height} no están ordenados, los segmentos de línea
+no conecta puntos vecinos, sino que se desplazan hacia adelante y hacia atrás
+entre puntos distantes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% R elementos escenciales del lenguaje
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{R elementos escenciales del lenguaje}
+
+Esta sección describe los aspectos básicos del lenguaje \textbf{R}. Es
+necesario hacer esto de una manera ligeramente superficial, con algunos
+detalles pasados de largo.  El énfasis está puesto en los elementos que son
+útiles conocer para el uso interactivo en lugar de la programación real , aunque
+se incluye una breve sección sobre programación.
+
+\subsection{Expresiones y objetos}
+
+La forma básica de interactuar en \textbf{R} es la de evaluación de expresiones. El
+usuario introduce una expresión; el sistema la evalúa e imprime el resultado.
+Algunas expresiones se evalúan no por sus resultados sino por los efectos
+secundarios tales como:
+
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=\linewidth]{fig-3.png}
+	\caption{Gráfico usando \texttt{pch=2}}
+	\label{fig:fig-3}
+\end{figure}
+
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=\linewidth]{fig-4.png}
+	\caption{Sobreimponiendo una curva de referencia, usando \texttt{lines(...)}}
+	\label{fig:fig-4}
+\end{figure}
 
 \end{document}
