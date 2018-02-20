@@ -11,7 +11,8 @@
 \usepackage{graphicx}
 \usepackage[capitalise]{cleveref}
 \usepackage{parskip}
-
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
 \usepackage[spanish]{babel}
 \usepackage{times}
  
@@ -77,8 +78,9 @@
 
 \begin{document}
 
+\cleardoublepage
+\pdfbookmark{\contentsname}{Contents}
 \tableofcontents
-\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prefacio
@@ -610,14 +612,151 @@ de nuevos objetos y de nuevos elementos lingüísticos.
 En este punto, ya tenemos una idea de la forma en que funciona \textbf{R}, y ya
 hemos utilizado parte de una terminología especial cuando hablamos de la
 función \texttt{plot}, etc. Ese es exactamente el punto: Muchas cosas en
-\textbf{R} se hacen usando llamadas de funciones, comandos que parecen una
+\textbf{R} se hacen usando llamadas a funciones, comandos que parecen una
 aplicación de una función matemática de una o varias variables; por ejemplo,
-\texttt{log (x)} o \texttt{plot(height, weight)}. El formato es que a un nombre
-de función le sigue un conjunto de paréntesis que contiene uno o más
+\texttt{log (x)} o \texttt{plot(height, weight)}. El formato es un nombre de
+función al cual le sigue un conjunto de paréntesis que contiene uno o más
 parámetros. Por ejemplo, en \texttt{plot(height, weight)} el nombre de la
 función es \texttt{plot} y los argumentos son \texttt{height} y
-\texttt{weight}.  Estos son los argumentos reales, que sólo se aplican a la
-convocatoria actual. Una función también tiene argumentos formales, que se
-conectan con argumentos reales en la llamada.
+\texttt{weight}.  Estos son los parametros efectivos, que se usan en la
+invocación efectiva de la función, sin embargo una función también tiene
+parámetros formales, que se conectan con parámetros reales en la invocación
+final.
+
+Cuando escribimos \texttt{plot(height , weight)} , \textbf{R} asume que el primer
+parámetro corresponde a la variable \texttt{x} y el segundo a la variable
+\texttt{y}. Esto se conoce como coincidencia posicional. Esto se vuelve difícil
+de manejar si una función tiene un gran número de parámetros, ya que hay que
+indicar cada uno de ellos y recordar su posición en la secuencia.
+Afortunadamente, \textbf{R} tiene métodos para evitar esto: la mayoría de los
+parámetros manejan valores por defecto y pueden omitirse en los casos de uso
+comunes, y hay formas no posicionales de especificarlos cuando se necesita
+apartarse de estos usos comunes.
+
+La función \texttt{plot} es, de hecho, un ejemplo de una función que tiene una
+gran variedad de parámetros para poder modificar símbolos, anchos de línea,
+títulos, tipo de eje, etcétera. Usamos la forma alternativa de especificar
+parámetros al establecer el símbolo de la gráfica en triángulos con
+\texttt{plot(height, weight, pch=2)}. 
+
+La forma \texttt{pch=2} se conoce como definición de parámetro por nombre, esta
+forma permite la comparación de los parametros de llamada con los formales de
+la función y por lo tanto permitie relacionar a ambos. La palabra clave
+\texttt{pch} se utilizó para indicar que el parámetro corresponde con las
+especificación del carácter de graficado. Esta forma de indicar cualquier
+parámetro permite usar un orden arbitrario. De este modo, se puede escribir
+\texttt{plot(x=height, y=weight)}) y obtener el mismo gráfico que
+\texttt{plot(y=weight, x=height)}.  
+
+Los dos tipos de especificación de parametros --posicional y por nombre-- pueden
+usarse al mismo tiempo. 
+
+Aunque no haya parámetros para el llamado a una función, es necesario escribir
+\texttt{ls()}, con los paréntesis, para mostrar el contenido del espacio de
+trabajo. Un error común es olvidar escribir los paréntesis, lo que termina
+provocando la visualización de un trozo de código \textbf{R} puesto que
+\texttt{ls} (sin paréntesis) indica que se desea ver la definición de la
+función en lugar de ejecutarla.
+
+Los parámetros formales de una función forman parte de la definición de la
+misma. El conjunto de los paramétros formales de una función, por ejemplo,
+\texttt{plot.default} (que es la función que se llama cuando se le pasa a
+\texttt{plot} un parámetro \texttt{x} porque no existe un método especial de
+trazado), puede verse con:
+\newpage
+
+\begin{lstlisting}[language=R]
+> args(plot.default)
+function (x, y = NULL, type = "p", xlim = NULL, ylim = NULL,
+log = "", main = NULL, sub = NULL, xlab = NULL, ylab = NULL,
+ann = par("ann"), axes = TRUE, frame.plot = axes,
+panel.first = NULL, panel.last = NULL, asp = NA, ...)
+\end{lstlisting}
+
+Note que la mayoría de los parámetros tienen valores por defecto, en el caso de
+\texttt{type} si no lo especificamos, la función se comportará como si
+hubieramos inidcado \texttt{type="p"}. El \texttt{NULL} por defecto para muchos
+de los parámetros, realmente sirve como indicador que el mismo no se ha
+especificado, permitiendo definir un comportamiento especial dentro de la
+función. Por ejemplo, si no se especifican los parámetros \texttt{xlab} e
+\texttt{ylab} estos se construyen a partir de los parametros reales pasados
+como \texttt{x} e \texttt{y}. (Hay algunos puntos muy sutiles asociados con
+esto, pero no vamos a profundizar más allá en el tema.)
+
+El parámetro especial \texttt{(...)} -- Triple punto -- indica que esta función
+aceptará parámetros adicionales cuyos nombres y cantidades no han sido
+especificados aún de forma formal. Por lo general se usan para definir
+parámetros que serán pasados a otras funciones, aunque algunas los traten de
+forma particular.  Por ejemplo, en \texttt{data.frame} y \texttt{c}, los
+parametros \texttt{...} representan el resultado recibido desde otra función.
+
+\begin{lstlisting}[language=R]
+# El resultado de matrix(1:4, nrow = 2) es la entrada de data.frame(...)
+> df <- data.frame(matrix(1:4, nrow = 2)) 
+
+  X1 X2
+1  1  3
+2  2  4
+\end{lstlisting}
+
+\subsection{Vectores}
+
+Ya hemos visto vectores numéricos. Hay dos tipos más, vectores de caracteres y
+vectores lógicos.
+
+Un vector de caracteres es un vector de cadenas de texto cuyos elementos están
+especificados entre comillas simples \texttt{'} o dobles \texttt{"}:
+
+\begin{lstlisting}[language=R]
+> c("Huey","Dewey","Louie")
+[1] "Huey" "Dewey" "Louie"
+\end{lstlisting}
+
+No importa que comillas usemos, lo que es importante es que si la cadena
+comienza con una finalice con la misma.
+
+\begin{lstlisting}[language=R]
+> c(\cite{Huey},\cite{Dewey}, \cite{Louie})
+[1] "Huey" "Dewey" "Louie"
+\end{lstlisting}
+
+Sin embargo, debe evitar el uso del acento agudo \texttt{`}, que está presente
+en algunos teclados. Usaremos las comillas dobles a lo largo de este libro para
+evitar errores. Los vectores lógicos pueden tomar el valor \texttt{TRUE} o
+\texttt{FALSE} (o \texttt{NA}; ver abajo). Tambien puede usar las abreviaturas
+\texttt{T} y \texttt{F} (si tiene cuidado de no redefinirlas). Los vectores
+lógicos se construyen usando la función \texttt{c} al igual que cualquier otros
+tipo de vector:
+\newpage
+
+\begin{lstlisting}[language=R]
+> c(T,T,F,T)
+[1] TRUE TRUE FALSE TRUE
+\end{lstlisting}
+
+En realidad, es raro que tenga que especificar vectores lógicos de la manera
+anterior. Es mucho más común usar valores lógicos únicos para activar o
+desactivar una determinada opción en una llamada a una función. Los vectores de
+más de un valor a menudo suelen ser el resultado de expresiones relacionales:
+
+\begin{lstlisting}[language=R]
+> bmi > 25
+[1] FALSE FALSE FALSE FALSE TRUE FALSE
+\end{lstlisting}
+
+\subsection{Encomillado y secuencias de escape}
+\subsection{Valores inexistentes}
+\subsection{Funciones que crean vectores}
+\subsection{Matrices y arreglos}
+\subsection{Factores}
+\subsection{Listas}
+\subsection{Data frames}
+\subsection{Indexado}
+\subsection{Selección condicional}
+\subsection{Indexado de data frames}
+\subsection{Agrupación de datos y data frames}
+\subsection{Ciclos implícitos}
+\subsection{Ordenamiento}
+
 
 \end{document}
