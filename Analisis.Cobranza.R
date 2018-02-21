@@ -107,13 +107,17 @@ resultados <- test.models(df, model.grid)
 model.grid <- as.data.frame(rbind(cbind("gbm", 3013, "LEG"),
                                   cbind("rpart", 3013, "MAR"),
                                   cbind("treebag", 3013, "PAT"),
+
                                   cbind("qrf", 3014, "LEG"),
                                   cbind("qrf", 3014, "MAR"),
                                   cbind("treebag", 3014, "PAT"),
+
                                   cbind("gbm", 3015, "LEG"),
                                   cbind("gbm", 3015, "MAR"),
                                   cbind("gbm", 3015, "PAT")
 ))
+
+#COB ~ N + F1 + F2 + F3 + F4 + F5
 model.formula <- CobTotal ~ np + Fact1 + Fact2 + Fact3 + Fact4 + Fact5
 model.grid <- merge(x=model.grid, y=c(201708, 201709, 201710, 201711, 201712))
 names(model.grid) = c("modelo", "cc", "depto", "pp")

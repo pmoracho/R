@@ -1,6 +1,7 @@
 \documentclass[spanish]{extbook}
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{luainputenc}
+\usepackage[utf8]{inputenc}
+%\usepackage[a4paper,showframe]{geometry}
 \usepackage[a4paper]{geometry}
 \usepackage{color}
 \usepackage{amsmath}
@@ -9,14 +10,43 @@
 \usepackage{float}
 \usepackage[font=small,labelfont=bf]{caption}
 \usepackage{graphicx}
-\usepackage[capitalise]{cleveref}
 \usepackage{parskip}
 \usepackage[hidelinks]{hyperref}
+\usepackage[capitalise]{cleveref}
 \usepackage{bookmark}
 \usepackage[spanish]{babel}
 \usepackage{times}
- 
 \usepackage{color}
+
+% for adjustwidth environment
+\usepackage[strict]{changepage}
+
+% for formal definitions
+\usepackage{framed}
+
+% environment derived from framed.sty: see leftbar environment definition
+\definecolor{formalshade}{rgb}{0.95,0.95,1}
+\definecolor{darkblue}{rgb}{0.0, 0.0, 0.55}
+
+\newenvironment{tradnote}{%
+  \def\FrameCommand{%
+    \hspace{1pt}%
+    {\color{darkblue}\vrule width 2pt}%
+    {\color{formalshade}\vrule width 4pt}%
+    \colorbox{formalshade}%
+  }%
+  \vspace{12pt}
+  \MakeFramed{\advance\hsize-\width\FrameRestore}%
+  \noindent\hspace{-4.55pt}% disable indenting first paragraph
+  \begin{adjustwidth}{}{7pt}%
+  \vspace{1pt}%
+  \textbf{Nota del Traductor:\\\\}%
+}
+{%
+  \vspace{6pt}\end{adjustwidth}\endMakeFramed%
+}
+
+
 \definecolor{gray97}{gray}{.97}
 \definecolor{gray75}{gray}{.75}
 \definecolor{gray45}{gray}{.45}
@@ -74,10 +104,9 @@
 
 \title{Introducción a las estadísticas con R}
 \date{2018-01-20}
-\author{Peter Daalgard}
-
+\author{Peter Daalgard\\\small{Trducido al español por Patricio Moracho}}
 \begin{document}
-
+\maketitle
 \cleardoublepage
 \pdfbookmark{\contentsname}{Contents}
 \tableofcontents
@@ -87,13 +116,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter*{Prefacio}
 
-\textbf{R} es un programa informático de estadístas disponible a través de
-Internet bajo la Licencia Pública General (GPL). Es decir, se suministra con
-una licencia que le permite utilizarlo libremente, distribuirlo o incluso
-venderlo, siempre que el receptor tenga los mismos derechos y el código fuente
-esté disponible libremente. Existen versiones para Microsoft Windows XP o
-posterior, para una variedad de plataformas Unix y Linux, y para Apple
-Macintosh OS X. 
+\textbf{R} es un programa informático para estadístas, disponible a través de
+Internet bajo la Licencia Pública General (\textbf{GPL}). Es decir, se
+suministra con una licencia que nos permite utilizarlo libremente, distribuirlo
+o incluso venderlo, siempre que el receptor tenga los mismos derechos y el
+código fuente esté disponible libremente. Existen versiones para Microsoft
+Windows XP o posteriores, para una variedad de plataformas Unix y Linux, y para
+Apple Macintosh OS X. 
 
 \textbf{R} proporciona un entorno en el que puede realizar análisis
 estadísticos y producir gráficos.  En realidad es un lenguaje de programación
@@ -119,30 +148,31 @@ deseable.
 haya oido hablar del lenguaje de programación C (cuyo nombre es otra historia
 en sí misma). Inspirados por esto, Becker y Chambers eligieron, a principios de
 los años ochenta, llamar a su nuevo lenguaje de programación estadística S.
-Este lenguaje se desarrolló aún más en el producto comercial S-PLUS, que a
+Este lenguaje se desarrolló aún más con el producto comercial S-PLUS, que a
 finales de la década era de uso generalizado entre los estadísticos de todo
 tipo. Ross Ihaka y Robert Gentleman de la Universidad de Auckland, Nueva
 Zelanda, eligieron escribir una versión reducida de S para propósitos de
 enseñanza, y ¿qué era más natural que elegir la letra inmediatamente anterior?
-Las iniciales de Ross y Robert también pueden haber jugado un papel importante. 
+Las iniciales de Ross y Robert también pueden haber jugado un papel importante
+en la elección del nombre.
 
 En 1995, Martin Maechler persuadió a Ross y Robert para que publicaran el
-código fuente de \textbf{R} bajo la licencia GPL. Esto coincidió con el auge
-del software de código abierto impulsado por el sistema Linux. R pronto logró
-llenar un hueco de gente como yo que tenía la intención de usar Linux para
-computación estadística, pero no tenía ningún paquete estadístico disponible en
-ese momento. Se creó una lista de correo para la comunicación de informes de
-fallos y discusiones sobre el desarrollo de \textbf{R}.
+código fuente de \textbf{R} bajo la licencia \textbf{GPL}. Esto coincidió con
+el auge del software de código abierto impulsado por el sistema Linux. R pronto
+logró llenar un hueco en gente como yo que tenía la intención de usar Linux
+para computación estadística, pero no tenía ningún paquete estadístico
+disponible en ese momento. Se creó una lista de correo para la comunicación de
+informes de fallos y discusiones sobre el desarrollo de \textbf{R}.
 
 En agosto de 1997, me invitaron a unirme a un equipo internacional extendido
 cuyos miembros colaboran a través de Internet y que ha controlado el desarrollo
 de \textbf{R} desde entonces. Posteriormente, el equipo básico se amplió varias
 veces y actualmente cuenta con 19 miembros. El 29 de febrero de 2000, se
-publicó la versión 1.0.0.0. Al momento de estos escritos, la versión actual es
+publicó la versión 1.0.0.0. Al momento de este escrito, la versión actual es
 la 2.6.2. Este libro se basó originalmente en una serie de notas elaboradas
 para el curso de Estadística Básica para Investigadores en Salud de la Facultad
 de Ciencias de la Salud de la Universidad de Copenhague. El curso tenía como
-objetivo principal los estudiantes de doctorado en medicina. Sin embargo, el
+objetivo principal, los estudiantes del doctorado en medicina. Sin embargo, el
 material se ha revisado sustancialmente y espero que sea útil para un público
 más amplio, aunque sigue habiendo algunos sesgos bioestadísticos, especialmente
 en la elección de ejemplos. En los últimos años, el curso de Práctica
@@ -187,7 +217,16 @@ sistema operativo en uso y asumo que el lector tiene el conocimiento operativo
 elemental para seleccionar desde menús, mover ventanas, etc. Sin embargo, hago
 excepciones cuando soy consciente de dificultades específicas con una
 plataforma o características específicas de la misma.
-\newpage
+
+\begin{tradnote} 
+	Al momento de la traducción la versión actual de R es la
+	3.4.2, aún así, lo ejemplos y el código en general del libro son totalmente
+	consistentes con las nuevas versiones. Asimismo es importante notar que el
+	autor se centra en la forma estándar y básica de introducir comandos,
+	directamente trabajando sobre la consola \textbf{R}, sin embargo, el lector
+	puede trabajar con entornos más complejos de desarrollo como
+	\textbf{Rstudio} que no debería significar grandes diferencias.
+\end{tradnote} \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Primeros pasos
@@ -233,7 +272,7 @@ actual. Esto se hace introduciendo:
 \end{lstlisting}
 
 en la línea de comandos. No necesita entender lo que hace este comando en este
-precisomomento. Se explicará en la Sección 2.1.5. Para una primera impresión de
+preciso momento. Se explicará en la Sección 2.1.5. Para una primera impresión de
 lo que \textbf{R} puede hacer, intente escribir lo siguiente:
 
 \begin{lstlisting}[language=R]
@@ -256,7 +295,7 @@ Haga clic en la consola para que acepte más comandos.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Una calculadora gigante}
 
-Una de las tareas más simples posibles de hacer en \textbf{R} es introducir una
+Una de las tareas más simples y posibles de hacer en \textbf{R} es introducir una
 expresión aritmética y obtener un resultado. (La segunda línea es la respuesta
 de la máquina.)
 
@@ -292,15 +331,21 @@ es el sexto elemento del vector. (Por razones tipográficas, los ejemplos
 en este libro están hechos con un ancho de línea acortado. Si lo prueba
 en su propia máquina, verá los valores impresos con seis números por
 línea en lugar de cinco. Los números en sí mismos también serán diferentes
-ya que interviene la generación de números aleatorios.
+ya que se trata justamente de una generación de números aleatoria.
+
+\begin{tradnote} Hay un mecanismo para asegurar que una generación aleatoria
+sea consistente en distintos momentos y es la de establecer un ``semilla''
+incial con que se ejecutarán cualquier rutina aleatoria, esto se logra mediante
+la ejecución de \texttt{set.seed(<número>)}, el \texttt{<número>}, no importa
+cual, es lo que hace repetible y consistente los datos aleatorios\end{tradnote} 
 
 \subsection{Asignaciones}
 
-Incluso en una calculadora, usted necesitará eventualmente una cierta manera de
+Incluso en una calculadora, usted necesitará eventualmente una manera de
 almacenar resultados intermedios, de modo que no tenga que ingresarlos una y
 otra vez. \textbf{R}, al igual que otros lenguajes informáticos, tiene
 variables simbólicas, es decir, nombres que se pueden utilizar para representar
-valores.  Para asignar el valor 2 a la variable x, se puede introducir:
+valores. Para asignar el valor 2 a la variable x, se puede introducir:
 
 \begin{lstlisting}[language=R]
 > x <- 2
@@ -315,6 +360,14 @@ de un <- cambia el significado a \textquotedbl{}menos que\textquotedbl{}
 seguido por \textquotedbl{}menos\textquotedbl{} (¡a la inversa, omitir el
 espacio al comparar una variable con un número negativo tiene consecuencias
 inesperadas!). 
+
+\begin{tradnote}
+	Es importante hacer notar, que si bien, por motivos históricos
+	el operador de asignación es \texttt{<-}, \textbf{R} permite la definir una asignación
+	de la forma habitual en otros lenguajes, mediante el operador de igualdad (\texttt{=}),
+	sin embargo en la práctica es mucho más habitual ver la asignaciones
+	escritas mediante \texttt{<-}.
+\end{tradnote} 
 
 No hay un resultado inmediatamente visible, pero a partir de ahora,
 \texttt{x} tiene el valor 2 y puede ser utilizado en las siguientes
@@ -369,8 +422,9 @@ alternativas para la lectura de datos. Por ahora, nos atenemos a un único
 método. Se pueden hacer cálculos con vectores igual que los números ordinarios,
 siempre y cuando tengan la misma longitud.  Supongamos que también tenemos las
 alturas que corresponden a los pesos anteriores. El índice de masa corporal
-(IMC) se define para cada persona como el peso en kilogramos dividido por el
-cuadrado de la altura en metros. Esto podría calcularse de la siguiente manera:
+(IMC) o ``body mass index'', se define para cada persona como el peso en
+kilogramos dividido por el cuadrado de la altura en metros. Esto podría
+calcularse de la siguiente manera:
 
 \begin{lstlisting}[language=R]
 > height <- c(1.75, 1.80, 1.65, 1.90, 1.74, 1.91) 
@@ -467,7 +521,7 @@ personas puede considerarse que tiene una media de 22,5, dado que proviene de
 una distribución normal. Para ello, puede utilizar la función \texttt{t.test}. (Podría
 no conocer la teoría de la prueba t todavía. El ejemplo se incluye aquí
 principalmente para dar una indicación de cómo es la producción estadística
-"real". En el capítulo 5 se ofrece una descripción detallada de \texttt{t.test})
+``real''. En el capítulo 5 se ofrece una descripción detallada de \texttt{t.test})
 
 %\begin{lstlisting}[language=R]
 \begin{lstlisting}[style=R]
@@ -489,7 +543,7 @@ letra griega $\mu$ usada convencionalmente para el definir teoricamente la
 media. Si este valor no se inidca, \texttt{t.test} usaría  \texttt{mu=0} por
 defecto, que no es de interés aquí.  
 
-Para una test como este, obtenemos una salida más extensa que en los ejemplos
+Para un test como este, obtenemos una salida más extensa que en los ejemplos
 anteriores. Los detalles se explican en el capítulo 5, pero es importante poner
 el foco en el \texttt{p.value} que se utiliza para probar la hipótesis de que
 la media es de 22,5. El valor de \texttt{p.value} no es pequeño, lo que indica
@@ -504,7 +558,7 @@ indica que tenemos muy poca información sobre el verdadero promedio.
 \subsection{Gráficos}
 
 Uno de los aspectos más importantes de la presentación y análisis de datos es
-la generación de gráficos adecuados. \texttt{R} - como antes \texttt{S} - tiene un modelo
+la generación de gráficos adecuados. \textbf{R} - como antes \textbf{S} - tiene un modelo
 para construir gráficos que permite la producción simple de gráficos estándar,
 así como el control fino sobre los componentes del mismo. 
 
@@ -516,7 +570,11 @@ hace mediante:
 > plot(height,weight)
 \end{lstlisting}
 
-Ver la figura \ref{fig:fig-2}.
+\begin{figure}[H]
+  \includegraphics[width=\linewidth]{fig-2.png}
+  \caption{Un simple gráfico x-y}
+  \label{fig:fig-2}
+\end{figure}
 
 Puede modificar el grafico de múltiples formas. Para ello, hay una enorme
 cantidad de parámetros que se pueden establecer. Como ejemplo, intentemos
@@ -526,12 +584,6 @@ cambiar el símbolo para gráficar cada punto usando la palabra clave
 \begin{lstlisting}[language=R]
 > plot(height, weight, pch=2)
 \end{lstlisting}
-
-\begin{figure}[H]
-  \includegraphics[width=\linewidth]{fig-2.png}
-  \caption{Un simple gráfico x-y}
-  \label{fig:fig-2}
-\end{figure}
 
 Esto da la gráfica en la Figura \ref{fig:fig-2}, con los puntos marcados ahora
 con pequeños triángulos.
@@ -548,9 +600,9 @@ de 22.5 de la siguiente forma:
 > lines(hh, 22.5 * hh^2)
 \end{lstlisting}
 
-Lo podremos verificar en la Figura 1.4. La función \texttt{lines} sumará los
-valores \texttt{(x, y))} para terminar generando una reecta ene el gráfico
-actual.
+Lo podremos verificar en la Figura \ref{fig:fig-4}. La función \texttt{lines}
+sumará los valores \texttt{(x, y))} para terminar generando una recta en el
+gráfico actual.
 
 La razón para definir una nueva variable (\texttt{hh}) para las alturas en
 lugar de utilizar el vector original (\texttt{height}) es doble. En primer
@@ -570,9 +622,9 @@ entre puntos distantes.
 
 Esta sección describe los aspectos básicos del lenguaje \textbf{R}. Es
 necesario hacer esto de una manera ligeramente superficial, con algunos
-detalles pasados de largo.  El énfasis está puesto en los elementos que son
-útiles conocer para el uso interactivo en lugar de la programación real , aunque
-se incluye una breve sección sobre programación.
+detalles a los que no profundizaremos demasiado.  El énfasis estará puesto en los
+elementos que son útiles conocer para el uso interactivo en lugar de la
+programación real , aunque se incluye una breve sección sobre programación.
 
 \subsection{Expresiones y objetos}
 
@@ -581,7 +633,9 @@ expresiones. El usuario introduce una expresión; el sistema la evalúa e imprim
 el resultado.  Algunas expresiones se evalúan no por sus resultados sino por
 los efectos secundarios tales como poner una ventana de gráficos o escribir en
 un archivo. Todas las expresiones R devuelven un valor (posiblemente NULL),
-pero a veces es "invisible" y no se imprime vlor alguno en la consola.
+pero a veces ese valor es ``invisible''  y no se imprime valor alguno en la
+consola.
+
 \newpage
 \begin{figure}[!htb]
 	\centering
@@ -593,13 +647,14 @@ pero a veces es "invisible" y no se imprime vlor alguno en la consola.
 	\caption{Sobreimponiendo una curva de referencia, usando \texttt{lines(...)}}
 	\label{fig:fig-4}
 \end{figure}
+\newpage
 
 Las expresiones suelen incluir referencias a variables, operadores como
 \texttt{+} y llamadas de función, así como algunos otros elementos en los que
 aún no hemos profundizado.  Las expresiones trabajan sobre objetos. Este es un
 término abstracto para cualquier cosa que se pueda asignar a una variable. \textbf{R}
 contiene varios tipos diferentes de objetos. Hasta ahora, hemos visto casi
-exclusivamente vectores numéricos, pero en este capítulo se introduciremos varios
+exclusivamente vectores numéricos, pero en este capítulo introduciremos varios
 tipos nuevos.  Aunque los objetos pueden ser explicados de forma abstracta,
 sería una lectura bastante aburrida sin alguna indicación de cómo generarlos y
 qué hacer con ellos. Por el contrario, gran parte de la sintaxis de las
@@ -614,16 +669,16 @@ hemos utilizado parte de una terminología especial cuando hablamos de la
 función \texttt{plot}, etc. Ese es exactamente el punto: Muchas cosas en
 \textbf{R} se hacen usando llamadas a funciones, comandos que parecen una
 aplicación de una función matemática de una o varias variables; por ejemplo,
-\texttt{log (x)} o \texttt{plot(height, weight)}. El formato es un nombre de
+\texttt{log(x)} o \texttt{plot(height, weight)}. El formato es: un nombre de
 función al cual le sigue un conjunto de paréntesis que contiene uno o más
 parámetros. Por ejemplo, en \texttt{plot(height, weight)} el nombre de la
 función es \texttt{plot} y los argumentos son \texttt{height} y
 \texttt{weight}.  Estos son los parametros efectivos, que se usan en la
-invocación efectiva de la función, sin embargo una función también tiene
+invocación final de la función, sin embargo una función también tiene
 parámetros formales, que se conectan con parámetros reales en la invocación
 final.
 
-Cuando escribimos \texttt{plot(height , weight)} , \textbf{R} asume que el primer
+Cuando escribimos \texttt{plot(height , weight)}, \textbf{R} asume que el primer
 parámetro corresponde a la variable \texttt{x} y el segundo a la variable
 \texttt{y}. Esto se conoce como coincidencia posicional. Esto se vuelve difícil
 de manejar si una función tiene un gran número de parámetros, ya que hay que
@@ -645,7 +700,7 @@ la función y por lo tanto permitie relacionar a ambos. La palabra clave
 \texttt{pch} se utilizó para indicar que el parámetro corresponde con las
 especificación del carácter de graficado. Esta forma de indicar cualquier
 parámetro permite usar un orden arbitrario. De este modo, se puede escribir
-\texttt{plot(x=height, y=weight)}) y obtener el mismo gráfico que
+\texttt{plot(x=height, y=weight)} y obtener el mismo gráfico que
 \texttt{plot(y=weight, x=height)}.  
 
 Los dos tipos de especificación de parametros --posicional y por nombre-- pueden
@@ -738,6 +793,7 @@ En realidad, es raro que tenga que especificar vectores lógicos de la manera
 anterior. Es mucho más común usar valores lógicos únicos para activar o
 desactivar una determinada opción en una llamada a una función. Los vectores de
 más de un valor a menudo suelen ser el resultado de expresiones relacionales:
+
 
 \begin{lstlisting}[language=R]
 > bmi > 25
