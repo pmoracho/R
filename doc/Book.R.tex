@@ -821,7 +821,137 @@ diferenciar entre una cadena y un nombre de variable.
 
 \subsection{Valores inexistentes}
 \subsection{Funciones que crean vectores}
+En esta sección, presentaremos tres funciones \texttt{c}, \texttt{seq}, y
+\texttt{rep}, todas se usan para crear vectores de diferentes formas.  La
+primera \texttt{c}, ya la hemos visto. Es la abreviatura de ``concatenar'', que
+es justamente lo que hace: juntar los elementos indicados del primero al último:
+
+\begin{lstlisting}[language=R]
+> c(42,57,12,39,1,3,4)
+[1] 42 57 12 39 1 3 4
+\end{lstlisting}
+
+También podemos concatenar directamente vectores de distinta cantidad de elementos:
+
+\begin{lstlisting}[language=R]
+> x <- c(1, 2, 3)
+> y <- c(10, 20)
+> c(x, y, 5)
+[1] 1 2 3 10 20 5
+\end{lstlisting}
+
+\begin{tradnote} Note que el vector \texttt{x} contiene 3 elementos, el vector
+\texttt{y} dos, y \texttt{5} es un vector en sí mismo de un solo elemento
+\end{tradnote} \newpage
+
+De todas formas no necesitamos usar \texttt{c} para crear un vector de longitud
+1. Muchos escriben \texttt{c(1)}, pero para \textbf{R} es exactamente lo mismo
+que escribamos un simple \texttt{1}.
+
+Es posible también, asignar un nombre a cada elemento de un vector. Esto
+modifica luego la forma en que éste se mostrará:
+
+\begin{lstlisting}[language=R]
+> x <- c(red="Huey", blue="Dewey", green="Louie")
+> x
+    red    blue   green 
+ "Huey" "Dewey" "Louie"
+\end{lstlisting}
+
+(En este caso si tiene sentido usar \texttt{c} incluso con vectores de un solo
+elemento)
+
+Los nombres pueden configurarse o leerse mediante la función \texttt{names}:
+
+\begin{lstlisting}[language=R]
+> names(x)
+[1] "red"   "blue"  "green"
+\end{lstlisting}
+
+En el caso de los vectores, todos los elementos deben ser del mismo tipo. Si
+concatenamos diferentes tipos de datos \textbf{R} convertira todos al tipo menos
+restrictivo:
+
+\begin{lstlisting}[language=R]
+> c(FALSE, 3)
+[1] 0 3
+> c(pi, "abc")
+[1] "3.14159265358979" "abc"
+> c(FALSE, "abc")
+[1] "FALSE" "abc"
+\end{lstlisting}
+
+Lo que ocurrió es, que los valores lógicos se convierten a valores \texttt{0/1}
+o \texttt{"FALSE/TRUE"} y los números a una representación de tipo cadena.
+
+La segunda función, \texttt{seq}("secuencia"), se usa para generar series de
+números equidistantes. Al escribir esto:
+
+\begin{lstlisting}[language=R]
+> seq(4,9)
+[1] 4 5 6 7 8 9
+\end{lstlisting}
+
+podemos ver claramente, que hemos creado un vector con los enteros del 4 al 9.
+Si buscamos secuencias que "salten" de a 2 elementos, podríamos escribir:
+
+\begin{lstlisting}[language=R]
+> seq(4,10,2)
+[1] 4 6 8 10
+\end{lstlisting}
+
+Frecuentemente son necesarios estos tipos de vectores, particlarmente para
+gráficos. Por ejemplo, anteriormente usamos un vector
+\texttt{c(1.65,1.70,1.75,1.80,1.85,1.90)} para definir un conjunto de alturas,
+algo que eventualmente podríamos haber escrito como
+\texttt{seq(1.65,1.90,0.05)} (La ventaja de usar \texttt{seq} es más que obvia
+si eventualmente necesitaramos crear pasos de 1cm en vez de 5cm)
+
+Una forma especial de definir una secuencia con pasos igual a 1 es la siguiente:
+
+\begin{lstlisting}[language=R]
+> 4:9
+[1] 4 5 6 7 8 9
+\end{lstlisting}
+
+Lo anterior es exactamente igual a hacer \texttt{seq(4,9)}, simplemente es más
+sencillo de leer.
+
+La tercer función, \texttt{rep} ("replicar"), es usada para generar valores que
+se repiten. Se puede usar de dos formas, dependiendo si el segundo parámetro es
+un vector o un número
+
+\begin{lstlisting}[language=R]
+> oops <- c(7,9,13)
+> rep(oops,3)
+[1]  7  9 13  7  9 13  7  9 13
+> rep(oops,1:3)
+[1]  7  9  9 13 13 13
+\end{lstlisting}
+
+La primera de las ejecuciones repite completamente el vector \texttt{oops} tres veces.
+La segunda llamada repite cada elemento la cantidad de veces definida en el
+segundo vector \texttt{(1,2,3)}, es decir que el 7 se repetirá una vez, el 9 dos, y el
+13 tres.
+
+La función rep se usa habitualmente para hacer cosas como agurpar elementos: Si
+sabemos que las primeras 10 observaciones son hombres y las últimas 17 mujeres,
+podemos hacer:
+
+\begin{lstlisting}[language=R]
+> rep(1:2,c(10,15))
+[1] 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+\end{lstlisting}
+
+para armar un vector que nos indica que las observaciones corresponden a un
+hombre (1) o a una mujer (2).  Una forma de repetir un mismo número de veces un
+elemento, puede lograrse mediante \texttt{rep(1:2,each=10)} que es lo mismo que
+hacer \texttt{rep(1:2,c(10,10))}.
+
 \subsection{Matrices y arreglos}
+
+..
+
 \subsection{Factores}
 \subsection{Listas}
 \subsection{Data frames}
@@ -832,5 +962,11 @@ diferenciar entre una cadena y un nombre de variable.
 \subsection{Ciclos implícitos}
 \subsection{Ordenamiento}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% El Entorno de R
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{El entorno de R}
+
+\subsection{Leyendo desde un archivo de texto} \label{readtextfile}
 
 \end{document}
