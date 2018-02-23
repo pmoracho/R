@@ -107,9 +107,9 @@
 \author{Peter Daalgard\\\small{Traducido al español por Patricio Moracho}}
 \begin{document}
 \maketitle
-\cleardoublepage
-\pdfbookmark{\contentsname}{Contents}
-\tableofcontents
+% \cleardoublepage
+% \pdfbookmark{\contentsname}{Contenido}
+% \tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prefacio
@@ -201,6 +201,11 @@ incluido breves secciones teóricas en relación con los diversos métodos, pero
 más que como material didáctico, éstos deberían servir de recordatorios o
 quizás como aperitivos para los lectores que son nuevos en el mundo de la
 estadística.
+
+\cleardoublepage
+\pdfbookmark{\contentsname}{Contenido}
+\tableofcontents
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Conceptos Básicos
@@ -801,6 +806,19 @@ más de un valor a menudo suelen ser el resultado de expresiones relacionales:
 \end{lstlisting}
 
 \subsection{Encomillado y secuencias de escape}
+
+Las cadenas de caracteres entrecomilladas requieren algunas consideraciones
+especiales: ¿Cómo, por ejemplo, que pasa si tenemos agregar una comilla dentro
+de la cadena? ¿Y qué pasa con los caracteres especiales como el de fín de
+linea? Este tipo de situaciones se resuelve usando secuencias de escape. Las
+veremos inmediatamente, pero antes será útil observar lo siguiente.
+
+Existe una diferencia entre una cadena de texto y la forma en que ésta se
+imprime. Cuando, por ejemplo, se define una cadena como \texttt{"Huey"}, se
+trata de una cadena de cuatro caracteres, no de seis. Las comillas no son
+realmente parte de la cadena, sino que están ahí para que el sistema pueda
+diferenciar entre una cadena y un nombre de variable.
+
 \subsection{Valores inexistentes}
 \subsection{Funciones que crean vectores}
 \subsection{Matrices y arreglos}
