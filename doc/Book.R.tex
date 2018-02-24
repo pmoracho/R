@@ -338,11 +338,15 @@ en su propia máquina, verá los valores impresos con seis números por
 línea en lugar de cinco. Los números en sí mismos también serán diferentes
 ya que se trata justamente de una generación de números aleatoria.
 
-\begin{tradnote} Hay un mecanismo para asegurar que una generación aleatoria
-sea consistente en distintos momentos y es la de establecer un ``semilla''
-incial con que se ejecutarán cualquier rutina aleatoria, esto se logra mediante
-la ejecución de \texttt{set.seed(<número>)}, el \texttt{<número>}, no importa
-cual, es lo que hace repetible y consistente los datos aleatorios\end{tradnote} 
+\begin{tradnote}
+
+	Hay un mecanismo para asegurar que una generación aleatoria sea consistente
+	en distintos momentos y es la de establecer un ``semilla'' incial con que
+	se ejecutarán cualquier rutina aleatoria, esto se logra mediante la
+	ejecución de \texttt{set.seed(<número>)}, el \texttt{<número>}, no importa
+	cual, es lo que hace repetible y consistente los datos aleatorios
+
+\end{tradnote} 
 
 \subsection{Asignaciones}
 
@@ -819,7 +823,61 @@ trata de una cadena de cuatro caracteres, no de seis. Las comillas no son
 realmente parte de la cadena, sino que están ahí para que el sistema pueda
 diferenciar entre una cadena y un nombre de variable.
 
-\subsection{Valores inexistentes}
+Si imprime un vector de caracteres, normalmente se imprimirá con comillas
+añadidas a cada elemento del mismo. Hay una manera de evitar esto, usando la
+función de \texttt{cat}.  Por ejemplo,
+
+\begin{lstlisting}[language=R]
+> cat(c("Huey","Dewey","Louie"))
+Huey Dewey Louie
+\end{lstlisting}
+
+Esto imprime las cadenas sin comillas, separadas por un espacio. No hay una
+nueva línea que siga a la cadena, por lo que el símbolo (\texttt{>}) para la
+siguiente entrada sigue directamente al final de la línea. (\textbf{Nota:}
+cuando el vector de caracteres es impreso por \texttt{cat} no hay manera de
+distinguir la diferencia entre este vector de tres elementos con un vector que
+contuviera una simple cadena \texttt{"Huey Dewey Louie"}).
+
+Para obtener el símbolo del sistema es necesario agregar específicamente el
+caracter de salto de línea \texttt{\textbackslash{}n}
+
+\begin{lstlisting}[language=R]
+> cat(c("Huey","Dewey","Louie","\n"))
+Huey Dewey Louie
+>
+\end{lstlisting}
+
+Aquí hay un ejemplo de lo que se conoce como secuencia de escape. En realidad
+representa un solo caracter, el linefeed (LF) o fín de línea, pero se
+representa como dos caracteres. La barra invertida \textbackslash{} se conoce
+como el \textit{carácter de escape}. En una forma similar, puede insertar una
+comilla usando los caracteres \texttt{\"}, como en:
+
+\begin{lstlisting}[language=R]
+> cat("What is \"R\"?\n")
+What is "R"?
+> 
+\end{lstlisting}
+
+También hay maneras de insertar otros caracteres de control y glifos
+especiales, pero nos llevaría demasiado tiempo discutirlo en detalle. Algo
+importante, sin embargo: ¿Qué hay del caracter de escape en sí mismo?  Este
+también debe ser escapado, así que para indicar una barra invertida, hay que
+repetirla (\texttt{\textbackslash{}\textbackslash{}}). Es importante saber esto
+en particular cuando cuando tengamos que especificar rutas de archivo en
+Windows. Consulte también la Sección \ref{readtextfile}.
+\subsection{Valores faltantes}
+
+En el análisis real de datos, con frecuencia no disponemos de alguna
+observación (el paciente no se presentó, un experimento falló, etc.). El
+software estadístico necesita formas de hacer frente a esto. \textbf{R} permite
+que los vectores contengan un valor especial llamado \texttt{NA}. Este valor se
+traslada a los cálculos por lo que las operaciones con valores \texttt{NA}
+darán como resultado otro \texttt{NA}. Hay algunos temas especiales asociados
+con el manejo de estos valores; los trataremos a medida que lo necesitemos (ver
+"valores faltantes" en el índice).
+
 \subsection{Funciones que crean vectores}
 En esta sección, presentaremos tres funciones \texttt{c}, \texttt{seq}, y
 \texttt{rep}, todas se usan para crear vectores de diferentes formas.  La
@@ -950,9 +1008,127 @@ hacer \texttt{rep(1:2,c(10,10))}.
 
 \subsection{Matrices y arreglos}
 
-..
+Em matemáticas, una matriz no es más que una arreglo de números de dos
+dimensiones. Se usan muchísimo en las estadísticas teóricas y prácticas, pero
+en este libro no asumimos que el lector este familiarizado con el álgebra de
+las matrices, por lo que evitaremos explicar muchas de las operaciones
+específicas como el producto escalar (El documento "An Introduction to R", que
+acompaña a la instalación, describe estos puntos bastante bien). Sin embargo,
+las matrices y los arreglos de más de una dimensión también se utilizan para
+propósitos más simples, principalmente para manejar tablas, por lo que una
+descripción elemental es necesaria. En \textbf{R}, la noción de matriz se
+extiende a elementos de cualquier tipo, por lo cual podríamos tener, por
+ejemplo, una matriz de cadenas de caracteres. Las matrices y los arreglos se
+representan como vectores con dimensiones:
+
+
+\begin{lstlisting}[language=R]
+> x <- 1:12
+> dim(x) <- c(3,4)
+> x
+[,1] [,2] [,3] [,4]
+[1,] 1 4 7 10
+[2,] 2 5 8 11
+[3,] 3 6 9 12
+\end{lstlisting}
+
+En el ejemplo anterior, la función \texttt{dim()} establece las dimensiones de
+la matriz \texttt{x}, hace que \textbf{R} convierta un vector de 12 números en
+una matriz de 3 x 4. Observe que la asignación se hace en el orden de las
+columnas, los tres primeros números representan la primer columna, los números
+4 al 6, la segunda y así hasta el final.
+
+Una forma conveniente de crear matrices es utilizando la función \texttt{matrix()}:
+
+\begin{lstlisting}[language=R]
+matrix(1:12,nrow=3,byrow=T)
+     [,1] [,2] [,3] [,4]
+[1,]    1    2    3    4
+[2,]    5    6    7    8
+[3,]    9   10   11   12
+\end{lstlisting}
+
+Notese que al usar el parámetro \texttt{byrow=T} hacemos que la matriz se
+complete por fila en vez del modo habitual por columna.
+
+Hay funcion muy útiles que pueden operar sobre las matrices como
+\texttt{rownames()}, \texttt{colnames()} y la funcion de transponer
+\texttt{t()} que transforma filas a columnas y visceversa (tome note que el
+nombre esta en minúscula al contrario de \texttt{T} que representa el valor
+\texttt{Verdadero}).
+
+\begin{tradnote} Es importante mencionar, aunque se verá más adelante, que
+estas funciones no se restringen solo a las matrices sino que aplican a
+múltiples estructuras similares a estas.\end{tradnote} \newpage
+
+\begin{lstlisting}[language=R]
+> x <- matrix(1:12,nrow=3,byrow=T)
+> rownames(x) <- LETTERS[1:3]
+> x
+  [,1] [,2] [,3] [,4]
+A    1    2    3    4
+B    5    6    7    8
+C    9   10   11   12
+> t(x)
+     A B  C
+[1,] 1 5  9
+[2,] 2 6 10
+[3,] 3 7 11
+[4,] 4 8 12
+\end{lstlisting}
+
+El vector de caracteres \texttt{LETTERS} es una variable ya definida en
+\textbf{R}, que contine todas las letras en mayúsculas (en el alfabeto inglés
+eso sí). También existen otros vectores similares muy útiles como
+\texttt{letters}, \texttt{month.name} o \texttt{month.abb} que contienen,
+letras en minúsculas, el nombre de los meses y los nombres de los meses en modo
+abreviado respectivamente.
+
+Es posible "pegar" vectores entre sí, en forma de columnas o filas, utilizando
+las funciones \texttt{cbind} y \texttt{rbind} (``column bind'' y ``row bind'').
+
+\begin{lstlisting}[language=R]
+cbind(A=1:4,B=5:8,C=9:12)
+     A B  C
+[1,] 1 5  9
+[2,] 2 6 10
+[3,] 3 7 11
+[4,] 4 8 12
+> rbind(A=1:4,B=5:8,C=9:12)
+  [,1] [,2] [,3] [,4]
+A    1    2    3    4
+B    5    6    7    8
+C    9   10   11   12
+\end{lstlisting}
+
+Volveremos a las operaciones tabulares en la Sección \ref{tables}.
 
 \subsection{Factores}
+
+Es habitual en los datos estdísticos tener variables categóricas, que indican
+algún tipo de subdivisión, como ser clase social, dignóstico
+primario, estadio tumoral, etapa de la pubertad de Tanner, etc. Normalmente se
+trabajan com algún tipo de código numérico. 
+
+Sin embargo en R podemos definir estas variables como Factores, un tipo de
+estructura, que entre otras cosas, permite asignar un nombre descriptivo a
+estas categorías.  
+
+Hay ciertos análisis dónde es escencial para R distinguir
+entre estos códigos categoricos y variables cuyos valores tienen un significado
+numérico directo (véase el capítulo 7). 
+
+Un factor tiene un conjunto de niveles, digamos 4 como ejemplo, internamente un
+factor de 4 niveles esta consituído por: (a) un vector de numeros enteros de 1
+a 4 y (b) un vector de caracteres de longitud 4 que contiene las cadenas que
+describen cuales son estos cuatro niveles. Veamos un ejemplo:
+
+\begin{lstlisting}[language=R]
+> pain <- c(0,3,2,2,1)
+> fpain <- factor(pain,levels=0:3)
+> levels(fpain) <- c("none","mild","medium","severe")
+\end{lstlisting}
+
 \subsection{Listas}
 \subsection{Data frames}
 \subsection{Indexado}
@@ -961,12 +1137,45 @@ hacer \texttt{rep(1:2,c(10,10))}.
 \subsection{Agrupación de datos y data frames}
 \subsection{Ciclos implícitos}
 \subsection{Ordenamiento}
+\section{Ejercicios}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% El Entorno de R
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{El entorno de R}
 
-\subsection{Leyendo desde un archivo de texto} \label{readtextfile}
+\section{Session management}
+\subsection{The workspace}
+\subsection{Textual output}
+\subsection{Scripting	}
+\subsection{Getting help}
+\subsection{Packages}
+\subsection{Built-in data}
+\subsection{attach and detach}
 
+\section{The graphics subsystem}
+\subsection{Plot layout}
+\subsection{Building a plot from pieces}
+\subsection{Using par}
+\subsection{Combining plots}
+
+\section{R programming}
+\subsection{Flow control}
+\subsection{Classes and generic functions}
+
+\section{Data entry}
+\subsection{Leyendo desde un archivo de texto} \label{readtextfile}
+\subsection{Further details on read.table}
+\subsection{The data editor}
+\subsection{Interfacing to other programs}
+\section{Ejercicios}
+
+\chapter{Probability and distributions}
+
+\chapter{Descriptive statistics and graphics}
+\section{Summary statistics for a single group}
+\section{Graphical display of distributions}
+\section{Graphics for grouped data}
+\section{Tables} \label{tables}
+\section{Graphical display of tables}
 \end{document}
