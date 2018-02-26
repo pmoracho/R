@@ -1105,16 +1105,16 @@ Volveremos a las operaciones tabulares en la Sección \ref{tables}.
 
 \subsection{Factores}
 
-Es habitual en los datos estdísticos tener variables categóricas, que indican
-algún tipo de subdivisión, como ser clase social, dignóstico
-primario, estadio tumoral, etapa de la pubertad de Tanner, etc. Normalmente se
-trabajan com algún tipo de código numérico. 
+Es habitual en los datos estadísticos tener variables categóricas, que indican
+algún tipo de subdivisión, como ser clase social, dignóstico primario, estadio
+tumoral, etapa de la pubertad de Tanner, etc. Normalmente estos datos se
+trabajan como algún tipo de código numérico. 
 
-Sin embargo en R podemos definir estas variables como Factores, un tipo de
-estructura, que entre otras cosas, permite asignar un nombre descriptivo a
-estas categorías.  
+Sin embargo en \textbf{R} podemos definir estas variables como
+\textit{Factores}, un tipo de estructura, que entre otras cosas, permite
+asignar un nombre descriptivo a estas categorías.  
 
-Hay ciertos análisis dónde es escencial para R distinguir
+Hay ciertos análisis dónde es escencial para \textbf{R} distinguir
 entre estos códigos categoricos y variables cuyos valores tienen un significado
 numérico directo (véase el capítulo 7). 
 
@@ -1128,6 +1128,44 @@ describen cuales son estos cuatro niveles. Veamos un ejemplo:
 > fpain <- factor(pain,levels=0:3)
 > levels(fpain) <- c("none","mild","medium","severe")
 \end{lstlisting}
+
+El primer comado crea un vector numérico llamado \texttt{pain} que codifica el
+nivel de dolor de 5 pacientes. Trataremos de manejar esto como una variable
+categórica, entonces creamos un factor que llamamos \texttt{fpain} usando justamente la
+función \texttt{factor()}. Esta es llamada con un parámetro adicional a \texttt{pain},
+\texttt{levels=0:3}, lo que indica que la codificación usa los valores 0 a 3.
+
+Podríamos haber obviado el inidcar el parámetro \texttt{levels}, ya que \textbf{R} usa
+los mismos valores de \texttt{pain} en el orden adecuado, sin embargo es una buena
+práctica hacerlo. El resultado final se ve claramente:
+
+\begin{lstlisting}[language=R]
+> fpain
+[1] none   severe medium medium mild  
+Levels: none mild medium severe
+> as.numeric(fpain)
+[1] 1 4 3 3 2
+> levels(fpain)
+[1] "none" "mild" "medium" "severe"
+\end{lstlisting}
+
+La función \texttt{as.numeric} recupera la codificación numérica: 1-4 y \texttt{levels} recupera
+los nombre de cada nivel. Observe que la codificación original de 0 a 3 ha
+desaparecido, esto es por que la representacion interna de un \texttt{factor} siempre
+comienza por 1. 
+
+\begin{tradnote} De hecho, todos los objetos en \textbf{R} se indizan a partir de 1, a
+diferencia de otros lenguajes como \textbf{C} dónde el índice inicial es el
+0.\end{tradnote}
+
+\textbf{R} también le permite crear un tipo especial de factor en el que los
+niveles se mantienen ordenados.  Esto se logra usando la función
+\texttt{ordered} que funciona de una forma similar a \texttt{factor}.  Esto es
+potencialmente útil ya que podemos distinguir entre variables nominales y
+ordinales (se podría decir que el factor anterior debería haber sido un factor
+ordenado) Desafortunadamente, \textbf{R} por defecto trata los niveles como si
+fueran equidistantes en el código de modelado (generando contrastes
+polinomiales), por lo que es mejor ignorar los factores ordenados por ahora.
 
 \subsection{Listas}
 \subsection{Data frames}
