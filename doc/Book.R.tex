@@ -145,7 +145,7 @@ ad-hoc, lo que hace que la flexibilidad añadida de \textbf{R} sea altamente
 deseable.
 
 \textbf{R} debe su nombre a una típica humorada de Internet. Es posible que
-haya oido hablar del lenguaje de programación C (cuyo nombre es otra historia
+haya oído hablar del lenguaje de programación C (cuyo nombre es otra historia
 en sí misma). Inspirados por esto, Becker y Chambers eligieron, a principios de
 los años ochenta, llamar a su nuevo lenguaje de programación estadística S.
 Este lenguaje se desarrolló aún más con el producto comercial S-PLUS, que a
@@ -158,11 +158,12 @@ en la elección del nombre.
 
 En 1995, Martin Maechler persuadió a Ross y Robert para que publicaran el
 código fuente de \textbf{R} bajo la licencia \textbf{GPL}. Esto coincidió con
-el auge del software de código abierto impulsado por el sistema Linux. R pronto
-logró llenar un hueco en gente como yo que tenía la intención de usar Linux
-para computación estadística, pero no tenía ningún paquete estadístico
-disponible en ese momento. Se creó una lista de correo para la comunicación de
-informes de fallos y discusiones sobre el desarrollo de \textbf{R}.
+el auge del software de código abierto impulsado por el sistema Linux.
+\textbf{R} pronto logró llenar un hueco en gente como yo que tenía la intención
+de usar Linux para computación estadística, pero no tenía ningún paquete
+estadístico disponible en ese momento. Se creó una lista de correo para la
+comunicación de informes de fallos y discusiones sobre el desarrollo de
+\textbf{R}.
 
 En agosto de 1997, me invitaron a unirme a un equipo internacional extendido
 cuyos miembros colaboran a través de Internet y que ha controlado el desarrollo
@@ -341,7 +342,7 @@ ya que se trata justamente de una generación de números aleatoria.
 \begin{tradnote}
 
 	Hay un mecanismo para asegurar que una generación aleatoria sea consistente
-	en distintos momentos y es la de establecer un ``semilla'' incial con que
+	en distintos momentos y es la de establecer un ``semilla'' inicial con que
 	se ejecutarán cualquier rutina aleatoria, esto se logra mediante la
 	ejecución de \texttt{set.seed(<número>)}, el \texttt{<número>}, no importa
 	cual, es lo que hace repetible y consistente los datos aleatorios
@@ -547,9 +548,9 @@ mean of x
 23.13262
 \end{lstlisting}
 
-El parametro \texttt{mu=22.5} define el valor de \texttt{mu}, que representa la
+El parámetro \texttt{mu=22.5} define el valor de \texttt{mu}, que representa la
 letra griega $\mu$ usada convencionalmente para el definir teoricamente la
-media. Si este valor no se inidca, \texttt{t.test} usaría  \texttt{mu=0} por
+media. Si este valor no se indica, \texttt{t.test} usaría  \texttt{mu=0} por
 defecto, que no es de interés aquí.  
 
 Para un test como este, obtenemos una salida más extensa que en los ejemplos
@@ -627,7 +628,7 @@ entre puntos distantes.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% R elementos escenciales del lenguaje
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{R elementos escenciales del lenguaje}
+\section{R elementos esenciales del lenguaje}
 
 Esta sección describe los aspectos básicos del lenguaje \textbf{R}. Es
 necesario hacer esto de una manera ligeramente superficial, con algunos
@@ -704,15 +705,15 @@ parámetros al establecer el símbolo de la gráfica en triángulos con
 \texttt{plot(height, weight, pch=2)}. 
 
 La forma \texttt{pch=2} se conoce como definición de parámetro por nombre, esta
-forma permite la comparación de los parametros de llamada con los formales de
-la función y por lo tanto permitie relacionar a ambos. La palabra clave
+forma permite la comparación de los parámetros de llamada con los formales de
+la función y por lo tanto permite relacionar a ambos. La palabra clave
 \texttt{pch} se utilizó para indicar que el parámetro corresponde con las
 especificación del carácter de graficado. Esta forma de indicar cualquier
 parámetro permite usar un orden arbitrario. De este modo, se puede escribir
 \texttt{plot(x=height, y=weight)} y obtener el mismo gráfico que
 \texttt{plot(y=weight, x=height)}.  
 
-Los dos tipos de especificación de parametros --posicional y por nombre-- pueden
+Los dos tipos de especificación de parámetros --posicional y por nombre-- pueden
 usarse al mismo tiempo. 
 
 Aunque no haya parámetros para el llamado a una función, es necesario escribir
@@ -723,7 +724,7 @@ provocando la visualización de un trozo de código \textbf{R} puesto que
 función en lugar de ejecutarla.
 
 Los parámetros formales de una función forman parte de la definición de la
-misma. El conjunto de los paramétros formales de una función, por ejemplo,
+misma. El conjunto de los parámetros formales de una función, por ejemplo,
 \texttt{plot.default} (que es la función que se llama cuando se le pasa a
 \texttt{plot} un parámetro \texttt{x} porque no existe un método especial de
 trazado), puede verse con:
@@ -739,11 +740,11 @@ panel.first = NULL, panel.last = NULL, asp = NA, ...)
 
 Note que la mayoría de los parámetros tienen valores por defecto, en el caso de
 \texttt{type} si no lo especificamos, la función se comportará como si
-hubieramos inidcado \texttt{type="p"}. El \texttt{NULL} por defecto para muchos
+hubiéramos indicado \texttt{type="p"}. El \texttt{NULL} por defecto para muchos
 de los parámetros, realmente sirve como indicador que el mismo no se ha
 especificado, permitiendo definir un comportamiento especial dentro de la
 función. Por ejemplo, si no se especifican los parámetros \texttt{xlab} e
-\texttt{ylab} estos se construyen a partir de los parametros reales pasados
+\texttt{ylab} estos se construyen a partir de los parámetros reales pasados
 como \texttt{x} e \texttt{y}. (Hay algunos puntos muy sutiles asociados con
 esto, pero no vamos a profundizar más allá en el tema.)
 
@@ -752,7 +753,7 @@ aceptará parámetros adicionales cuyos nombres y cantidades no han sido
 especificados aún de forma formal. Por lo general se usan para definir
 parámetros que serán pasados a otras funciones, aunque algunas los traten de
 forma particular.  Por ejemplo, en \texttt{data.frame} y \texttt{c}, los
-parametros \texttt{...} representan el resultado recibido desde otra función.
+parámetros \texttt{...} representan el resultado recibido desde otra función.
 
 \begin{lstlisting}[language=R]
 # El resultado de matrix(1:4, nrow = 2) es la entrada de data.frame(...)
@@ -813,7 +814,7 @@ más de un valor a menudo suelen ser el resultado de expresiones relacionales:
 
 Las cadenas de caracteres entrecomilladas requieren algunas consideraciones
 especiales: ¿Cómo, por ejemplo, que pasa si tenemos agregar una comilla dentro
-de la cadena? ¿Y qué pasa con los caracteres especiales como el de fín de
+de la cadena? ¿Y qué pasa con los caracteres especiales como el de fin de
 linea? Este tipo de situaciones se resuelve usando secuencias de escape. Las
 veremos inmediatamente, pero antes será útil observar lo siguiente.
 
@@ -1106,7 +1107,7 @@ Volveremos a las operaciones tabulares en la Sección \ref{tables}.
 \subsection{Factores}
 
 Es habitual en los datos estadísticos tener variables categóricas, que indican
-algún tipo de subdivisión, como ser clase social, dignóstico primario, estadio
+algún tipo de subdivisión, como ser clase social, diagnóstico primario, estadio
 tumoral, etapa de la pubertad de Tanner, etc. Normalmente estos datos se
 trabajan como algún tipo de código numérico. 
 
@@ -1114,12 +1115,12 @@ Sin embargo en \textbf{R} podemos definir estas variables como
 \textit{Factores}, un tipo de estructura, que entre otras cosas, permite
 asignar un nombre descriptivo a estas categorías.  
 
-Hay ciertos análisis dónde es escencial para \textbf{R} distinguir
-entre estos códigos categoricos y variables cuyos valores tienen un significado
+Hay ciertos análisis dónde es esencial para \textbf{R} distinguir
+entre estos códigos categóricos y variables cuyos valores tienen un significado
 numérico directo (véase el capítulo 7). 
 
 Un factor tiene un conjunto de niveles, digamos 4 como ejemplo, internamente un
-factor de 4 niveles esta consituído por: (a) un vector de numeros enteros de 1
+factor de 4 niveles esta constituido por: (a) un vector de números enteros de 1
 a 4 y (b) un vector de caracteres de longitud 4 que contiene las cadenas que
 describen cuales son estos cuatro niveles. Veamos un ejemplo:
 
@@ -1129,13 +1130,13 @@ describen cuales son estos cuatro niveles. Veamos un ejemplo:
 > levels(fpain) <- c("none","mild","medium","severe")
 \end{lstlisting}
 
-El primer comado crea un vector numérico llamado \texttt{pain} que codifica el
+El primer comando crea un vector numérico llamado \texttt{pain} que codifica el
 nivel de dolor de 5 pacientes. Trataremos de manejar esto como una variable
 categórica, entonces creamos un factor que llamamos \texttt{fpain} usando justamente la
 función \texttt{factor()}. Esta es llamada con un parámetro adicional a \texttt{pain},
 \texttt{levels=0:3}, lo que indica que la codificación usa los valores 0 a 3.
 
-Podríamos haber obviado el inidcar el parámetro \texttt{levels}, ya que \textbf{R} usa
+Podríamos haber obviado el indicar el parámetro \texttt{levels}, ya que \textbf{R} usa
 los mismos valores de \texttt{pain} en el orden adecuado, sin embargo es una buena
 práctica hacerlo. El resultado final se ve claramente:
 
@@ -1151,7 +1152,7 @@ Levels: none mild medium severe
 
 La función \texttt{as.numeric} recupera la codificación numérica: 1-4 y \texttt{levels} recupera
 los nombre de cada nivel. Observe que la codificación original de 0 a 3 ha
-desaparecido, esto es por que la representacion interna de un \texttt{factor} siempre
+desaparecido, esto es por que la representación interna de un \texttt{factor} siempre
 comienza por 1. 
 
 \begin{tradnote} De hecho, todos los objetos en \textbf{R} se indizan a partir de 1, a
@@ -1168,9 +1169,166 @@ fueran equidistantes en el código de modelado (generando contrastes
 polinomiales), por lo que es mejor ignorar los factores ordenados por ahora.
 
 \subsection{Listas}
+
+En algunos casos es útil combinar una colección de objetos en un único objeto
+compuesto. Esto lo podemos lograr usando las \textit{listas}. 
+
+Podemos construir una lista a partir de los objetos individuales que la
+conformarán, usando la función \texttt{list}.
+
+Como ejemplo, considere un conjunto de datos de Altman (1991, p. 183) sobre la
+ingesta de energía pre y postmenstrual en un grupo de mujeres. Podemos colocar
+estos datos en dos vectores como sigue:
+
+\begin{lstlisting}[language=R]
+> intake.pre <- c(5260,5470,5640,6180,6390,
++ 6515,6805,7515,7515,8230,8770)
+> intake.post <- c(3910,4220,3885,5160,5645,
++ 4680,5265,5975,6790,6900,7335)
+\end{lstlisting}
+
+Observe como podemos continuar de escribir las sentencias en la linea
+siguiente. Si presionamos la tecla Enter cuando la sentencia es sintácticamente
+incompleta, \textbf{R} asume que la expresión continua en la siguiente línea y el
+símbolo habitual > cambia por el +. Esto puede suceder de forma inadvertida
+debido, por ejemplo, a la falta de un paréntesis, o algún caso semejante; en
+esos casos, o bien se completa la expresión en la línea siguiente o se puede
+presionar la tecla ESC (Windows and Macintosh) o Ctrl-C (Unix). En windows
+también podremos usar el botón ``Stop''. 
+
+Para combinar los dos vectores anteriores en una lista:
+
+\begin{lstlisting}[language=R]
+> mylist <- list(before=intake.pre,after=intake.post)
+> mylist
+$before
+[1] 5260 5470 5640 6180 6390 6515 6805 7515 7515 8230 8770
+$after
+[1] 3910 4220 3885 5160 5645 4680 5265 5975 6790 6900 7335
+\end{lstlisting}
+
+Los componentes de una lista puede nombrarse de acuerdo a los nombres de los
+parámetros indicados en al invocar a \texttt{list}. Los componentes de la lista
+que han sido nombrados pueden recuperarse de la siguiente forma:
+
+\begin{lstlisting}[language=R]
+> mylist$before
+[1] 5260 5470 5640 6180 6390 6515 6805 7515 7515 8230 8770
+\end{lstlisting}
+
+Muchas de las funciones de \texttt{R} que pueden retornar más de un valor lo
+hacen por medio de listas.
+
 \subsection{Data frames}
-\subsection{Indexado}
+
+Un \textit{data frame} corresponde a lo que otros paquetes estadísticos llaman
+una ``matriz de datos'' o un ``conjunto de datos''. Es una lista de vectores y/o
+factores de la misma longitud que están relacionados "horizontalmente" de tal manera
+que los datos en la misma fila corresponden a la misma unidad experimental
+(sujeto, animal, etc.). Además, tiene un conjunto único de nombres de filas.
+
+Podemos crear un \texttt{data.frame} con los datos del ejemplo anterior:
+
+\begin{lstlisting}[language=R]
+> d <- data.frame(intake.pre,intake.post)
+> d
+   intake.pre intake.post
+1        5260        3910
+2        5470        4220
+3        5640        3885
+4        6180        5160
+5        6390        5645
+6        6515        4680
+7        6805        5265
+8        7515        5975
+9        7515        6790
+10       8230        6900
+11       8770        7335
+\end{lstlisting}
+
+Note que estos datos están ``emparejados'', es decir, la misma mujer tiene una
+ingesta de 5260 kJ premenstrualmente y 3910 kJ postmenstrualmente.
+
+De igual forma que las listas, lo componentes o variables individuales pueden
+ser accedidos usando la notación \texttt{\$}:
+
+\begin{lstlisting}[language=R]
+> d$intake.pre
+[1] 5260 5470 5640 6180 6390 6515 6805 7515 7515 8230 8770
+\end{lstlisting}
+
+\subsection{Indexado} \label{index}
+
+En caso de necesitar acceder a un elemento en particular de un vector, por
+ejemplo la ingesta premenstrual para la mujer número 5 , podemos hacer:
+
+\begin{lstlisting}[language=R]
+> intake.pre[5]
+[1] 6390
+\end{lstlisting}
+
+Los corchetes se utilizan para la selección de datos, también conocido como
+acceso por índice o extración de un subcojunto (indexing o subsetting en
+inglés). Esto funciona también del lado izquierdo de la asignación (por lo que
+por ejemplo podríamos hacer \texttt{intake.pre[5] <- 6390}) si quisieramos
+modificar uno de los elemento del vector.
+
+Si queremos otro vector compuesto de los datos de más de una de las mujeres,
+por ejemplo la 3, 5 y 7, podemos hacer lo siguiente:
+
+\begin{lstlisting}[language=R]
+> intake.pre[c(3,5,7)]
+[1] 5640 6390 6805
+\end{lstlisting}
+
+Observe que es necesario el uso de la función \texttt{c(...)} para definir un
+vector que contenga los números 3, 5 y 7. \texttt{intake.pre[3,5,7]} significa
+algo completamente distinto, una operación de acceso por índice de un vector de
+tres dimensiones.
+
+Por supuesto, el acceso por índice también funciona si el vector de selección
+viene definido en una variable. Esto es útil si queremos repetir la misma
+operación de selección en mmúltiples conjuntos de datos.
+
+\begin{lstlisting}[language=R]
+> v <- c(3,5,7)
+> intake.pre[v]
+[1] 5640 6390 6805
+> intake.post[v]
+[1] 3885 5645 5265
+\end{lstlisting}
+
+Tampoco reviste ningún problema recuperar una secuencia de elementos, por
+ejemplo los primeros 5, para esto usaremos la notación \texttt{a:b}:
+
+\begin{lstlisting}[language=R]
+> intake.pre[1:5]
+[1] 5260 5470 5640 6180 6390
+\end{lstlisting}
+
+
+Una característica muy interesante de \textbf{R} es la posibilidad de usar
+índices negativos, para negar una cierta selección. Podemos recuperar todas
+las observaciones \textit{excepto} la 3,5 y 7:
+
+\begin{lstlisting}[language=R]
+> intake.pre[-c(3,5,7)]
+[1] 5260 5470 6180 6515 7515 7515 8230 8770
+\end{lstlisting}
+
+Lo que no podemos es combinar índices negativos y positivos ya que esto trae
+aparejado una ambiguedad eventualmente imposible de manejar.
+
 \subsection{Selección condicional}
+
+Ya vimos en la sección \ref{index}, como extraer dados usando uno o más índices. En la práctica, lo más habitual es seleccionar datos que cumplan con un cierto criterio, como
+
+We saw in Section 1.2.11 how to extract data using one or several indices.
+In practice, you often need to extract data that satisfy certain criteria, such
+as data from the males or the prepubertal or those with chronic diseases,
+etc. This can be done simply by inserting a relational expression instead
+of the index,
+
 \subsection{Indexado de data frames}
 \subsection{Agrupación de datos y data frames}
 \subsection{Ciclos implícitos}
@@ -1190,6 +1348,7 @@ polinomiales), por lo que es mejor ignorar los factores ordenados por ahora.
 \subsection{Packages}
 \subsection{Built-in data}
 \subsection{attach and detach}
+\subsection{subset, transform, and within}
 
 \section{The graphics subsystem}
 \subsection{Plot layout}
@@ -1209,6 +1368,16 @@ polinomiales), por lo que es mejor ignorar los factores ordenados por ahora.
 \section{Ejercicios}
 
 \chapter{Probability and distributions}
+\section{Random sampling}
+\section{Probability calculations and combinatorics}
+\section{Discrete distributions}
+\section{Continuous distributions}
+\section{The built-in distributions in R}
+\subsection{Densities}
+\subsection{Cumulative distribution functions}
+\subsection{Quantiles}
+\subsection{Random numbers}
+\section{Ejercicios}
 
 \chapter{Descriptive statistics and graphics}
 \section{Summary statistics for a single group}
