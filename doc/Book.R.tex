@@ -169,10 +169,10 @@ En agosto de 1997, me invitaron a unirme a un equipo internacional extendido
 cuyos miembros colaboran a través de Internet y que ha controlado el desarrollo
 de \textbf{R} desde entonces. Posteriormente, el equipo básico se amplió varias
 veces y actualmente cuenta con 19 miembros. El 29 de febrero de 2000, se
-publicó la versión 1.0.0.0. Al momento de este escrito, la versión actual es
-la 2.6.2. Este libro se basó originalmente en una serie de notas elaboradas
-para el curso de Estadística Básica para Investigadores en Salud de la Facultad
-de Ciencias de la Salud de la Universidad de Copenhague. El curso tenía como
+publicó la versión 1.0.0.0. Al momento de este escrito, la versión actual es la
+2.6.2. Este libro se basó originalmente en una serie de notas elaboradas para
+el curso de Estadística Básica para Investigadores en Salud de la Facultad de
+Ciencias de la Salud de la Universidad de Copenhague. El curso tenía como
 objetivo principal, los estudiantes del doctorado en medicina. Sin embargo, el
 material se ha revisado sustancialmente y espero que sea útil para un público
 más amplio, aunque sigue habiendo algunos sesgos bioestadísticos, especialmente
@@ -528,10 +528,11 @@ corporal) para un individuo de peso normal debería estar entre 20 y 25, y
 queremos saber si nuestros datos se desvían sistemáticamente de eso. Se puede
 utilizar una prueba t de una muestra para evaluar si el IMC de las seis
 personas puede considerarse que tiene una media de 22,5, dado que proviene de
-una distribución normal. Para ello, puede utilizar la función \texttt{t.test}. (Podría
-no conocer la teoría de la prueba t todavía. El ejemplo se incluye aquí
+una distribución normal. Para ello, puede utilizar la función \texttt{t.test}.
+(Podría no conocer la teoría de la prueba t todavía. El ejemplo se incluye aquí
 principalmente para dar una indicación de cómo es la producción estadística
-``real''. En el capítulo 5 se ofrece una descripción detallada de \texttt{t.test})
+``real''. En el capítulo 5 se ofrece una descripción detallada de
+\texttt{t.test})
 
 %\begin{lstlisting}[language=R]
 \begin{lstlisting}[style=R]
@@ -568,9 +569,9 @@ indica que tenemos muy poca información sobre el verdadero promedio.
 \subsection{Gráficos}
 
 Uno de los aspectos más importantes de la presentación y análisis de datos es
-la generación de gráficos adecuados. \textbf{R} - como antes \textbf{S} - tiene un modelo
-para construir gráficos que permite la producción simple de gráficos estándar,
-así como el control fino sobre los componentes del mismo. 
+la generación de gráficos adecuados. \textbf{R} - como antes \textbf{S} - tiene
+un modelo para construir gráficos que permite la producción simple de gráficos
+estándar, así como el control fino sobre los componentes del mismo. 
 
 Si quieres investigar la relación entre  \texttt{weight} y \texttt{height}, una
 primer aproximación es contrastarlos uno con el otro en una gráfica. Esto se
@@ -662,15 +663,15 @@ consola.
 Las expresiones suelen incluir referencias a variables, operadores como
 \texttt{+} y llamadas de función, así como algunos otros elementos en los que
 aún no hemos profundizado.  Las expresiones trabajan sobre objetos. Este es un
-término abstracto para cualquier cosa que se pueda asignar a una variable. \textbf{R}
-contiene varios tipos diferentes de objetos. Hasta ahora, hemos visto casi
-exclusivamente vectores numéricos, pero en este capítulo introduciremos varios
-tipos nuevos.  Aunque los objetos pueden ser explicados de forma abstracta,
-sería una lectura bastante aburrida sin alguna indicación de cómo generarlos y
-qué hacer con ellos. Por el contrario, gran parte de la sintaxis de las
-expresiones tienen poco sentido sin conocer los objetos sobre los que se pretende
-trabajar. Por lo tanto, las secciones siguientes alternan entre la introducción
-de nuevos objetos y de nuevos elementos lingüísticos.
+término abstracto para cualquier cosa que se pueda asignar a una variable.
+\textbf{R} contiene varios tipos diferentes de objetos. Hasta ahora, hemos
+visto casi exclusivamente vectores numéricos, pero en este capítulo
+introduciremos varios tipos nuevos.  Aunque los objetos pueden ser explicados
+de forma abstracta, sería una lectura bastante aburrida sin alguna indicación
+de cómo generarlos y qué hacer con ellos. Por el contrario, gran parte de la
+sintaxis de las expresiones tienen poco sentido sin conocer los objetos sobre
+los que se pretende trabajar. Por lo tanto, las secciones siguientes alternan
+entre la introducción de nuevos objetos y de nuevos elementos lingüísticos.
 
 \subsection{Funciones y parámetros}
 
@@ -688,11 +689,11 @@ invocación final de la función, sin embargo una función también tiene
 parámetros formales, que se conectan con parámetros reales en la invocación
 final.
 
-Cuando escribimos \texttt{plot(height , weight)}, \textbf{R} asume que el primer
-parámetro corresponde a la variable \texttt{x} y el segundo a la variable
-\texttt{y}. Esto se conoce como coincidencia posicional. Esto se vuelve difícil
-de manejar si una función tiene un gran número de parámetros, ya que hay que
-indicar cada uno de ellos y recordar su posición en la secuencia.
+Cuando escribimos \texttt{plot(height , weight)}, \textbf{R} asume que el
+primer parámetro corresponde a la variable \texttt{x} y el segundo a la
+variable \texttt{y}. Esto se conoce como coincidencia posicional. Esto se
+vuelve difícil de manejar si una función tiene un gran número de parámetros, ya
+que hay que indicar cada uno de ellos y recordar su posición en la secuencia.
 Afortunadamente, \textbf{R} tiene métodos para evitar esto: la mayoría de los
 parámetros manejan valores por defecto y pueden omitirse en los casos de uso
 comunes, y hay formas no posicionales de especificarlos cuando se necesita
@@ -764,7 +765,8 @@ parámetros \texttt{...} representan el resultado recibido desde otra función.
 2  2  4
 \end{lstlisting}
 
-\subsection{Vectores}
+\subsection{Vectores} \label{vectores}
+
 
 Ya hemos visto vectores numéricos. Hay dos tipos más, vectores de caracteres y
 vectores lógicos.
@@ -988,10 +990,10 @@ un vector o un número
 [1]  7  9  9 13 13 13
 \end{lstlisting}
 
-La primera de las ejecuciones repite completamente el vector \texttt{oops} tres veces.
-La segunda llamada repite cada elemento la cantidad de veces definida en el
-segundo vector \texttt{(1,2,3)}, es decir que el 7 se repetirá una vez, el 9 dos, y el
-13 tres.
+La primera de las ejecuciones repite completamente el vector \texttt{oops} tres
+veces.  La segunda llamada repite cada elemento la cantidad de veces definida
+en el segundo vector \texttt{(1,2,3)}, es decir que el 7 se repetirá una vez,
+el 9 dos, y el 13 tres.
 
 La función rep se usa habitualmente para hacer cosas como agurpar elementos: Si
 sabemos que las primeras 10 observaciones son hombres y las últimas 17 mujeres,
@@ -1132,9 +1134,10 @@ describen cuales son estos cuatro niveles. Veamos un ejemplo:
 
 El primer comando crea un vector numérico llamado \texttt{pain} que codifica el
 nivel de dolor de 5 pacientes. Trataremos de manejar esto como una variable
-categórica, entonces creamos un factor que llamamos \texttt{fpain} usando justamente la
-función \texttt{factor()}. Esta es llamada con un parámetro adicional a \texttt{pain},
-\texttt{levels=0:3}, lo que indica que la codificación usa los valores 0 a 3.
+categórica, entonces creamos un factor que llamamos \texttt{fpain} usando
+justamente la función \texttt{factor()}. Esta es llamada con un parámetro
+adicional a \texttt{pain}, \texttt{levels=0:3}, lo que indica que la
+codificación usa los valores 0 a 3.
 
 Podríamos haber obviado el indicar el parámetro \texttt{levels}, ya que \textbf{R} usa
 los mismos valores de \texttt{pain} en el orden adecuado, sin embargo es una buena
@@ -1150,10 +1153,10 @@ Levels: none mild medium severe
 [1] "none" "mild" "medium" "severe"
 \end{lstlisting}
 
-La función \texttt{as.numeric} recupera la codificación numérica: 1-4 y \texttt{levels} recupera
-los nombre de cada nivel. Observe que la codificación original de 0 a 3 ha
-desaparecido, esto es por que la representación interna de un \texttt{factor} siempre
-comienza por 1. 
+La función \texttt{as.numeric} recupera la codificación numérica: 1-4 y
+\texttt{levels} recupera los nombre de cada nivel. Observe que la codificación
+original de 0 a 3 ha desaparecido, esto es por que la representación interna de
+un \texttt{factor} siempre comienza por 1. 
 
 \begin{tradnote} De hecho, todos los objetos en \textbf{R} se indizan a partir de 1, a
 diferencia de otros lenguajes como \textbf{C} dónde el índice inicial es el
@@ -1321,17 +1324,259 @@ aparejado una ambiguedad eventualmente imposible de manejar.
 
 \subsection{Selección condicional}
 
-Ya vimos en la sección \ref{index}, como extraer dados usando uno o más índices. En la práctica, lo más habitual es seleccionar datos que cumplan con un cierto criterio, como
+Ya vimos en la sección \ref{index}, como extraer dados usando uno o más
+índices. En la práctica, lo más habitual es seleccionar datos que cumplan con
+un cierto criterio, como como los datos de aquellas observaciones
+correspondientes a varones, o a los prepúberes o a los que padecen enfermedades
+crónicas, etc. Esto se puede hacer simplemente insertando una expresión
+relacional en lugar del índice,
 
-We saw in Section 1.2.11 how to extract data using one or several indices.
-In practice, you often need to extract data that satisfy certain criteria, such
-as data from the males or the prepubertal or those with chronic diseases,
-etc. This can be done simply by inserting a relational expression instead
-of the index,
+\begin{lstlisting}[language=R]
+> intake.post[intake.pre > 7000]
+[1] 5975 6790 6900 7335
+\end{lstlisting}
+
+esto recupera aquellas casos de mujeres dónde la ingesta de energía
+postmenstrual está por encima de 7000 kJ premenstrualmente.
+
+Este tipo de expresión tiene sentido siempre que la expresión relacional opere
+sobre la misma cantidad de registros que la variable indexada.
+
+Los operadores de comparación disponibles, son similares a lo que podemos tener
+en cualquier otro lenguaje, por ejmplo \textbf{C} y son: < (menor a), > (mayor
+a), == (igual a), <= (menor o igual a), >= (mayor o igual a), y != (distinto).
+Es importante notar que el test de igualdad usa el doble igual (==), esto es
+para evitar confusión con el simple = que usamos para la asignación de
+parámetros en una función, o eventualmente en la asignación de valores a una
+variable.
+
+Para combinar varias expresiones, podemos usar los operadores lógicos \& (y
+lógico), | (o lógico) y ! (no lógico). Por ejemplo para ubicar los casos de
+ingesta postmenstrual en mujeres dónde la ingesta premenstrual se encuentra
+comprendida entre los 7000 y 8000 Kj, podemos hacer:
+
+\begin{lstlisting}[language=R]
+> intake.post[intake.pre > 7000 & intake.pre <= 8000]
+[1] 5975 6790
+\end{lstlisting}
+
+Existen también los operadores \&\& y ||, los cuales se usan para el control de
+flujo en la programación en \textbf{R}. De todas formas su utilidad esta fuera
+del alcance en esta etapa.  Cale la pena prestar atención a lo que realmente
+sucede cuando usamos una expresión lógica como índice. El resultado termina
+siendo un vector lñogico tal como lo hemos secripto en la sección
+\ref{vectores}, 
+
+\begin{lstlisting}[language=R]
+> intake.pre > 7000 & intake.pre <= 8000
+[1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE TRUE TRUE FALSE
+[11] FALSE
+\end{lstlisting}
+
+La selección por índice por medio de un vector lógico significa que tomaremos
+los valores dónde el vector lógico sea Verdadero. En el ejemplo anterior
+recuperaremos el valor octavo y noveno de \texttt{intake.post}.
+
+Si hubiera valores faltantes (\texttt{NA}, como vimos en la sección \ref{na})
+en el vector lógico, \textbf{R} completará el valor correspondiente con el
+valor \texttt{NA}.
+
+Además de de los operadores lógicos y relacionales, tenemos una serie de
+funciones que retornan un valor lógico. Es particularmente importante
+\texttt{is.na(x)}, que se usa justamente para determinar que elementos de
+\texttt{x} son \texttt{NA}.
+
+Es importante tener claro que existe una necesidad muy concreta para
+\texttt{is.na(x)}, no es posible hacer comparaciones del tipo \texttt{x == NA},
+esto simplemente retornará un valor \texttt{NA}. El resultado de la comparación
+con un valor desconocido es otro valor desconocido.
+
 
 \subsection{Indexado de data frames}
+
+Ya hemos visto que podemos extraer variables de un \texttt{data.frame},
+ingresando, por ejemplo, \texttt{d\$intake.post}. De cualquier forma, es
+posible también usar una notación que aprovecha la estructura matricial del
+\texttt{data.frame}:
+
+\begin{lstlisting}[language=R]
+> d <- data.frame(intake.pre,intake.post)
+> d[5,1]
+[1] 6390
+\end{lstlisting}
+
+Esto nos daría el valor ubicado en la quinta fila y la primer columna, que
+representa la medida previa de la mujer número 5 y,
+
+\begin{lstlisting}[language=R]
+> d[5,]
+  intake.pre intake.post
+5       6390        5645
+\end{lstlisting}
+
+nos devolverá las medidas completas para la mujer número 5. Note que se
+requiere usar la coma en \texttt{d[5,]}, sin ésta, por ejemplo \texttt{d[2]},
+obtendríamos un \texttt{data.frame} compuesto únicamente por la segunda columna
+(que es como si hiciéramos \texttt{d[,2]}, que es la columna en sí misma).
+
+Pero también podemos aplicar otras técnicas de selección o indexado, puede ser
+útil obtener todos los casos que satisfacen algún criterio, como por ejemplo,
+las mujeres cuya ingesta premestrual fue superior a los 7000 kJ:
+
+\begin{lstlisting}[language=R]
+> d[d$intake.pre>7000,]
+   intake.pre intake.post
+8        7515        5975
+9        7515        6790
+10       8230        6900
+11       8770        7335
+\end{lstlisting}
+
+Para entender exactamente lo que hemos hecho, vamos a dividirlo en pasos más
+pequeños:
+
+\begin{lstlisting}[language=R]
+> sel <- d$intake.pre>7000
+> sel
+ [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE
+
+> d[sel,]
+   intake.pre intake.post
+8        7515        5975
+9        7515        6790
+10       8230        6900
+11       8770        7335
+\end{lstlisting}
+
+Lo que ha pasado es que hemos definido \texttt{sel} como un vector lógico,
+dónde el valor \texttt{TRUE} se corresponden con las 4 mujeres con más de 7000
+kJ de ingresta premestrual.
+
+Ahora, al hacer \texttt{d[sel,]} seleccionamos aquellas filas de \texttt{d} que
+correspondan a los valores \texttt{TRUE} de \texttt{sel}, y por supuesto, todas
+las columnas ya que dejamos vacío es lugar luego de la coma.
+
+Muchas veces es conveniente ver los primeros casos de un juego de datos. Esto
+puede hacerse mediante el indexado o selección, de esta forma:
+
+\begin{lstlisting}[language=R]
+> d[1:2,]
+  intake.pre intake.post
+1       5260        3910
+2       5470        4220
+\end{lstlisting}
+
+Esto se suele hacer tan a menudo que ya existe la función \texttt{head}. Por
+defecto nos traera los primeros 6 elementos.
+
+\begin{lstlisting}[language=R]
+> head(d)
+  intake.pre intake.post
+1       5260        3910
+2       5470        4220
+3       5640        3885
+4       6180        5160
+5       6390        5645
+6       6515        4680
+\end{lstlisting}
+
+De forma similar, existe la función \texttt{tail} para mostrarnos los últimos
+elementos.
+
 \subsection{Agrupación de datos y data frames}
+
+La forma más natural de almacenar grupos de datos en un \texttt{data.frame} es tener
+los mismos en un solo vector y paralelamente, tener un factor que
+indique a que grupo pertenece. Considere, por ejemplo, el siguiente
+conjunto de datos sobre el gasto de energía para las mujeres delgadas y obesas.
+
+\begin{lstlisting}[language=R]
+> energy
+   expend stature
+1    9.21   obese
+2    7.53    lean
+3    7.48    lean
+4    8.08    lean
+5    8.09    lean
+6   10.15    lean
+7    8.40    lean
+8   10.88    lean
+9    6.13    lean
+10   7.90    lean
+11  11.51   obese
+12  12.79   obese
+13   7.05    lean
+14  11.85   obese
+15   9.97   obese
+16   7.48    lean
+17   8.79   obese
+18   9.69   obese
+19   9.68   obese
+20   7.58    lean
+21   9.19   obese
+22   8.11    lean
+\end{lstlisting}
+
+Esta forma es muy conveniente ya que permite fácilmente clasificar los datos
+por múltiples criterios.  De todas formas, en ocasiones, puede ser deseable
+separa en distintos vectores cada uno de los grupos, lo cual es muy sencillo de
+hacer:
+
+\begin{lstlisting}[language=R]
+> exp.lean <- energy$expend[energy$stature=="lean"]
+> exp.obese <- energy$expend[energy$stature=="obese"]
+\end{lstlisting}
+
+Y de unaforma más generalizable podemos usar la función split que generará una
+lista de vectores de acuerdo a los grupos existentes.
+
+\begin{lstlisting}[language=R]
+> l <- split(energy$expend, energy$stature)
+> l
+$lean
+ [1]  7.53  7.48  8.08  8.09 10.15  8.40 10.88  6.13  7.90  7.05  7.48  7.58  8.11
+
+$obese
+[1]  9.21 11.51 12.79 11.85  9.97  8.79  9.69  9.68  9.19
+\end{lstlisting}
+
 \subsection{Ciclos implícitos}
+
+The looping constructs of R are described in Section 2.3.1. For the purposes of
+this book, you can largely ignore their existence. However, there is a group of
+R functions that it will be useful for you to know about.  A common application
+of loops is to apply a function to each element of a set of values or vectors
+and collect the results in a single structure. In R this is abstracted by the
+functions lapply and sapply. The former always returns a list (hence the ‘l’),
+whereas the latter tries to simplify (hence the ‘s’) the result to a vector or
+a matrix if possible. So, to compute the mean of each variable in a data frame
+of numeric vectors, you can do the following:
+
+\begin{lstlisting}[language=R]
+
+> lapply(thuesen, mean, na.rm=T)
+$blood.glucose
+[1] 10.3
+$short.velocity
+[1] 1.325652
+> sapply(thuesen, mean, na.rm=T)
+blood.glucose short.velocity
+10.300000 1.325652
+\end{lstlisting}
+
+Notice how both forms attach meaningful names to the result, which is another
+good reason to prefer to use these functions rather than explicit loops. The
+second argument to lapply/sapply is the function that should be applied, here
+mean. Any further arguments are passed on to the function; in this case we pass
+na.rm=T to request that missing values be removed (see Section 4.1).  Sometimes
+you just want to repeat something a number of times but still collect the
+results as a vector. Obviously, this makes sense only when the repeated
+computations actually give different results, the common case being simulation
+studies. This can be done using sapply, but there is a simplified version
+called replicate, in which you just have to give a count and the expression to
+evaluate:
+
+
 \subsection{Ordenamiento}
 \section{Ejercicios}
 
