@@ -1519,7 +1519,7 @@ conjunto de datos sobre el gasto de energía para las mujeres delgadas y obesas.
 
 Esta forma es muy conveniente ya que permite fácilmente clasificar los datos
 por múltiples criterios.  De todas formas, en ocasiones, puede ser deseable
-separa en distintos vectores cada uno de los grupos, lo cual es muy sencillo de
+separar en distintos vectores cada uno de los grupos, lo cual es muy sencillo de
 hacer:
 
 \begin{lstlisting}[language=R]
@@ -1542,27 +1542,35 @@ $obese
 
 \subsection{Ciclos implícitos}
 
-The looping constructs of R are described in Section 2.3.1. For the purposes of
-this book, you can largely ignore their existence. However, there is a group of
-R functions that it will be useful for you to know about.  A common application
-of loops is to apply a function to each element of a set of values or vectors
-and collect the results in a single structure. In R this is abstracted by the
-functions lapply and sapply. The former always returns a list (hence the ‘l’),
-whereas the latter tries to simplify (hence the ‘s’) the result to a vector or
-a matrix if possible. So, to compute the mean of each variable in a data frame
-of numeric vectors, you can do the following:
+La construcción de ciclos en \textbf{R} se describen en la Sección \ref{flowcontrol}.
+Para los propósitos de este libro, podemos ignorar en gran medida la existencia
+de estos. Sin embargo, hay un grupo de funciones \textbf{R} que será útil conocer.
+
+Un uso muy común de un ciclo es el de aplicar una función a cada elemento de un
+conjunto de valores o vectores y recoger los resultados en una sola estructura.
+En \textbf{R} esto se logra mediante el uso de las funciones \texttt{lapply} y
+\texttt{sapply}. La primera siempre devuelve una lista (de ahí la \texttt{l}),
+mientras que la segunda intenta simplificar (de ahí la \texttt{s}) el resultado
+a un vector o a una matriz si es posible. Por lo tanto, para calcular la media
+de cada variable en un \texttt{data.frame} con valores numéricos, podríamos hacer lo
+siguiente
 
 \begin{lstlisting}[language=R]
-
 > lapply(thuesen, mean, na.rm=T)
 $blood.glucose
 [1] 10.3
+
 $short.velocity
 [1] 1.325652
+
 > sapply(thuesen, mean, na.rm=T)
-blood.glucose short.velocity
-10.300000 1.325652
+ blood.glucose short.velocity 
+     10.300000       1.325652 
 \end{lstlisting}
+
+Observe que ambas funciones dotaron a los resultados de un nombre informativo,
+lo cual es otra razón para usar estas funciones en vez de los ciclos
+explicítos.
 
 Notice how both forms attach meaningful names to the result, which is another
 good reason to prefer to use these functions rather than explicit loops. The
@@ -1602,7 +1610,7 @@ evaluate:
 \subsection{Combining plots}
 
 \section{R programming}
-\subsection{Flow control}
+\subsection{Flow control} \label{flowcontrol}
 \subsection{Classes and generic functions}
 
 \section{Data entry}
