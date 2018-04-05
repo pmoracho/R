@@ -349,7 +349,9 @@ ya que se trata justamente de una generación de números aleatoria.
 
 \end{tradnote} 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Asignaciones}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Incluso en una calculadora, usted necesitará eventualmente una manera de
 almacenar resultados intermedios, de modo que no tenga que ingresarlos una y
@@ -408,7 +410,9 @@ no suelen causar problemas cuando se utilizan como nombres de variables. Sin
 embargo, \texttt{F} y \texttt{T} son las abreviaturas estándar de
 \texttt{FALSE} y \texttt{TRUE} y ya no funcionan como tales si las redefine.
 
-\subsection{Aritmetica vectorizada}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Aritmética vectorizada}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 No se pueden hacer muchas estadísticas sobre números individuales!  Más bien,
 por ejemplo, usted examinará los datos de un grupo de pacientes.  Una de las
@@ -520,7 +524,9 @@ simplemente de esta forma:
 [1] 15.42293
 \end{lstlisting}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Procedimientos comunes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Como ejemplo de algo un poco más complicado de lo que \textbf{R} es capaz de
 hacer, considere lo siguiente: La regla general es que el IMC (Índice de masa
@@ -566,7 +572,9 @@ confianza del 95\% para la media real. Este intervalo es bastante amplio, lo que
 indica que tenemos muy poca información sobre el verdadero promedio.
 \newpage
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Gráficos}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Uno de los aspectos más importantes de la presentación y análisis de datos es
 la generación de gráficos adecuados. \textbf{R} - como antes \textbf{S} - tiene
@@ -627,9 +635,8 @@ no conecta puntos vecinos, sino que se desplazan hacia adelante y hacia atrás
 entre puntos distantes.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% R elementos escenciales del lenguaje
+\section{R: elementos esenciales del lenguaje}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{R elementos esenciales del lenguaje}
 
 Esta sección describe los aspectos básicos del lenguaje \textbf{R}. Es
 necesario hacer esto de una manera ligeramente superficial, con algunos
@@ -637,7 +644,9 @@ detalles a los que no profundizaremos demasiado.  El énfasis estará puesto en 
 elementos que son útiles conocer para el uso interactivo en lugar de la
 programación real , aunque se incluye una breve sección sobre programación.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Expresiones y objetos}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 La forma básica de interactuar en \textbf{R} es la de evaluación de
 expresiones. El usuario introduce una expresión; el sistema la evalúa e imprime
@@ -673,7 +682,9 @@ sintaxis de las expresiones tienen poco sentido sin conocer los objetos sobre
 los que se pretende trabajar. Por lo tanto, las secciones siguientes alternan
 entre la introducción de nuevos objetos y de nuevos elementos lingüísticos.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Funciones y parámetros}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 En este punto, ya tenemos una idea de la forma en que funciona \textbf{R}, y ya
 hemos utilizado parte de una terminología especial cuando hablamos de la
@@ -765,8 +776,9 @@ parámetros \texttt{...} representan el resultado recibido desde otra función.
 2  2  4
 \end{lstlisting}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Vectores} \label{vectores}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Ya hemos visto vectores numéricos. Hay dos tipos más, vectores de caracteres y
 vectores lógicos.
@@ -812,7 +824,9 @@ más de un valor a menudo suelen ser el resultado de expresiones relacionales:
 [1] FALSE FALSE FALSE FALSE TRUE FALSE
 \end{lstlisting}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Encomillado y secuencias de escape}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Las cadenas de caracteres entrecomilladas requieren algunas consideraciones
 especiales: ¿Cómo, por ejemplo, que pasa si tenemos agregar una comilla dentro
@@ -870,7 +884,10 @@ también debe ser escapado, así que para indicar una barra invertida, hay que
 repetirla (\texttt{\textbackslash{}\textbackslash{}}). Es importante saber esto
 en particular cuando cuando tengamos que especificar rutas de archivo en
 Windows. Consulte también la Sección \ref{readtextfile}.
-\subsection{Valores faltantes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Valores faltantes} \label{na}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 En el análisis real de datos, con frecuencia no disponemos de alguna
 observación (el paciente no se presentó, un experimento falló, etc.). El
@@ -881,7 +898,10 @@ darán como resultado otro \texttt{NA}. Hay algunos temas especiales asociados
 con el manejo de estos valores; los trataremos a medida que lo necesitemos (ver
 "valores faltantes" en el índice).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Funciones que crean vectores}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 En esta sección, presentaremos tres funciones \texttt{c}, \texttt{seq}, y
 \texttt{rep}, todas se usan para crear vectores de diferentes formas.  La
 primera \texttt{c}, ya la hemos visto. Es la abreviatura de ``concatenar'', que
@@ -953,7 +973,7 @@ números equidistantes. Al escribir esto:
 [1] 4 5 6 7 8 9
 \end{lstlisting}
 
-podemos ver claramente, que hemos creado un vector con los enteros del 4 al 9.
+Podemos ver claramente, que hemos creado un vector con los enteros del 4 al 9.
 Si buscamos secuencias que "salten" de a 2 elementos, podríamos escribir:
 
 \begin{lstlisting}[language=R]
@@ -995,7 +1015,7 @@ veces.  La segunda llamada repite cada elemento la cantidad de veces definida
 en el segundo vector \texttt{(1,2,3)}, es decir que el 7 se repetirá una vez,
 el 9 dos, y el 13 tres.
 
-La función rep se usa habitualmente para hacer cosas como agurpar elementos: Si
+La función \texttt{rep} se usa habitualmente para hacer cosas como agrupar elementos: Si
 sabemos que las primeras 10 observaciones son hombres y las últimas 17 mujeres,
 podemos hacer:
 
@@ -1004,14 +1024,16 @@ podemos hacer:
 [1] 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
 \end{lstlisting}
 
-para armar un vector que nos indica que las observaciones corresponden a un
+Para armar un vector que nos indica que las observaciones corresponden a un
 hombre (1) o a una mujer (2).  Una forma de repetir un mismo número de veces un
 elemento, puede lograrse mediante \texttt{rep(1:2,each=10)} que es lo mismo que
 hacer \texttt{rep(1:2,c(10,10))}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Matrices y arreglos}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Em matemáticas, una matriz no es más que una arreglo de números de dos
+En matemáticas, una matriz no es más que una arreglo de números de dos
 dimensiones. Se usan muchísimo en las estadísticas teóricas y prácticas, pero
 en este libro no asumimos que el lector este familiarizado con el álgebra de
 las matrices, por lo que evitaremos explicar muchas de las operaciones
@@ -1054,7 +1076,7 @@ matrix(1:12,nrow=3,byrow=T)
 Notese que al usar el parámetro \texttt{byrow=T} hacemos que la matriz se
 complete por fila en vez del modo habitual por columna.
 
-Hay funcion muy útiles que pueden operar sobre las matrices como
+Hay función muy útiles que pueden operar sobre las matrices como
 \texttt{rownames()}, \texttt{colnames()} y la funcion de transponer
 \texttt{t()} que transforma filas a columnas y visceversa (tome note que el
 nombre esta en minúscula al contrario de \texttt{T} que representa el valor
@@ -1171,7 +1193,9 @@ ordenado) Desafortunadamente, \textbf{R} por defecto trata los niveles como si
 fueran equidistantes en el código de modelado (generando contrastes
 polinomiales), por lo que es mejor ignorar los factores ordenados por ahora.
 
-\subsection{Listas}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Listas} \label{listas}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 En algunos casos es útil combinar una colección de objetos en un único objeto
 compuesto. Esto lo podemos lograr usando las \textit{listas}. 
@@ -1222,7 +1246,9 @@ que han sido nombrados pueden recuperarse de la siguiente forma:
 Muchas de las funciones de \texttt{R} que pueden retornar más de un valor lo
 hacen por medio de listas.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data frames}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Un \textit{data frame} corresponde a lo que otros paquetes estadísticos llaman
 una ``matriz de datos'' o un ``conjunto de datos''. Es una lista de vectores y/o
@@ -1260,7 +1286,9 @@ ser accedidos usando la notación \texttt{\$}:
 [1] 5260 5470 5640 6180 6390 6515 6805 7515 7515 8230 8770
 \end{lstlisting}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Indexado} \label{index}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 En caso de necesitar acceder a un elemento en particular de un vector, por
 ejemplo la ingesta premenstrual para la mujer número 5 , podemos hacer:
@@ -1322,7 +1350,9 @@ las observaciones \textit{excepto} la 3,5 y 7:
 Lo que no podemos es combinar índices negativos y positivos ya que esto trae
 aparejado una ambiguedad eventualmente imposible de manejar.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Selección condicional}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Ya vimos en la sección \ref{index}, como extraer dados usando uno o más
 índices. En la práctica, lo más habitual es seleccionar datos que cumplan con
@@ -1336,7 +1366,7 @@ relacional en lugar del índice,
 [1] 5975 6790 6900 7335
 \end{lstlisting}
 
-esto recupera aquellas casos de mujeres dónde la ingesta de energía
+Esto recupera aquellas casos de mujeres dónde la ingesta de energía
 postmenstrual está por encima de 7000 kJ premenstrualmente.
 
 Este tipo de expresión tiene sentido siempre que la expresión relacional opere
@@ -1391,8 +1421,9 @@ Es importante tener claro que existe una necesidad muy concreta para
 esto simplemente retornará un valor \texttt{NA}. El resultado de la comparación
 con un valor desconocido es otro valor desconocido.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Indexado de data frames}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Ya hemos visto que podemos extraer variables de un \texttt{data.frame},
 ingresando, por ejemplo, \texttt{d\$intake.post}. De cualquier forma, es
@@ -1450,7 +1481,7 @@ pequeños:
 
 Lo que ha pasado es que hemos definido \texttt{sel} como un vector lógico,
 dónde el valor \texttt{TRUE} se corresponden con las 4 mujeres con más de 7000
-kJ de ingresta premestrual.
+kJ de ingesta premestrual.
 
 Ahora, al hacer \texttt{d[sel,]} seleccionamos aquellas filas de \texttt{d} que
 correspondan a los valores \texttt{TRUE} de \texttt{sel}, y por supuesto, todas
@@ -1483,7 +1514,9 @@ defecto nos traera los primeros 6 elementos.
 De forma similar, existe la función \texttt{tail} para mostrarnos los últimos
 elementos.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Agrupación de datos y data frames}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 La forma más natural de almacenar grupos de datos en un \texttt{data.frame} es tener
 los mismos en un solo vector y paralelamente, tener un factor que
@@ -1527,7 +1560,7 @@ hacer:
 > exp.obese <- energy$expend[energy$stature=="obese"]
 \end{lstlisting}
 
-Y de unaforma más generalizable podemos usar la función split que generará una
+Y de una forma más generalizable podemos usar la función \texttt{split} que generará una
 lista de vectores de acuerdo a los grupos existentes.
 
 \begin{lstlisting}[language=R]
@@ -1540,7 +1573,9 @@ $obese
 [1]  9.21 11.51 12.79 11.85  9.97  8.79  9.69  9.68  9.19
 \end{lstlisting}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Ciclos implícitos}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 La construcción de ciclos en \textbf{R} se describen en la Sección \ref{flowcontrol}.
 Para los propósitos de este libro, podemos ignorar en gran medida la existencia
@@ -1570,22 +1605,121 @@ $short.velocity
 
 Observe que ambas funciones dotaron a los resultados de un nombre informativo,
 lo cual es otra razón para usar estas funciones en vez de los ciclos
-explicítos.
+explicítos. El segundo parámetro to \texttt{lapply/sapply} es el nombre de la
+función que se aplicará , en este caso \texttt{mean}. 
 
-Notice how both forms attach meaningful names to the result, which is another
-good reason to prefer to use these functions rather than explicit loops. The
-second argument to lapply/sapply is the function that should be applied, here
-mean. Any further arguments are passed on to the function; in this case we pass
-na.rm=T to request that missing values be removed (see Section 4.1).  Sometimes
-you just want to repeat something a number of times but still collect the
-results as a vector. Obviously, this makes sense only when the repeated
-computations actually give different results, the common case being simulation
-studies. This can be done using sapply, but there is a simplified version
-called replicate, in which you just have to give a count and the expression to
-evaluate:
+Cualquier otro parámetro se pasa a la función a continuación; en este caso
+pasamos \texttt{na.rm=T} para indicar que se eliminen los valores faltantes
+(ver \ref{resestad}).  A veces sólo queremos repetir algo un número de veces
+pero aún así guardar los resultados en un vector. Obviamente, esto tiene
+sentido sólo cuando los cálculos repetitivos dan resultados diferentes, siendo
+el caso común los estudios de simulación. Esto se puede hacer usando
+\texttt{sapply}, pero hay una versión simplificada llamada \texttt{replicate},
+en el que sólo tienes que dar un recuento y la expresión a evaluar:
+
+\begin{lstlisting}[language=R]
+> replicate(10,mean(rexp(20)))
+ [1] 0.8369313 0.9651302 1.0437885 0.7174850 0.8586701 0.5218970 1.5854871
+ [8] 1.1025462 0.9269089 1.3222753
+\end{lstlisting}
+
+Una función similar, \texttt{apply}, nos permite "aplicar" un determinada
+función a las filas o columnas de una matriz (o sobre los índices de cualquier
+arreglo multidimensional)
+
+\begin{lstlisting}[language=R]
+> m <- matrix(rnorm(12),4)
+> m
+           [,1]       [,2]        [,3]
+[1,] -0.2007822  2.0034906 -0.44432912
+[2,]  1.3281647 -1.2074197  0.06629581
+[3,]  2.2353936 -0.1198466 -1.82850943
+[4,]  0.3476552  1.2306042  0.34204225
+> apply(m, 2, min)
+[1] -0.2007822 -1.2074197 -1.8285094
+\end{lstlisting}
+
+El segundo parámetro en este caso es el índice (o vector de índices) que define
+a qué se aplica la función; en este caso calculamos los mínimos por columna.
+Además, tenemos la función \texttt{tapply} que permite crear tablas (de ahí la
+\texttt{t}) del valor de una función en subgrupos definidos por su segundo
+parámetro, que puede ser un factor o una lista de factores. En este último
+caso, se genera una tabla de clasificación cruzada. (La agrupación también
+puede ser definida por vectores ordinarios que internamente se convertirán a
+factores.)
+
+\begin{lstlisting}[language=R]
+> tapply(energy$expend, energy$stature, median)
+ lean obese 
+ 7.90  9.69 
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Orden}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Es trivial ordenar un vector, simplemente usaremos la función \texttt{sort}.
+(Aprovecharemos los datos \texttt{intake}; contiene la misma información que
+usamos en la sección \ref{listas})
+
+\begin{lstlisting}[language=R]
+> intake$post
+ [1] 3910 4220 3885 5160 5645 4680 5265 5975 6790 6900 7335
+> sort(intake$post)
+ [1] 3885 3910 4220 4680 5160 5265 5645 5975 6790 6900 7335
+\end{lstlisting}
+
+(No podemos usar \texttt{intake\$pre} en este ejemplo por que ya se encuentra
+ordenada!)
+
+Sin embargo, el orden de un solo vector no siempre es lo que se
+requiere. A menudo es necesario ordenar una serie de variables de acuerdo con
+los valores de algunas otras variables - presiones sanguíneas ordenadas por
+sexo y edad, por ejemplo. Para este propósito, hay una construcción que puede
+parecer algo abstracta al principio pero que es realmente muy poderosa. Primero
+se calcula el orden de una variable.
+
+\begin{lstlisting}[language=R]
+> order(intake$post)
+ [1]  3  1  2  6  4  7  5  8  9 10 11
+\end{lstlisting}
+
+El resultado son los números del 1 al 11 (o cualquiera que sea la longitud del
+vector), ordenados de acuerdo al valor del parámetro a ordenar (aquí
+\texttt{intake\$post}). Interpretar el resultado de \texttt{order} es un poco
+complicado - debe leerse de la siguiente manera: Usted ordena \texttt{intake\$post}
+ubicando sus valores en el orden no. 3, no. 1, no. 2, no. 6, etc.
+
+El punto es, que este vector puede servir para ordenar otras variables usando
+el mismo criterio. Tenga en cuenta que la indización con un vector que contiene
+los números del 1 al número exacto de elementos corresponde a una reordenación
+de estos.
+
+\begin{lstlisting}[language=R]
+> o <- order(intake$post)
+> intake$post[o]
+ [1] 3885 3910 4220 4680 5160 5265 5645 5975 6790 6900 7335
+> intake$pre[o]
+ [1] 5640 5260 5470 6515 6180 6805 6390 7515 7515 8230 8770
+\end{lstlisting}
 
 
-\subsection{Ordenamiento}
+Lo que ocurrió aquí es que hemos ordenado \texttt{intake\$post}, mientras que
+\texttt{intake\$pre} fue ordenada también pero según el orden de los valores de
+\texttt{intake\$post}. Es posible ordenar directamente el data frame
+\texttt{intake}
+
+\begin{lstlisting}[language=R]
+> intake.sorted <- intake[o,]
+\end{lstlisting}
+
+Ordenar por múltiples criterios es tan sencillo como indicar las variables a
+usar como parámetros de la función \texttt{order}; por ejemplo
+\texttt{order(sex, age}, ordenará primero por sexo y luego dentro de cada
+grupo, por la edad. El orden descendente se puede establecer modificando el
+signo de la variable
+
+
 \section{Ejercicios}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1633,7 +1767,7 @@ evaluate:
 \section{Ejercicios}
 
 \chapter{Descriptive statistics and graphics}
-\section{Summary statistics for a single group}
+\section{Resumen estadístico para un solo grupo} \label{resestad}
 \section{Graphical display of distributions}
 \section{Graphics for grouped data}
 \section{Tables} \label{tables}
