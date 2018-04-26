@@ -1574,7 +1574,7 @@ $obese
 \end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Ciclos implícitos}
+\subsection{Ciclos implícitos}\label{ciclosimplicitos}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 La construcción de ciclos en \textbf{R} se describen en la Sección \ref{flowcontrol}.
@@ -1731,22 +1731,61 @@ trampa!
 un vector con longitud \texttt{n}, ¿que sucede si hacemos \texttt{y[x]}?
 
 1.3 Escriba una expresión lógica para obtener las mujeres entre 7 y 14 años del
-conjunto de datos \textt{juul}
+conjunto de datos \texttt{juul}
 
 1.4 ¿Que ocurre si modificamos los niveles de un \texttt{factor} (con la
 función \texttt{levels()}) con los mismos niveles más dos o más niveles?
 
-1.5 On p. 27, replicate was used to simulate the distribution of the
-mean of 20 random numbers from the exponential distribution by repeating the operation 10 times. How would you do the same thing with
-sapply?
+1.5 En la página \pageref{ciclosimplicitos}, usamos \texttt{replicate} para
+generar 10 números que se corrresponden con la media de una distribución
+exponenecial.  ¿Cómo podríamos conseguir lo mismo usando \texttt{sapply}?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% El Entorno de R
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{El entorno de R}
 
-\section{Session management}
-\subsection{The workspace}
+Este capítulo comprende algunos aspectos prácticos del trabajo con \textbf{R}.
+Describe cuestiones relacionadas con la estructura del espacio de trabajo, los
+dispositivos gráficos y sus parámetros, y la programación elemental, e incluye
+una discusión bastante extensa, aunque lejos de ser completa, sobre el ingreso
+de datos.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Administración de sesiones}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{El espacio de trabajo}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Todas las variables creadas en R se almacenan en un espacio de trabajo común.
+Para ver qué variables están definidas en el área de trabajo, puede utilizar la
+función \texttt{ls} (lista).  Si ha ejecutado todos los
+ejemplos del capítulo anterior es posible que la salida sea similar a esto:
+
+\begin{lstlisting}[language=R]
+> ls()
+ [1] "bmi"           "d"             "exp.lean"      "exp.obese"    
+ [5] "fpain"         "height"        "hh"            "intake.post"  
+ [9] "intake.pre"    "intake.sorted" "l"             "m"            
+[13] "mylist"        "o"             "oops"          "pain"         
+[17] "sel"           "v"             "weight"        "x"            
+[21] "xbar"          "y"   
+\end{lstlisting}
+
+Recuerde no omitir los paréntesis al invocar a \texttt{ls}().
+
+Si en algún momento las cosas comienzan a ser confusas, podemos eliminar
+algunos objetos del entorno. Esto se puede hacer mediante \texttt{rm}()
+(remover), de manera que:
+
+\begin{lstlisting}[language=R]
+> rm(height, weight)
+\end{lstlisting}
+
+Elimina las variables \texttt{height} y \texttt{weight}.
+
 \subsection{Textual output}
 \subsection{Scripting	}
 \subsection{Getting help}
