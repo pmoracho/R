@@ -1786,6 +1786,39 @@ algunos objetos del entorno. Esto se puede hacer mediante \texttt{rm}()
 
 Elimina las variables \texttt{height} y \texttt{weight}.
 
+Se puede eliminar completamente el espacio de trabajo mediante
+\texttt{rm(list=ls())}, y también mediante la opciones de menú “Remove all
+objects” o “Clear Workspace” en las versiones graficas de \textbf{R}. Esto no
+elimina las variables cuyo nombre comienza con un punto (\texttt{.}) por que
+las mismas no son listadas por \texttt{ls()} - necesitaríamos usa
+\texttt{ls(all=T)} para eso,  pero podría ser peligros ya que algunos objetos
+usados por el sistema usan esta notación.
+
+Si está familiarizado con el sistema operativo \textbf{Unix}, para el cual el
+lenguaje \textbf{S}, que precedió a \textbf{R}, fue escrito originalmente,
+entonces sabrá que los comandos para listar y eliminar archivos en Unix se
+llaman precisamente \texttt{ls} y \texttt{rm}.
+
+Es posible salvar completamente el espacio de trabajo en cualquier momento.
+Simplemente deberemos escribir:
+
+\begin{lstlisting}[language=R]
+save.image()
+\end{lstlisting}
+
+de esta forma, todo será salvado en un archivo de nombre \texttt{.RData} en el
+directorio de trabajo actual. Las versiones gráficas también tienen un menú
+para hacer esto. Cuando salimos de \textbf{R} se nos puede llegar a preguntar
+si queremos salvar una imagen de nuestro espacio de trabajo; si le decimos que
+sí estaremos haciendo exactamente lo mismo. Es posible también especificar un
+nombre de archivo a salvar alternativo (usando comillas), también podremos
+salvar objetos específicos con \texttt{save}. El archivo \texttt{.RData} se
+carga automáticamente cuando se inicia \texttt{R} desde el directorio dónde se
+encuentre. Otros archivos similares pueden cargarse al espacio de trabajo
+mediante \texttt{load}.
+
+
+
 \subsection{Textual output}
 \subsection{Scripting	}
 \subsection{Getting help}
