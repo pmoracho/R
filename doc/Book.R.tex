@@ -1817,11 +1817,102 @@ carga automáticamente cuando se inicia \texttt{R} desde el directorio dónde se
 encuentre. Otros archivos similares pueden cargarse al espacio de trabajo
 mediante \texttt{load}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Salida Textual}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Es importante tener en cuenta que el espacio de trabajo está formado únicamente
+por objetos \textbf{R}, no por ninguna de las salidas generadas durante la
+sesión de trabajo.  Si desea guardar ésta utilice "Guardar en archivo" en el
+menú Archivo de la version Gráfica o utilice las funciones estándar de cortar y
+pegar. También puede utilizar \textbf{ESS} (Emacs Speaks Statistics), que
+funciona en todas las plataformas. Es un "modo" para el editor \textbf{Emacs}
+en el que puede ejecutar toda la sesión en un búfer. Puede obtener la
+\textbf{ESS} y las instrucciones de instalación de \textbf{CRAN} (ver Apéndice
+A).  
+
+Una forma alternativa de redirigir la salida a un archivo es usar la función
+\texttt{sink}. Se trata en gran medida de una reliquia de la época de las
+terminales de 80 x 25, en la que no se disponía de técnicas de cortar y pegar,
+pero que aún puede ser útil en ocasiones. En particular, se puede utilizar en
+el procesamiento por lotes. La forma en que funciona es de la siguiente manera:
+
+\begin{lstlisting}[language=R]
+sink("salidatxt")
+ls()
+\end{lstlisting}
+
+No parece ninguna salida por pantalla!. Esto por que ahora la salida normal de
+cualquier comando o función se redirige automáticamente al archivo
+\texttt{salida.txt} en el directorio actual.  El sistema permanecerá trabajando
+de esta forma hasta que ejecutemos nuevamente (esta vez sin parámetros):
+
+\begin{lstlisting}[language=R]
+sink()
+\end{lstlisting}
+
+El directorio de trabajo actual se puede obtener mediante \texttt{getwd()} y
+establecer otro mediante \texttt{setwd(mi directorio)}, dónde \texttt{mi
+directorio} es una cadena de texto. El directorio de trabajo inicial depende
+del sistema, por ejemplo para las versiones gráficas suele ser el \texttt{home
+dir} del usuario y en la versión de línea de comandos es la carpeta desde dónde
+se ha ejecutado \textbf{R}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Scripting}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Más allá de un cierto nivel de complejidad, seguramente no querrá trabajar con
+\textbf{R} línea por línea. En estas situaciones, es mejor trabajar con scripts
+\textbf{R}, colecciones de líneas de código almacenadas en un archivo o en la
+memoria de la computadora de alguna forma. 
+
+Una opción es usar la función de \texttt{source}, que es algo así como lo
+opuesto a \texttt{sink}. Toma la entrada (es decir, los comandos desde un
+archivo) y los ejecuta. Nótese, sin embargo, que todo el archivo se comprueba
+sintácticamente antes de que ejecuatar cualquier instrucción. A menudo es útil
+configurar \texttt{echo=T} en la llamada para que los comandos sean impresos
+junto con la salida. 
+
+Otra opción es de naturaleza más interactiva. Puedes trabajar con un editor que
+le permite enviar una o más líneas del script a una instancia de R en
+ejecución, el cual se comportará como si las mismas líneas hubieran sido
+introducida en el indicador de comandos. Las versiones de Windows, Linux y
+Macintosh de R tienen ventanas de scripting simples incorporadas, y un número
+importante de Editores de texto tienen la funcionalidad para enviar los
+comandos a R.
+
+\begin{tradnote} 
+	
+	Actualmente son muchas las herramientas para trabajar en R, muchas más de
+	las que existían al momento de la publicación original de este libro. En
+	lineas generales hoy tenemos R en las tres principales plataformas:
+	Windows, Linux y MAC, en cada una además podemos contar con:
+
+	\begin{description}
+	\item[$\bullet$] Interprete interactivo por línea de comando (\texttt{R})
+	\item[$\bullet$] Versión grafica (\texttt{Rgui})
+	\item[$\bullet$] Múltiples editores de texto con integración con \textbf{R}
+	\item[$\bullet$] Entornos integrados de desarrollo (\textbf{Rstudio})
+	\end{description}
+
+\end{tradnote}
+
+El historial de los comandos introducidos en una sesión se puede guardar y
+volver a cargar utilizando los comandos \texttt{savehistory} y
+\texttt{loadhistory}, que también se asignan a entradas de menú en la versión
+gráfica. Las comandos guardados pueden ser útiles como punto de partida para
+escribir scripts; observe también que la función \texttt{history()} mostrará
+los últimos comandos introducidos en la consola (hasta un máximo de 25 líneas
+por defecto)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{El sistema de ayuda de R}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
 
 
-\subsection{Textual output}
-\subsection{Scripting	}
-\subsection{Getting help}
 \subsection{Packages}
 \subsection{Built-in data}
 \subsection{attach and detach}
