@@ -1824,7 +1824,7 @@ mediante \texttt{load}.
 Es importante tener en cuenta que el espacio de trabajo está formado únicamente
 por objetos \textbf{R}, no por ninguna de las salidas generadas durante la
 sesión de trabajo.  Si desea guardar ésta utilice "Guardar en archivo" en el
-menú Archivo de la version Gráfica o utilice las funciones estándar de cortar y
+menú Archivo de la versión Gráfica o utilice las funciones estándar de cortar y
 pegar. También puede utilizar \textbf{ESS} (Emacs Speaks Statistics), que
 funciona en todas las plataformas. Es un "modo" para el editor \textbf{Emacs}
 en el que puede ejecutar toda la sesión en un búfer. Puede obtener la
@@ -1870,7 +1870,7 @@ memoria de la computadora de alguna forma.
 Una opción es usar la función de \texttt{source}, que es algo así como lo
 opuesto a \texttt{sink}. Toma la entrada (es decir, los comandos desde un
 archivo) y los ejecuta. Nótese, sin embargo, que todo el archivo se comprueba
-sintácticamente antes de que ejecuatar cualquier instrucción. A menudo es útil
+sintácticamente antes de que ejecutar cualquier instrucción. A menudo es útil
 configurar \texttt{echo=T} en la llamada para que los comandos sean impresos
 junto con la salida. 
 
@@ -1945,27 +1945,27 @@ Venables y David Smith y adaptado a \textbf{R} por varias personas.  Contiene
 una introducción al lenguaje \textbf{R} y al entorno, mucho más centrada en el
 lenguaje en sí que este libro. En la plataforma Windows, puede elegir instalar
 documentos PDF como parte del procedimiento normal de instalación para poder
-acceder luego por medio del menu ``Ayuda''.  Se puede acceder también a una
+acceder luego por medio del menú ``Ayuda''.  Se puede acceder también a una
 versión HTML (sin imágenes) a través del navegador en todas las plataformas.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Packages}
+\subsection{Paquetes}\label{paquetes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Una instalación de \texttt{R} contiene una o más librerías o paquetes. Algunos
 de estos paquetes forman parte de la instalación básica.  Otros pueden ser
-descargados from \textbf{CRAN} (ver apéndice A), el cual alberga a la fecha más
-de 12000 paquetes para múltiples propósitos.  Incluso podríamos crear nuestros
-propios paquetes. Una librería es por lo general una simple carpeta en el
-disco. Una librería de sistema se crea al instalar \texttt{R}.  En algunas
-instalaciones, no les es permitido a los usuarios modificar la libreía del
+descargados desde \textbf{CRAN} (ver apéndice A), el cual alberga a la fecha
+más de 12000 paquetes para múltiples propósitos.  Incluso podríamos crear
+nuestros propios paquetes. Una librería es por lo general una simple carpeta en
+el disco. Una librería de sistema se crea al instalar \texttt{R}.  En algunas
+instalaciones, no les es permitido a los usuarios modificar la librería del
 sistema. De todas formas, es posible configurara librerías privadas; para más
 detalles ver \texttt{help(".Library")}.
 
 Un paquete puede contener, funciones escritas en \textbf{R}, librerías de carga
 dinámica escritas en \textbf{C} o \textbf{Fortran} y distintos conjuntos de
 datos.  Un paquete generalmente implementa funcionalidad que la mayoría de los
-usuarios probablemnet no necesiten tener cargada todo el tiempo. Un paquete es
+usuarios probablemente no necesiten tener cargada todo el tiempo. Un paquete es
 cargado en \textbf{R} mediante el comando \texttt{library}, de esta forma, para
 cargar el paquete \texttt{survival} tendremos que ingresar:
 
@@ -1977,7 +1977,7 @@ Los paquetes cargados, no se consideran parte del espacio de trabajo. Si
 terminamos la sesión \texttt{R} y comenzamos una nueva con es espacio de
 trabajo guardado, deberemos cargar nuevamente los paquetes anteriores.  Por
 esta misma razón, rara vez necesitemos descargar un paquete activo, pero si lo
-llegaramos a necesitar hacer, podríamos escribir:
+llegaremos a necesitar hacer, podríamos escribir:
 
 \begin{lstlisting}[language=R]
 detach("package:survival")
@@ -1985,40 +1985,124 @@ detach("package:survival")
 
 (ver sección \ref{attachdetach}.)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Datos integrados}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Muchos paquetes, tanto dentro como fuera de la distribución R estándar, vienen
+con algún que otro conjunto de datos incorporado. Estos conjuntos de datos
+pueden ser bastante grandes, por lo que no es una buena idea mantenerlos en la
+memoria en todo momento. Se requiere entonces, un mecanismo para la carga bajo
+demanda. En muchos paquetes, esto funciona a través de un mecanismo llamado
+\textit{carga perezosa} ("lazy loading,"), que permite al sistema "simular" que
+los datos están sí  en memoria, pero en realidad no se cargan hasta que son
+referenciados por primera vez.  
+
+Con este mecanismo, los datos están al alcance de la mano. Por ejemplo, si
+escribe \texttt{thuesen}, se muestra el \texttt{data.frame} de dicho nombre.
+Algunos paquetes todavía requieren llamadas explícitas a la función
+\texttt{data}.  La mayoría de las veces, esto carga un \texttt{data.frame} con
+el nombre que se especifica como parámetro; \texttt{data(thuesen)}, por
+ejemplo, carga el \texttt{data.frame} "thuesen".
+
+Lo que hace \texttt{data} es recorrer los directorios de datos asociados a cada
+paquete (ver Sección \ref{paquetes}) y buscar archivos cuyo nombre base
+coincida con el nombre especificado. Dependiendo de la extensión del archivo,
+pueden suceder varias cosas. Los archivos con extensión \texttt{.tab} se leen
+usando \texttt{read.table} (Sección \ref{readtextfile}), mientras que los
+archivos con extensión \texttt{.R} se ejecutan como archivos de código (¡y
+podrían, en general, hacer cualquier cosa!), esto simplemente, por dar dos
+ejemplos comunes.
+
+Si hay un subdirectorio del directorio actual llamado \texttt{data}, entonces
+también se busca en él. Esta puede ser una forma muy útil de organizar sus
+proyectos personales.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\texttt{attach} y \texttt{detach}}\label{attachdetach}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+La notación para acceder a variables en \texttt{data.frames} se vuelve bastante pesada
+si tiene que escribir repetidamente comandos largos como:
+
+\begin{lstlisting}[language=R]
+plot(thuesen$blood.glucose,thuesen$short.velocity)
+\end{lstlisting}
+
+Afortunadamente, puede hacer que\textbf{R} busque objetos entre las variables
+de un \texttt{data.frame} determinado, por ejemplo \texttt{thuesen}. Escribiendo:
+
+\begin{lstlisting}[language=R]
+attach(thuesen)
+\end{lstlisting}
+
+y entonces los datos de \texttt{thuesen} estarán disponibles sin la engorrosa
+notación \texttt{\$}:
+
+\begin{lstlisting}[language=R]
+blood.glucose
+ [1] 15.3 10.8  8.1 19.5  7.2  5.3  9.3 11.1  7.5 12.2  6.7  5.2
+[13] 19.0 15.1  6.7  8.6  4.2 10.3 12.5 16.1 13.3  4.9  8.8  9.5
+\end{lstlisting}
+
+Lo que sucedió es que el \texttt{data.frame} \texttt{thuesen} se coloca en la
+ruta de búsqueda del sistema. Puede ver la misma con el comando:
+
+\begin{lstlisting}[language=R]
+search()
+ [1] ".GlobalEnv"        "thuesen"           "package:ISwR"     
+ [4] "tools:rstudio"     "package:stats"     "package:graphics" 
+ [7] "package:grDevices" "package:utils"     "package:datasets" 
+[10] "package:methods"   "Autoloads"         "package:base"     
+\end{lstlisting}
+
+Notice that thuesen is placed as no. 2 in the search path. .GlobalEnv
+is the workspace and package:base is the system library where
+all standard functions are defined. Autoloads is not described here.
+package:stats and onwards contains the basic statistical routines such
+as the Wilcoxon test, and the other packages similarly contain various functions and data sets. (The package system is modular, and you
+can run R with a minimal set of packages for specific uses.) Finally,
+package:ISwR contains the data sets used for this book.
+
+There may be several objects of the same name in different parts of the
+search path. In that case, R chooses the first one (that is, it searches first in
+.GlobalEnv, then in thuesen, and so forth). For this reason, you need
+to be a little careful with “loose” objects that are defined in the workspace
+outside a data frame since they will be used before any vectors and factors
+of the same name in an attached data frame. For the same reason, it is not a
+good idea to give a data frame the same name as one of the variables inside
+it. Note also that changing a data frame after attaching it will not affect the
+variables available since attach involves a (virtual) copy operation of the
+data frame.
+
+It is not possible to attach data frames in front of .GlobalEnv or following package:base. However, it is possible to attach more than one
+data frame. New data frames are inserted into position 2 by default, and
+everything except .GlobalEnv moves one step to the right. It is, however, possible to specify that a data frame should be searched before
+.GlobalEnv by using constructions of the form
+
+with(thuesen, plot(blood.glucose, short.velocity))
+
+In some contexts, R uses a slightly different method when looking for objects. If looking for a variable of a specific type (usually a function), R will
+skip those of other types. This is what saves you from the worst consequences of accidentally naming a variable (say) c, even though there is a
+system function of the same name.
+
+You can remove a data frame from the search path with detach. If no
+arguments are given, the data frame in position 2 is removed, which is
+generally what is desired. .GlobalEnv and package:base cannot be
+detach’ed.
+
+> detach()
+> search()
+[1] ".GlobalEnv" "package:ISwR" "package:stats"
+[4] "package:graphics" "package:grDevices" "package:utils"
+[7] "package:datasets" "package:methods" "Autoloads"
+[10] "package:base"
+
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Built-in data}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Many packages, both inside and outside the standard R distribution, come
-with built-in data sets. Such data sets can be rather large, so it is not a
-good idea to keep them all in computer memory at all times. A mecha-
-nism for on-demand loading is required. In many packages, this works
-via a mechanism called lazy loading, which allows the system to “pretend”
-that the data are in memory, but in fact they are not loaded until they are
-referenced for the first time.
-With this mechanism, data are “just there”. For example, if you type “thue-
-sen”, the data frame of that name is displayed. Some packages still require
-explicit calls to the data function. Most often, this loads a data frame with
-the name that its argument specifies; data(thuesen) will, for instance,
-load the thuesen data frame.
-
-What data does is to go through the data directories associated with each
-package (see Section 2.1.5) and look for files whose basename matches the
-given name. Depending on the file extension, several things can then hap-
-pen. Files with a .tab extension are read using read.table (Section 2.4),
-whereas files with a .R extension are executed as source files (and could,
-in general, do anything!), to give two common examples.
-If there is a subdirectory of the current directory called data, then it
-is searched as well. This can be quite a handy way of organizing your
-personal projects.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{\texttt{attach} and \texttt{detach}}\label{attachdetach}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{subset, transform, and within}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{The graphics subsystem}
 \subsection{Plot layout}
