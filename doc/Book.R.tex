@@ -2045,7 +2045,7 @@ blood.glucose
 [13] 19.0 15.1  6.7  8.6  4.2 10.3 12.5 16.1 13.3  4.9  8.8  9.5
 \end{lstlisting}
 
-Lo que sucedió es que el \texttt{data.frame} \texttt{thuesen} se coloca en la
+Lo que sucedió aquí es que el \texttt{data.frame} \texttt{thuesen} se colocan en la
 ruta de búsqueda del sistema. Puede ver la misma con el comando:
 
 \begin{lstlisting}[language=R]
@@ -2056,53 +2056,147 @@ search()
 [10] "package:methods"   "Autoloads"         "package:base"     
 \end{lstlisting}
 
-Notice that thuesen is placed as no. 2 in the search path. .GlobalEnv
-is the workspace and package:base is the system library where
-all standard functions are defined. Autoloads is not described here.
-package:stats and onwards contains the basic statistical routines such
-as the Wilcoxon test, and the other packages similarly contain various functions and data sets. (The package system is modular, and you
-can run R with a minimal set of packages for specific uses.) Finally,
-package:ISwR contains the data sets used for this book.
+Nótese que \texttt{thuesen} se coloca en segundo lugar en la ruta de búsqueda.
+\texttt{.GlobalEnv} es el espacio de trabajo y \texttt{package:base} es la
+biblioteca del sistema donde se definen todas las funciones estándar. Omitimos
+describir \texttt{Autoloads}.  \texttt{package:stats} en adelante contiene las
+rutinas estadísticas básicas como el test de Wilcoxon, y los otros paquetes
+contienen de forma similar varias funciones y conjuntos de datos. (El sistema
+de paquetes es modular, y puede ejecutar \textbf{R} con un conjunto mínimo de
+paquetes para usos específicos. Por último, \texttt{package:ISwR} contiene los
+conjuntos de datos utilizados para este libro. 
 
-There may be several objects of the same name in different parts of the
-search path. In that case, R chooses the first one (that is, it searches first in
-.GlobalEnv, then in thuesen, and so forth). For this reason, you need
-to be a little careful with “loose” objects that are defined in the workspace
-outside a data frame since they will be used before any vectors and factors
-of the same name in an attached data frame. For the same reason, it is not a
-good idea to give a data frame the same name as one of the variables inside
-it. Note also that changing a data frame after attaching it will not affect the
-variables available since attach involves a (virtual) copy operation of the
-data frame.
 
-It is not possible to attach data frames in front of .GlobalEnv or following package:base. However, it is possible to attach more than one
-data frame. New data frames are inserted into position 2 by default, and
-everything except .GlobalEnv moves one step to the right. It is, however, possible to specify that a data frame should be searched before
-.GlobalEnv by using constructions of the form
+Puede haber varios objetos del mismo nombre en diferentes partes de la ruta de
+búsqueda. En ese caso, \textbf{R} elige la primera (es decir, busca primero en
+\texttt{.GlobalEnv}, luego en \texttt{thuesen}, y así sucesivamente). Por esta
+razón, hay que tener un poco de cuidado con los objetos "sueltos" que se
+definen en el espacio de trabajo fuera de un \texttt{data.frame}, ya que se
+utilizarán antes que cualquier vector y factor del mismo nombre en el 
+\texttt{data.frame} específico. Por la misma razón, no es una buena idea dar a
+un \texttt{data.frame} el mismo nombre que a una de las variables dentro de él.
+Tenga en cuenta también que cambiar un \texttt{data.frame} después de
+adjuntarlo no afectará a las variables disponibles a partrir del
+\texttt{attach}, ya que adjuntar implica una operación de copia (virtual) del
+\texttt{data.frame} 
 
+No es posible adjuntar \texttt{data.frame} antes de \texttt{.GlobalEnv} o después de
+\texttt{package:base}. Sin embargo, es posible adjuntar más de un \texttt{data.frame}. Las
+nuevos \texttt{data.frame} se insertan en la posición 2 de forma predeterminada, y
+todo excepto \texttt{.GlobalEnv} se mueve un paso a la derecha. Sin embargo, es posible
+especificar que se debe buscar un marco de datos antes de \texttt{.GlobalEnv} utilizando
+construcciones de la forma de:
+
+\begin{lstlisting}[language=R]
 with(thuesen, plot(blood.glucose, short.velocity))
+\end{lstlisting}
 
-In some contexts, R uses a slightly different method when looking for objects. If looking for a variable of a specific type (usually a function), R will
-skip those of other types. This is what saves you from the worst consequences of accidentally naming a variable (say) c, even though there is a
-system function of the same name.
+En algunos contextos, \textbf{R} usa un método ligeramente diferente para
+buscar objetos. Si se busca una variable de un tipo específico (generalmente
+una función), \textbf{R} omitirá las de otros tipos. Esto ahorra las peores
+consecuencias de nombrar accidentalmente una variable, por ejemplo \texttt{c},
+aunque exista una función del sistema con el mismo nombre.
 
-You can remove a data frame from the search path with detach. If no
-arguments are given, the data frame in position 2 is removed, which is
-generally what is desired. .GlobalEnv and package:base cannot be
-detach’ed.
+Puede eliminar un \texttt{data.frame} de la ruta de búsqueda con
+\texttt{detach}. Si no se dan argumentos, el \texttt{data.frame} en la posición
+2 se elimina, que es generalmente lo que se desea. \texttt{.GlobalEnv} y \texttt{package:base} no
+se pueden desadjuntar (\texttt{detach}) del entorno. 
 
-> detach()
-> search()
-[1] ".GlobalEnv" "package:ISwR" "package:stats"
-[4] "package:graphics" "package:grDevices" "package:utils"
-[7] "package:datasets" "package:methods" "Autoloads"
-[10] "package:base"
+\begin{lstlisting}[language=R]
+detach()
+search()
+
+ [1] ".GlobalEnv"        "package:ISwR"      "tools:rstudio"    
+ [4] "package:stats"     "package:graphics"  "package:grDevices"
+ [7] "package:utils"     "package:datasets"  "package:methods"  
+[10] "Autoloads"         "package:base"    
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{subset, transform, y within}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Puede adjuntar un \texttt{data.frame} para evitar la engorrosa indexación de cada
+variable dentro de él. Sin embargo, esto es poco práctico para seleccionar
+subconjuntos de datos y para crear nuevos \texttt{data.frame} con variables
+transformadas. Existen un par de funciones para facilitar estas operaciones. Se
+utilizan de la siguiente manera:
+
+\begin{lstlisting}[language=R]
+thue2 <- subset(thuesen,blood.glucose<7)
+thue2
+
+   blood.glucose short.velocity
+6            5.3           1.49
+11           6.7           1.25
+12           5.2           1.19
+15           6.7           1.52
+17           4.2           1.12
+22           4.9           1.03
+
+thue3 <- transform(thuesen,log.gluc=log(blood.glucose))
+thue3 
+
+   blood.glucose short.velocity log.gluc
+1           15.3           1.76 2.727853
+2           10.8           1.34 2.379546
+3            8.1           1.27 2.091864
+4           19.5           1.47 2.970414
+5            7.2           1.27 1.974081
+...
+22           4.9           1.03 1.589235
+23           8.8           1.12 2.174752
+24           9.5           1.70 2.251292
+\end{lstlisting}
+
+Note que las variables usadas en las expresiones para crear nuevas variables o
+para construir subconjunto son evaluadas con variables del propio
+\texttt{data.frame}.
+
+\texttt{subset} también funciona con vectores individuales. Esto es casi lo
+mismo que la indexación con un vector lógico (como ser
+\texttt{short.velocity[blood.glucose<7]}), excepto que se excluyen las
+observaciones con valores faltanantes (\texttt{NA}}) en el criterio de
+selección.
+
+\texttt{subset} también tiene un parámetros \textt{select} que puede usarse
+para extraer variables del \texttt{data.frame}. Volveremos sobre esto en la
+sección \label{appending frames}.
+
+La función de \texttt{transform} tiene un par de inconvenientes, el más grave,
+probablemente sea, que no permite cálculos encadenados donde algunas de las
+nuevas variables dependen de las otras. Los signos \texttt{=} en la sintaxis no
+son asignaciones, sino que indican nombres, que se asignan a los vectores
+calculados en el último paso.
+
+Una alternativa a \texttt{transform} es la función \texttt{within}, que puede
+ser utilizada de esta manera:
+
+\begin{lstlisting}[language=R]
+thue4 <- within(thuesen,{
+        log.gluc <- log(blood.glucose)
+        m <- mean(log.gluc)
+        centered.log.gluc <- log.gluc - m
+        rm(m)
+})
+
+thue4
+   blood.glucose short.velocity centered.log.gluc log.gluc
+1           15.3           1.76       0.481879807 2.727853
+2           10.8           1.34       0.133573113 2.379546
+3            8.1           1.27      -0.154108960 2.091864
+4           19.5           1.47       0.724441444 2.970414
+5            7.2           1.27      -0.271891996 1.974081
+...
+22           4.9           1.03      -0.656737817 1.589235
+23           8.8           1.12      -0.071221300 2.174752
+24           9.5           1.70       0.005318777 2.251292
+> 
+\end{lstlisting}
+
+Notice that the second argument is an arbitrary expression (here a compound expression, see p. 45). The function is similar to with, but instead of just returning the computed value, it collects all new and modified variables into a modified data frame, which is then returned. As shown, variables containing intermediate results can be discarded with rm. (It is particularly important to do this if the contents are incompatible with the data frame.)
 
 \newpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{subset, transform, and within}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{The graphics subsystem}
 \subsection{Plot layout}
@@ -2139,4 +2233,19 @@ detach’ed.
 \section{Graphics for grouped data}
 \section{Tables} \label{tables}
 \section{Graphical display of tables}
+
+\chapter{Advanced data handling}
+\section{Recoding variables}
+\subsection{The cut function}
+\subsection{Manipulating factor levels}
+\subsection{Working with dates}
+\subsection{Recoding multiple variables}
+\section{Conditional calculations}
+\section{Combining and restructuring data frames}
+\subsection{Appending frames} \label{appending frames}
+\subsection{Merging data frames}
+\subsection{Reshaping data frames}
+\section{Per-group and per-case procedures}
+\section{Time splitting}
+\section{jercicios}
 \end{document}
