@@ -65,6 +65,8 @@
 \renewcommand{\baselinestretch}{0.96}
 
 \usepackage{listings}
+\usepackage{color}
+
 \lstset{ frame=Ltb,
      framerule=0pt,
      aboveskip=0.5cm,
@@ -99,8 +101,34 @@
    }
  
 \lstdefinestyle{R}
-   {language=R,
-   }
+{
+	language=R,
+}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Estilo del código
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{frame=tb,
+  language=R,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
 
 \title{Introducción a las estadísticas con R}
 \date{2018-01-20}
@@ -573,7 +601,7 @@ indica que tenemos muy poca información sobre el verdadero promedio.
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Gráficos}
+\subsection{Gráficos}\label{graficos}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Uno de los aspectos más importantes de la presentación y análisis de datos es
@@ -1803,7 +1831,7 @@ Es posible salvar completamente el espacio de trabajo en cualquier momento.
 Simplemente deberemos escribir:
 
 \begin{lstlisting}[language=R]
-save.image()
+> save.image()
 \end{lstlisting}
 
 de esta forma, todo será salvado en un archivo de nombre \texttt{.RData} en el
@@ -1838,8 +1866,8 @@ pero que aún puede ser útil en ocasiones. En particular, se puede utilizar en
 el procesamiento por lotes. La forma en que funciona es de la siguiente manera:
 
 \begin{lstlisting}[language=R]
-sink("salidatxt")
-ls()
+> sink("salidatxt")
+> ls()
 \end{lstlisting}
 
 No aparece ninguna salida por pantalla!. Esto por que ahora la salida normal de
@@ -1848,7 +1876,7 @@ cualquier comando o función se redirige automáticamente al archivo
 de esta forma hasta que ejecutemos nuevamente (esta vez sin parámetros):
 
 \begin{lstlisting}[language=R]
-sink()
+> sink()
 \end{lstlisting}
 
 El directorio de trabajo actual se puede obtener mediante \texttt{getwd()} y
@@ -1970,7 +1998,7 @@ cargado en \textbf{R} mediante el comando \texttt{library}, de esta forma, para
 cargar el paquete \texttt{survival} tendremos que ingresar:
 
 \begin{lstlisting}[language=R]
-library(survival)
+> library(survival)
 \end{lstlisting}
 
 Los paquetes cargados, no se consideran parte del espacio de trabajo. Si
@@ -1980,7 +2008,7 @@ esta misma razón, rara vez necesitemos descargar un paquete activo, pero si lo
 llegaremos a necesitar hacer, podríamos escribir:
 
 \begin{lstlisting}[language=R]
-detach("package:survival")
+> detach("package:survival")
 \end{lstlisting}
 
 (ver sección \ref{attachdetach}.)
@@ -2026,21 +2054,21 @@ La notación para acceder a variables en \texttt{data.frames} se vuelve bastante
 si tiene que escribir repetidamente comandos largos como:
 
 \begin{lstlisting}[language=R]
-plot(thuesen$blood.glucose,thuesen$short.velocity)
+> plot(thuesen$blood.glucose,thuesen$short.velocity)
 \end{lstlisting}
 
 Afortunadamente, puede hacer que\textbf{R} busque objetos entre las variables
 de un \texttt{data.frame} determinado, por ejemplo \texttt{thuesen}. Escribiendo:
 
 \begin{lstlisting}[language=R]
-attach(thuesen)
+> attach(thuesen)
 \end{lstlisting}
 
 y entonces los datos de \texttt{thuesen} estarán disponibles sin la engorrosa
 notación \texttt{\$}:
 
 \begin{lstlisting}[language=R]
-blood.glucose
+> blood.glucose
  [1] 15.3 10.8  8.1 19.5  7.2  5.3  9.3 11.1  7.5 12.2  6.7  5.2
 [13] 19.0 15.1  6.7  8.6  4.2 10.3 12.5 16.1 13.3  4.9  8.8  9.5
 \end{lstlisting}
@@ -2049,7 +2077,7 @@ Lo que sucedió aquí es que el \texttt{data.frame} \texttt{thuesen} se colocan 
 ruta de búsqueda del sistema. Puede ver la misma con el comando:
 
 \begin{lstlisting}[language=R]
-search()
+> search()
  [1] ".GlobalEnv"        "thuesen"           "package:ISwR"     
  [4] "tools:rstudio"     "package:stats"     "package:graphics" 
  [7] "package:grDevices" "package:utils"     "package:datasets" 
@@ -2088,7 +2116,7 @@ especificar que se debe buscar un marco de datos antes de \texttt{.GlobalEnv} ut
 construcciones de la forma de:
 
 \begin{lstlisting}[language=R]
-with(thuesen, plot(blood.glucose, short.velocity))
+> with(thuesen, plot(blood.glucose, short.velocity))
 \end{lstlisting}
 
 En algunos contextos, \textbf{R} usa un método ligeramente diferente para
@@ -2103,8 +2131,8 @@ Puede eliminar un \texttt{data.frame} de la ruta de búsqueda con
 se pueden desadjuntar (\texttt{detach}) del entorno. 
 
 \begin{lstlisting}[language=R]
-detach()
-search()
+> detach()
+> search()
 
  [1] ".GlobalEnv"        "package:ISwR"      "tools:rstudio"    
  [4] "package:stats"     "package:graphics"  "package:grDevices"
@@ -2123,8 +2151,8 @@ transformadas. Existen un par de funciones para facilitar estas operaciones. Se
 utilizan de la siguiente manera:
 
 \begin{lstlisting}[language=R]
-thue2 <- subset(thuesen,blood.glucose<7)
-thue2
+> thue2 <- subset(thuesen,blood.glucose<7)
+> thue2
 
    blood.glucose short.velocity
 6            5.3           1.49
@@ -2134,8 +2162,8 @@ thue2
 17           4.2           1.12
 22           4.9           1.03
 
-thue3 <- transform(thuesen,log.gluc=log(blood.glucose))
-thue3 
+> thue3 <- transform(thuesen,log.gluc=log(blood.glucose))
+> thue3 
 
    blood.glucose short.velocity log.gluc
 1           15.3           1.76 2.727853
@@ -2156,10 +2184,10 @@ para construir subconjunto son evaluadas con variables del propio
 \texttt{subset} también funciona con vectores individuales. Esto es casi lo
 mismo que la indexación con un vector lógico (como ser
 \texttt{short.velocity[blood.glucose<7]}), excepto que se excluyen las
-observaciones con valores faltanantes (\texttt{NA}}) en el criterio de
+observaciones con valores faltanantes (\texttt{NA}) en el criterio de
 selección.
 
-\texttt{subset} también tiene un parámetros \textt{select} que puede usarse
+\texttt{subset} también tiene un parámetros \texttt{select} que puede usarse
 para extraer variables del \texttt{data.frame}. Volveremos sobre esto en la
 sección \label{appending frames}.
 
@@ -2173,14 +2201,14 @@ Una alternativa a \texttt{transform} es la función \texttt{within}, que puede
 ser utilizada de esta manera:
 
 \begin{lstlisting}[language=R]
-thue4 <- within(thuesen,{
+> thue4 <- within(thuesen,{
         log.gluc <- log(blood.glucose)
         m <- mean(log.gluc)
         centered.log.gluc <- log.gluc - m
         rm(m)
 })
 
-thue4
+> thue4
    blood.glucose short.velocity centered.log.gluc log.gluc
 1           15.3           1.76       0.481879807 2.727853
 2           10.8           1.34       0.133573113 2.379546
@@ -2191,15 +2219,69 @@ thue4
 22           4.9           1.03      -0.656737817 1.589235
 23           8.8           1.12      -0.071221300 2.174752
 24           9.5           1.70       0.005318777 2.251292
-> 
 \end{lstlisting}
 
-Notice that the second argument is an arbitrary expression (here a compound expression, see p. 45). The function is similar to with, but instead of just returning the computed value, it collects all new and modified variables into a modified data frame, which is then returned. As shown, variables containing intermediate results can be discarded with rm. (It is particularly important to do this if the contents are incompatible with the data frame.)
+Note que el segundo parámetro es una expresión arbitraria (en este caso, una
+expresión compuesta). La función es similar a \texttt{with}, pero en vezr de,
+simplemente devolver el valor calculado, recoge todas las variables nuevas y
+modificadas en \texttt{data.frame} modificado, el cual es devuelto.  Como se
+muestra, las variables que contienen resultados intermedios pueden ser
+descartadas con \texttt{rm} (es particularmente importante hacer esto si el
+contenido es incompatible con el \texttt{data.frame}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{El subsistema gráfico}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+En la seccioón \ref{graficos}, vimos como crear un simple gráfico y sobreimponer
+en él una curva.  Es muy común en los gráficos estadísticos que se desee crear un
+gráfico que sea ligeramente diferente al predeterminado: A veces querrá añadir
+anotaciones, a veces querrá que los ejes sean diferentes - etiquetas en lugar de
+números, colocación irregular de marcas de verificación, etc. Todas estas cosas
+se pueden realizar en \textbf{R}. Los métodos para hacerlo pueden parecer un poco
+inusuales al principio, pero ofrecen un enfoque muy flexible y poderoso.
+
+En esta sección, profundizaremomos en la estructura de un gráfico o plot típico
+y daremos algunas indicaciones sobre cómo puede trabajar con estos para lograr
+los resultados deseados.  Tenga en cuenta, sin embargo, que se trata de un área
+grande y compleja y que no está dentro del alcance de este libro cubrirla
+completamente. De hecho, ignoramos completamente las nuevas herramientas
+importantes en los paquetes de \texttt{grid} y \texttt{lattice}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Plot layout}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+En el modelo gráfico que utiliza \textbf{R}, hay (para un determinado gráfico)
+una región central de gráficación rodeada de márgenes. Las coordenadas dentro de
+esta región de trazado se especifican en unidades de datos (el tipo utilizado
+generalmente para etiquetar los ejes). Las coordenadas de los márgenes se
+especifican en líneas de texto a medida que se desplaza en una dirección
+perpendicular a un lado de la región de trazado, pero en unidades de datos a
+medida que se desplaza por el lado. Esto es útil ya que generalmente desea poner
+texto en los márgenes de un gráfico.
+
+Un gráfico x-y estándar tiene una etiqueta de título para x e y generada a
+partir de las expresiones que se están trazando. Sin embargo, puede anular estas
+etiquetas y también añadir otros dos títulos, un título principal encima del
+gráfico y un subtítulo en la parte inferior, en la llamada al gráfico.
+
+\begin{lstlisting}[language=R]
+> x <- runif(50,0,2)
+> y <- runif(50,0,2)
+> xplot(x, y, main="Main title", sub="subtitle", xlab="x-label", ylab="y-label")
+\end{lstlisting}
+
+Dentro de la región de graficación, puede colocar puntos y líneas que se especifican
+en la llamada a \texttt{plot} o se añaden posteriormente con \texttt{points} y
+\texttt{lines}. También puede colocar un texto con:
+
+\begin{lstlisting}[language=R]
+> text(0.6,0.6,"text at (0.6,0.6)")
+> tabline(h=.6,v=.6)
+\end{lstlisting}
 
 \newpage
-
-\section{The graphics subsystem}
-\subsection{Plot layout}
 \subsection{Building a plot from pieces}
 \subsection{Using par}
 \subsection{Combining plots}
