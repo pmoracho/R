@@ -2233,7 +2233,7 @@ contenido es incompatible con el \texttt{data.frame}).
 \section{El subsistema gráfico}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-En la seccioón \ref{graficos}, vimos como crear un simple gráfico y sobreimponer
+En la sección \ref{graficos}, vimos como crear un simple gráfico y sobre imponer
 en él una curva.  Es muy común en los gráficos estadísticos que se desee crear un
 gráfico que sea ligeramente diferente al predeterminado: A veces querrá añadir
 anotaciones, a veces querrá que los ejes sean diferentes - etiquetas en lugar de
@@ -2241,7 +2241,7 @@ números, colocación irregular de marcas de verificación, etc. Todas estas cos
 se pueden realizar en \textbf{R}. Los métodos para hacerlo pueden parecer un poco
 inusuales al principio, pero ofrecen un enfoque muy flexible y poderoso.
 
-En esta sección, profundizaremomos en la estructura de un gráfico o plot típico
+En esta sección, profundizaremos en la estructura de un gráfico o plot típico
 y daremos algunas indicaciones sobre cómo puede trabajar con estos para lograr
 los resultados deseados.  Tenga en cuenta, sin embargo, que se trata de un área
 grande y compleja y que no está dentro del alcance de este libro cubrirla
@@ -2253,7 +2253,7 @@ importantes en los paquetes de \texttt{grid} y \texttt{lattice}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 En el modelo gráfico que utiliza \textbf{R}, hay (para un determinado gráfico)
-una región central de gráficación rodeada de márgenes. Las coordenadas dentro de
+una región central de graficación rodeada de márgenes. Las coordenadas dentro de
 esta región de trazado se especifican en unidades de datos (el tipo utilizado
 generalmente para etiquetar los ejes). Las coordenadas de los márgenes se
 especifican en líneas de texto a medida que se desplaza en una dirección
@@ -2264,7 +2264,7 @@ texto en los márgenes de un gráfico.
 Un gráfico x-y estándar tiene una etiqueta de título para x e y generada a
 partir de las expresiones que se están trazando. Sin embargo, puede anular estas
 etiquetas y también añadir otros dos títulos, un título principal encima del
-gráfico y un subtítulo en la parte inferior, en la llamada al gráfico.
+gráfico y un subtitulo en la parte inferior, en la llamada al gráfico.
 
 \begin{lstlisting}[language=R]
 > x <- runif(50,0,2)
@@ -2278,8 +2278,30 @@ en la llamada a \texttt{plot} o se añaden posteriormente con \texttt{points} y
 
 \begin{lstlisting}[language=R]
 > text(0.6,0.6,"text at (0.6,0.6)")
-> tabline(h=.6,v=.6)
+> abline(h=.6,v=.6)
 \end{lstlisting}
+
+En este caso, invocamos a \texttt{abline} simplemente para mostrar como el
+texto está centrado en el punto ( 0.6, 0.6 ) . (Habitualmente, \texttt{abline}
+dibuja la línea $y = a + bx$ cuando se la invoca con los parámetros \texttt{a}
+y \texttt{b}, pero también puede usarse para dibujar una línea horizontal y
+vertical tal como la hemos usado.)
+
+Las coordenadas del margen son usadas por la función \texttt{mtext}. Tal como
+podemos ver en el siguiente ejemplo:
+
+\begin{lstlisting}[language=R]
+> for (side in 1:4) mtext(-1:4,side=side,at=.7,line=-1:4)
+> mtext(paste("side",1:4), side=1:4, line=-1,font=2)
+\end{lstlisting}
+
+El ciclo \textt{for} (ver Sección) coloca los números -1 al 4 alineados en cada
+uno de los cuatro margenes en la posición 0.7 medida en las coordenadas del
+usuario.La función siguiente coloca una etiqueta en cada lado, indicando el
+número del lado. El parámetro \texttt{font=2} significa que se utiliza una
+fuente en negrita. Observe en la Figura 2.1 que no todos los márgenes son lo
+suficientemente anchos para contener todos los números y que es posible usar
+números de línea negativos para colocar el texto dentro de la región de trazado.
 
 \newpage
 \subsection{Building a plot from pieces}
