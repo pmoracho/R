@@ -1,0 +1,140 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Probabilidad y distribuciones}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Los conceptos de aleatoriedad y probabilidad son fundamentales para las
+estadísticas. Es un hecho empírico que la mayoría de los experimentos e
+investigaciones no son perfectamente reproducibles. El grado de
+irreproducibilidad puede variar: Algunos experimentos en física pueden producir
+datos que son exactos hasta muchos decimales, mientras que los datos sobre
+sistemas biológicos son típicamente mucho menos confiables. Sin embargo, la
+visión de los datos como algo que proviene de una distribución estadística es
+vital para entender los métodos estadísticos. En esta sección se esbozan las
+ideas básicas de probabilidad y las funciones que tiene \textbf{R} para el
+muestreo aleatorio y el manejo de las distribuciones teóricas.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Muestreo aleatorio}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Gran parte de los primeros trabajos en la teoría de la probabilidad se referían
+a juegos y apuestas, basados en consideraciones de simetría. Por lo tanto, la
+noción básica de una  muestra aleatoria es la de repartir de una baraja bien
+barajada o recoger bolas numeradas de una urna bien revuelta.
+
+En \textbf{R}, se pueden simular estas situaciones con la función
+\texttt{sample}. Si quieres elegir cinco números al azar del conjunto de
+\texttt{1:40}, entonces se puede escribir:
+
+\begin{lstlisting}[language=R]
+> sample(1:40,5)
+[1] 36 37 26 24  3
+\end{lstlisting}
+
+El primer parámetro (\texttt{x}) es el vector de valores posibles de dónde
+obtendremos la muestra y el segundo (\texttt{size}) es el tamaño de la muestra.
+En realidad, \texttt{sampe(40,5)} sería suficiente ya que un solo número se
+interpreta como la longitud de una secuencia de números enteros desde el 1.
+
+Note que el comportamiento predeterminado de \texttt{sample} es el de
+\textit{muestreo sin reemplazo}. Es decir, las muestras no contendrán ningún
+número repetido, y \texttt{size} obviamente no puede ser mayor que la longitud
+del vector a muestrear. Si quiere muestreo con reemplazo, entonces necesita
+agregar el parámetro \texttt{replace=TRUE}.
+
+El muestreo con reemplazo es adecuado para modelar lanzamientos de monedas o
+lanzamientos de un dado. Así, por ejemplo, para simular 10 lanzamientos de
+monedas podríamos escribir:
+
+\begin{lstlisting}[language=R]
+> sample(c("H","T"), 10, replace=T)
+[1] "T" "T" "T" "T" "T" "H" "H" "T" "H" "T"
+\end{lstlisting}
+
+En un lanzamiento normal de monedas, la probabilidad de cara debe ser igual a la
+probabilidad de cruz, pero la idea de un evento aleatorio no se limita a casos
+simétricos.  Podría aplicarse igualmente bien a otros casos, como el resultado
+exitoso de un procedimiento quirúrgico. Esperemos que haya más de un 50% de
+posibilidades de que esto suceda. Puede simular datos con probabilidades no
+simétricas para los resultados (por ejemplo, un 90\% de probabilidad de éxito)
+usando el parámetro \texttt{prob} de \texttt{sample}, como ser:
+
+\begin{lstlisting}[language=R]
+> sample(c("succ", "fail"), 10, replace=T, prob=c(0.9, 0.1))
+[1] "succ" "succ" "succ" "succ" "succ" "succ" "succ" "succ"
+[9] "succ" "succ"
+\end{lstlisting}
+
+Sin embargo, esta puede no ser la mejor manera de generar una muestra de este
+tipo. Ver la discusión posterior de la distribución binomial.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cálculos de probabilidad y combinatoria}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Volvamos al caso del muestreo sin reemplazo, específicamente
+\texttt{sample(1:40,5)}. La probabilidad de obtener un número dado como ser, el
+primero de la muestra debe ser de $1/40$, la del siguiente es de $1/39$, y así
+sucesivamente. La probabilidad entonces  de obtener una determinada de 5
+números,  debe ser de $1/(40 \times 39 \times 38 \times 37 \times 36)$.  En
+\textbf{R}, puede utilizar la función \texttt{prod}, para calcular el producto
+de un vector de números:
+
+\begin{lstlisting}[language=R]
+> 1/prod(40:36)
+[1] 1.266449e-08
+\end{lstlisting}
+
+Sin embargo, tenga en cuenta que esta es la probabilidad de que se den los
+números en un orden determinado. Si se tratara de un juego como el de la
+lotería, entonces preferiría estar interesado en la probabilidad de adivinar
+correctamente un determinado conjunto de cinco números.  Por lo tanto, también
+es necesario incluir los casos que dan los mismos números pero en un orden
+diferente.  Puesto que obviamente la probabilidad de cada caso va a ser la
+misma, todo lo que tenemos que hacer es averiguar cuántos casos de este tipo hay
+y multiplicarlos por eso. Hay cinco posibilidades para el primer número, y para
+cada uno de ellos hay cuatro posibilidades para el segundo, y así sucesivamente;
+es decir, el número es $5 \times 4 \times 3 \times 2 \times 1$. ¡Este número
+también se escribe como $5!$ (factorial de 5)!. Así que la probabilidad de un
+"cupón ganador de la lotería" sería:
+
+\begin{lstlisting}[language=R]
+> prod(5:1)/prod(40:36)
+[1] 1.519738e-06
+\end{lstlisting}
+
+Hay otra forma de llegar al mismo resultado. Note que como el conjunto real de
+números es irrelevante, todos los conjuntos de cinco números deben tener la
+misma probabilidad. Así que todo lo que tenemos que hacer es calcular el número
+de maneras de elegir 5 números de un total de 40. Esto se puede definir como:
+
+\begin{gather*}
+\left(
+    \begin{array}{c}
+      40\\
+      5
+  \end{array}
+\right) = \frac{40!}{5!35!} = 658008
+\end{gather*} 
+
+En \textbf{R}, se puede utilizar la función \texttt{choose} para calcular este
+número, y por lo tanto la probabilidad es:
+
+\begin{lstlisting}[language=R]
+> 1/choose(40,5)
+[1] 1.519738e-06
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discrete distributions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Continuous distributions}
+\section{The built-in distributions in R}
+\subsection{Densities}
+\subsection{Cumulative distribution functions}
+\subsection{Quantiles}
+\subsection{Random numbers}
+\section{Ejercicios}
+
+
