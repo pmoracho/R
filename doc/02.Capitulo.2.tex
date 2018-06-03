@@ -529,7 +529,7 @@ El ciclo \texttt{for} (ver Sección \ref{flowcontrol}) coloca los números -1 al
 alineados en cada uno de los cuatro margenes en la posición 0.7 medida en las
 coordenadas del usuario.La función siguiente coloca una etiqueta en cada lado,
 indicando el número del lado. El parámetro \texttt{font=2} significa que se
-utiliza una fuente en negrita. Observe en la Figura 2.1 que no todos los
+utiliza una fuente en negrita. Observe en la Figura \ref{fig-5} que no todos los
 márgenes son lo suficientemente anchos para contener todos los números y que es
 posible usar números de línea negativos para colocar el texto dentro de la
 región de trazado.
@@ -553,9 +553,79 @@ Aquí \texttt{type="n"} hace que los puntos no se dibujen. \texttt{axes=F}
 suprime los ejes y el rectángulo alrededor del gráfico, y las etiquetas de
 título \textit{x} e \textit{y} se establecen en cadenas vacías.
 
-\newpage
-\subsection{Using par}
+\begin{figure}[H]
+  \includegraphics[width=\linewidth]{fig-5.png}
+  \caption{La disposición de una gráfica estándar.}
+  \label{fig:fig-5}
+\end{figure}
+
+Sin embargo, el hecho de que no se trace ningún gráfico no significa que no haya
+pasado nada. El comando configura la región de trazado y los sistemas de
+coordenadas como si realmente lo hubiera hecho. Para agregar los elementos de la
+gráfica, evalúe lo siguiente:
+
+\begin{lstlisting}[language=R]
+> points(x,y)
+> axis(1)
+> axis(2,at=seq(0.2,1.8,0.2))
+> box()
+> title(main="Main title", sub="subtitle",xlab="x-label", ylab="y-label")
+\end{lstlisting}
+
+Observe cómo la llamada a \textt{axis} especifica un conjunto alternativo de
+marcas de verificación (y etiquetas). Esta es una técnica común utilizada para
+crear ejes especiales en un gráfico y también se puede utilizar para crear ejes
+no equidistantes, así como ejes con etiquetado no numérico.
+
+Trazar con \texttt{type="n"} es a veces una técnica útil porque tiene el efecto
+secundario de dimensionar el área de la gráfica. Por ejemplo, para crear un
+gráfico con diferentes colores para diferentes grupos, primero puede trazar
+todos los datos con \texttt{type="n"}, asegurándose de que la región del gráfico
+es lo suficientemente grande, y luego sumar los puntos para cada grupo usando
+\texttt{points}. (Pasar un argumento vectorial para \texttt{col} es más
+conveniente en este caso en particular.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Utilizando \texttt{par}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+La función \texttt{par} permite un control increíblemente fino sobre los
+detalles de un gráfico, aunque puede ser bastante confusa para los principiantes
+(e incluso para los usuarios expertos a veces). La mejor estrategia puede ser
+simplemente tratar de aprender algunos trucos útiles a la vez y de vez en cuando
+tratar de resolver un problema en particular examinando la página de ayuda.
+
+Algunos de los parámetros, pero no todos, también se pueden establecer mediante
+parámetros a las funciones de dibujo, que también tienen algunos parámetros que
+no se pueden establecer mediante \texttt{par}.  Cuando un parámetro se puede
+establecer por ambos métodos, la diferencia es, generalmente que si algo se se
+configuró mediante \texttt{par}, entonces permanecerá configurado
+posteriormente.
+
+La configuración de \texttt{par} permite controlar el ancho y el tipo de línea,
+así como el tamaño de los caracteres y fuente de la letra, color, estilo de
+cálculo de los ejes, tamaño de la gráfica y figuras, recortes, etc. Es posible
+dividir una figura en varias subfiguras utilizando los parámetros \texttt{mfrow}
+y \texttt{mfcol}.
+
+Por ejemplo, los tamaños de margen predeterminados son algo más de 5, 4, 4 y 2
+líneas.  Puede definir \texttt{par(mar=c(4,4,2,2)+0.1)} antes de graficar. Esto
+quita una línea fuera del margen inferior y dos líneas fuera del margen superior
+del gráfico, lo que reducirá la cantidad de espacios en blanco no utilizados
+cuando no haya un título o subtítulo principal. Si se mira cuidadosamente, se
+notará que la Figura \ref{fig:fig-5} tiene una región de trazado algo más
+pequeña que las otras gráficas de este libro. Esto se debe a que las otras
+gráficas se han realizado con márgenes reducidos por razones de composición
+tipográfica.
+
+Sin embargo, no tiene sentido describir los parámetros gráficos de forma
+completa en este punto. En su lugar, volveremos a ellos, ya que los utilizaremos 
+para gráficos específicos.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Combining plots}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 
 \section{R programming}
 \subsection{Flow control} \label{flowcontrol}
