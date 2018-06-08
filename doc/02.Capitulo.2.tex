@@ -619,12 +619,55 @@ gráficas se han realizado con márgenes reducidos por razones de composición
 tipográfica.
 
 Sin embargo, no tiene sentido describir los parámetros gráficos de forma
-completa en este punto. En su lugar, volveremos a ellos, ya que los utilizaremos 
+completa en este momento. Ya volveremos a ellos, cuando los utilicemos 
 para gráficos específicos.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Combining plots}
+\subsection{Combinando gráficos}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Algunas consideraciones especiales surgen cuando usted desea poner varios
+elementos juntos en la misma gráfica. Considere la posibilidad de superponer un
+histograma de una densidad normal (consulte las Secciones 4.2 y 4.4.1 para
+obtener información sobre los histogramas y la Sección 3.5.1 para la densidad).
+Lo siguiente está cerca, pero no es lo suficientemente bueno (figura no
+mostrada).
+
+\begin{lstlisting}[language=R]
+> x <- rnorm(100)
+> hist(x,freq=F)
+> curve(dnorm(x),add=T)
+\end{lstlisting}
+
+El parámetro \texttt{feq=F} en la llamada a \texttt{hist} nos asegura que el
+histograma estará en términos de densidades en lugar de conteos absolutos.  La
+función \texttt{curve} grafíca una expresión (en términos de x) y \texttt{add=T}
+permite sobreponer la misma a una gráfica ya existente.  Por lo tanto, las cosas
+parecieran estar configuradas correctamente, pero a veces la parte superior de
+la función de densidad se corta. La razón es, por supuesto, que la altura de la
+densidad normal no jugó ningún papel en el ajuste del eje \texttt{y} para el
+histograma. No ayuda nada,  invertir el orden y dibujar la curva primero y
+agregar el histograma luego, porque entonces las barras más altas podrían ser
+las recortadas.
+
+La solución es primero obtener la magnitud de los valores de \texttt{y} para ambos
+elementos de la gráfica y hacer luego  que la gráfica sea lo suficientemente grande
+como para contener ambos (Figura 2.2):
+
+\begin{lstlisting}[language=R]
+h <- hist(x, plot=F)
+ylim <- range(0, h$density, dnorm(0))
+hist(x, freq=F, ylim=ylim)
+curve(dnorm(x), add=T)
+\end{lstlisting}
+
+\begin{figure}[H]
+  \includegraphics[width=\linewidth]{fig-6.png}
+  \caption{Histograma con densidad normal superpuesta.}
+  \label{fig:fig-6}
+\end{figure}
+
+
 \newpage
 
 \section{R programming}
