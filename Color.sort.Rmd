@@ -1,0 +1,159 @@
+---
+title: "Colores"
+author: "Patricio Moracho"
+date: "11 de enero de 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Colores
+
+
+```{r cars}
+library("tidyverse")
+
+
+
+draw_cols <-  function(sample_colors, show_labels=TRUE) {
+    ncols <- nrow(sample_colors)
+    if (show_labels) {
+        midpoints <- barplot( rep(1, ncols) , col = rgb(sample_colors[,1:3]/255), ylim=c(0,2), border = NA)
+        labels <- apply(sample_colors[, 1:3], 1, FUN=function(x) paste("rgb(", paste(x[1], x[2], x[3], sep=","), ")", sep=""))
+	    text(midpoints, 1.5, labels=labels, srt = 90, cex=0.3)
+    } else {
+        midpoints <- barplot( rep(1, ncols) , col = rgb(sample_colors[,1:3]/255), ylim=c(0,1), border = NA)
+    }
+}
+
+sample_colors <- tribble(
+    ~r,   ~g,  ~b,
+    255, 253, 254,
+    255, 127, 128,
+    255,  49, 50,
+    255,   0, 0, 
+    128, 126, 127,
+    128,  99, 100,
+    128,  49, 50,
+    128,   0, 0,
+     50,  48, 47,
+     50,  19, 20,
+     50,   4, 5,
+     50,   0, 0
+    )
+
+hsv
+draw_cols(sample_colors)
+rojo <- sample_colors$r * .5 - (sample_colors$b * .3 + sample_colors$g * .2)
+draw_cols(sample_colors[order(rojo), ])
+
+
+# RB RR RG GR GG GB BG BB BR
+train_colors <- tribble(
+    ~red, ~green, ~blue,
+    255,    0,    254,  # RB
+    255,    0,    128,  # RB-
+    255,    0,      0,  # RR
+    255,  128,      0,  # RG-
+    255,  254,      0,  # RG
+    254,  255,      0,  # GR 
+    128,  255,      0,  # GR- 
+      0,  255,      0,  # GG
+      0,  255,    128,  # GB-
+      0,  255,    254,  # GB
+      0,  254,    255,  # BG
+      0,  128,    255,  # BG-
+      0,    0,    255,  # BB
+    128,    0,    255,   # BR-
+    254,    0,    255   # BR
+)
+
+train_colors$orden <- 1:nrow(train_colors)
+draw_cols(train_colors)
+
+model <- lm(orden ~ red * green * blue, train_colors)
+
+hex_colors <- c("#ff2300", "#fff000", "#aaaaa0", "#2ff014", "#238923", "#010203")
+alvaro_colors <- as.data.frame(t(col2rgb(hex_colors)))
+alvaro_colors$orden <- predict(model, alvaro_colors)
+
+draw_cols(alvaro_colors)
+draw_cols(alvaro_colors[order(alvaro_colors$orden),])
+
+
+ncolors <- 50
+test_colors <- data.frame(red = sample(0:255,ncolors, replace=TRUE), 
+                          green = sample(0:255,ncolors, replace=TRUE), 
+                          blue = sample(0:255,ncolors, replace=TRUE))
+
+test_colors <- unique(test_colors)
+
+test_colors$lum <- sqrt(.299*test_colors$red^2 + .587*test_colors$green^2 + 0.114*test_colors$blue^2)
+hsv <- t(apply(test_colors,1,FUN=function(x) rgb2hsv(x[1], x[2], x[3])))
+colnames(hsv) <- c('h', 's', 'v')
+test_colors <- cbind(test_colors, hsv)
+
+offset <- .25
+start <- 1 - offset
+
+test_colors$h <- ifelse(test_colors$h >= start, test_colors$h - start, test_colors$h + start)
+
+draw_cols(test_colors, show_labels = FALSE)
+draw_cols(test_colors[order(test_colors$h),], show_labels = TRUE)
+
+
+alvaro_colors <- color_data(c("#ff2300", "#fff000", "#aaaaa0", "#2ff014", "#238923", "#010203"))
+draw_cols(alvaro_colors, show_labels = TRUE)
+draw_cols(alvaro_colors[order(alvaro_colors$h),], show_labels = TRUE)
+
+
+color_data <- function(hex_colors) {
+    
+    df_colors <- as.data.frame(t(col2rgb(hex_colors)))
+
+    df_colors$lum <- sqrt(.299*df_colors$red^2 + .587*df_colors$green^2 + 0.114*df_colors$blue^2)
+    hsv <- t(apply(df_colors,1,FUN=function(x) rgb2hsv(x[1], x[2], x[3])))
+    colnames(hsv) <- c('h', 's', 'v')
+    df_colors <- cbind(df_colors, hsv)
+
+    offset <- .25
+    start <- 1 - offset
+
+    df_colors$h <- ifelse(df_colors$h >= start, df_colors$h - start, df_colors$h + start)
+    df_colors
+}
+
+
+rgb2hsv(186, 81, 153)
+
+repetitions <- 16
+
+test_colors
+
+test_colors$h2 = as.integer(test_colors$h * repetitions)
+test_colors$lum2 = as.integer(test_colors$lum * repetitions)
+test_colors$v2 = as.integer(test_colors$v * repetitions)
+
+test_colors$v2 <- ifelse(test_colors$h2 %% 2 == 1, repetitions - test_colors$v2, test_colors$v2)
+test_colors$lum <- ifelse(test_colors$h2 %% 2 == 1, repetitions - test_colors$lum, test_colors$lum)
+
+test_colors$neworder <- rank(test_colors$h2 * 100 + test_colors$lum * 10 + test_colors$v2)
+
+draw_cols(test_colors, show_labels = FALSE)
+draw_cols(test_colors[order(test_colors$h, test_colors$lum),],show_labels = FALSE)
+
+
+    
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
