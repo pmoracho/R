@@ -1,0 +1,239 @@
+---
+title: "Untitled"
+author: "Patricio Moracho"
+date: "19 de enero de 2019"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(scales) 
+source("simple_theme.R")
+```
+
+## Ejemplos de gráficos con Ggplot2 + simple_theme()
+
+## Box plot
+
+El Boxplot es probablemente uno de los tipos de gráficos más comunes. Da un buen resumen de una o varias variables numéricas. La línea que divide la caja en 2 partes representa la mediana de los datos. El final de la caja muestra los cuartiles superior e inferior. Las líneas extremas muestran el valor más alto y el más bajo excluyendo los valores atípicos. Tenga en cuenta que Boxplot oculta el número de valores detrás de la variable. Por lo tanto, es muy recomendable imprimir el número de observaciones, añadir una observación única con fluctuaciones o usar un Violinplot si tiene muchas observaciones.
+
+fuente: https://www.r-graph-gallery.com/boxplot/
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(ToothGrowth, aes(x=factor(dose), y=len, fill=factor(dose))) + 
+    geom_boxplot() +
+    labs(title="El efecto de la vitamina C", 
+         subtitle="en el crecimiento de los dientes de los cerdos de Guinea", 
+         caption="fuente: C. I. Bliss (1952) The Statistics of Bioassay. Academic Press.", 
+         y="Longitud %", 
+         x="Dosis",
+         color=NULL) +  # title and caption
+    simple_theme()
+
+```
+
+## Scatter plot
+
+Una gráfica de dispersión (scatterplot) muestra el valor de 2 conjuntos de datos en 2 dimensiones. Cada punto representa una observación. La posición en los ejes X (horizontal) e Y (vertical) representa los valores del valor de 2 variables. Es realmente útil estudiar la relación entre ambas variables. Es común proporcionar aún más información usando colores o formas (para mostrar grupos, o una tercera variable). También es posible mapear otra variable al tamaño de cada punto, lo que hace un gráfico de burbujas. Si tiene muchos puntos y lucha con el sobretrazado, considere la posibilidad de usar un gráfico de densidad en 2D.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+options(scipen=999)  # turn-off scientific notation like 1e+48
+data("midwest", package = "ggplot2")
+
+# Scatterplot
+ggplot(midwest, aes(x=area, y=poptotal)) + 
+    geom_point(aes(col=state, size=popdensity)) + 
+    geom_smooth(method="loess", se=F) + 
+    xlim(c(0, 0.1)) + 
+    ylim(c(0, 500000)) + 
+    labs(subtitle="Area Vs Población", 
+         y="Poblacíon", 
+         x="Area", 
+         title="Ejemplo de un Scatterplot", 
+         caption = "Fuente: midwest") +
+    simple_theme()
+
+ggplot(mpg, aes(cty, hwy)) +
+    geom_point() + 
+    geom_smooth(method="lm", se=F) +
+    labs(subtitle="Consumo en la ciudad versus autopista", 
+         y="Autopista", 
+         x="Ciudad", 
+         title="Millas por galón", 
+         caption="Fuente: midwest") +
+    simple_theme()
+
+data("diamonds")
+levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
+ggplot(data=diamonds, aes(x = carat, y = price, color = cut)) + 
+    geom_point(alpha = 1, size = .01, aes(color = cut)) + 
+    labs(title = "Precio vs. Quilates", 
+       subtitle = "¿Cual es la corelación entre el precio y los quilates?",
+       x = "Quilates", 
+       y = "Precio",
+       caption = "pmoracho.github.io" ) + 
+    scale_color_manual(values=c('#25AAE2','#F2B53A', '#8BC540', '#DC5D42', '#666666', '9FAFBE')) +
+    guides(colour = guide_legend(override.aes = list(size=10))) +
+    theme(legend.key = element_rect(colour = "transparent", fill = "white")) +
+    scale_y_continuous(labels=dollar_format(prefix="$")) +
+    simple_theme()
+```
+
+## Ridgeline plot
+
+Un gráfico Ridgeline o Joyplot muestra la distribución de un valor numérico para varios grupos. Pueden ser muy útiles para visualizar los cambios en las distribuciones a lo largo del tiempo o del espacio. La distribución puede representarse mediante histogramas o gráficos de densidad, todos alineados a la misma escala horizontal y presentados con un ligero solapamiento. Las gráficas son especialmente interesantes cuando el número de grupos a representar es alto y, por lo tanto, una separación clásica de ventanas requeriría de mucho más espacio. Sin embargo, hay que tener cuidado, ya que está gráfica suele ocultar una parte de los datos, donde se produce el solapamiento. En R, los gráficos de Ridgeline se pueden hacer fácilmente gracias a la librería [ggridges](https://github.com/clauswilke/ggridges) de [Claus Wilke](http://wilkelab.org/), que es una extensión de ggplot2.
+
+source: https://www.r-graph-gallery.com/ridgeline-plot/
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggridges)
+library(ggplot2)
+ 
+data("diamonds")
+levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
+ 
+# basic example
+ggplot(diamonds, aes(x = price, y = cut, fill = cut)) +
+  geom_density_ridges() +
+    labs(title = "Precio vs. Corte", 
+       subtitle = "¿Cual es la corelación entre el precio y el corte?",
+       x = "Precio", 
+       y = "Corte",
+       caption = "source: pmoracho.github.io" ) + 
+    scale_x_continuous(labels=dollar_format(prefix="$")) +
+    scale_color_manual(values=c('#25AAE2','#F2B53A', '#8BC540', '#DC5D42', '#666666',
+                                '9FAFBE')) +
+  simple_theme()
+```
+
+## Correlogram
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(ggcorrplot)
+
+# Correlation matrix
+data(mtcars)
+corr <- round(cor(mtcars), 1)
+
+# Plot
+ggcorrplot(corr, hc.order = TRUE, 
+           type = "lower", 
+           lab = TRUE, 
+           lab_size = 3, 
+           method="circle", 
+           colors = c("tomato2", "white", "springgreen3"), 
+           title="Correlogram of mtcars", 
+           ggtheme=simple_theme)
+```
+
+## Line plot
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+data("diamonds")
+
+# Time Series 
+
+ggplot(data = diamonds, aes(x = carat, y = price, color = cut)) + 
+    labs(title = "Price vs. Carat", 
+       subtitle = "What is the correlation between the price of a diamond its carat? ",
+       x = "Carat", 
+       y = "Price",
+       caption = "www.datatoinsight.io" ) + 
+    scale_color_manual(values=c('#25AAE2','#F2B53A', '#8BC540', '#DC5D42', '#666666', '9FAFBE')) +
+    guides(colour = guide_legend(override.aes = list(size=10))) +
+    geom_smooth(alpha = 0.2, size = 1.5, span = 4, se=FALSE) + 
+    theme(legend.key = element_rect(fill = "white")) +
+    scale_y_continuous(labels=dollar_format(prefix="$")) +
+    simple_theme()
+
+```
+
+## Dendograma
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(ggdendro)
+theme_set(simple_theme())
+
+hc <- hclust(dist(USArrests), "ave")  # hierarchical clustering
+
+# plot
+ggdendrogram(hc, rotate = TRUE, size = 2)
+```
+
+## Line plot
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(lubridate)
+theme_set(simple_theme())
+
+df <- economics_long[economics_long$variable %in% c("psavert", "uempmed"), ]
+df <- df[lubridate::year(df$date) %in% c(1967:1981), ]
+
+# labels and breaks for X axis text
+brks <- df$date[seq(1, length(df$date), 12)]
+lbls <- lubridate::year(brks)
+
+# plot
+ggplot(df, aes(x=date)) + 
+  geom_line(aes(y=value, col=variable)) + 
+  labs(title="Time Series of Returns Percentage", 
+       subtitle="Drawn from Long Data format", 
+       caption="Source: Economics", 
+       y="Returns %", 
+       color=NULL) +  # title and caption
+  scale_x_date(labels = lbls, breaks = brks) +  # change to monthly ticks and labels
+  scale_color_manual(labels = c("psavert", "uempmed"), 
+                     values = c("psavert"="#00ba38", "uempmed"="#f8766d")) +  # line color
+  theme(axis.text.x = element_text(angle = 90, vjust=0.5, size = 8),  # rotate x axis text
+        panel.grid.minor = element_blank())  # turn off minor grid
+```
+
+## Circular bar plot
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Create dataset
+data=data.frame(
+  individual=paste( "Mister ", seq(1,60), sep=""),
+  value=sample( seq(10,100), 60, replace=T)
+)
+ 
+# Set a number of 'empty bar'
+empty_bar=10
+ 
+# Add lines to the initial dataset
+to_add = matrix(NA, empty_bar, ncol(data))
+colnames(to_add) = colnames(data)
+data=rbind(data, to_add)
+data$id=seq(1, nrow(data))
+ 
+# Get the name and the y position of each label
+label_data=data
+number_of_bar=nrow(label_data)
+angle= 90 - 360 * (label_data$id-0.5) /number_of_bar     # I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)
+label_data$hjust<-ifelse( angle < -90, 1, 0)
+label_data$angle<-ifelse(angle < -90, angle+180, angle)
+ 
+# Make the plot
+p = ggplot(data, aes(x=as.factor(id), y=value)) +       # Note that id is a factor. If x is numeric, there is some space between the first bar
+  geom_bar(stat="identity", fill=alpha("green", 0.3)) +
+  ylim(-100,120) +
+  simple_theme() +
+  theme(
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    plot.margin = unit(rep(-1,4), "cm") 
+  ) +
+  coord_polar(start = 0) + 
+  geom_text(data=label_data, aes(x=id, y=value+10, label=individual, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=2.5, angle= label_data$angle, inherit.aes = FALSE ) 
+ 
+p
+
+```
