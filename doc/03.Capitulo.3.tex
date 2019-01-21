@@ -75,8 +75,8 @@ tipo. Ver la discusión posterior de la distribución binomial.
 Volvamos al caso del muestreo sin reemplazo, específicamente
 \texttt{sample(1:40,5)}. La probabilidad de obtener un número dado como ser, el
 primero de la muestra debe ser de $1/40$, la del siguiente es de $1/39$, y así
-sucesivamente. La probabilidad entonces  de obtener una determinada de 5
-números,  debe ser de $1/(40 \times 39 \times 38 \times 37 \times 36)$.  En
+sucesivamente. La probabilidad entonces  de obtener una determinada combinación
+de 5 números,  debe ser de $1/(40 \times 39 \times 38 \times 37 \times 36)$.  En
 \textbf{R}, puede utilizar la función \texttt{prod}, para calcular el producto
 de un vector de números:
 
@@ -96,7 +96,7 @@ y multiplicarlos por eso. Hay cinco posibilidades para el primer número, y para
 cada uno de ellos hay cuatro posibilidades para el segundo, y así sucesivamente;
 es decir, el número es $5 \times 4 \times 3 \times 2 \times 1$. ¡Este número
 también se escribe como $5!$ (factorial de 5)!. Así que la probabilidad de un
-"cupón ganador de la lotería" sería:
+cupón ganador de la lotería, sería:
 
 \begin{lstlisting}[language=R]
 > prod(5:1)/prod(40:36)
@@ -126,9 +126,23 @@ número, y por lo tanto la probabilidad es:
 \end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discrete distributions}
+\section{Distribuciones discretas}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
+
+Al examinar las réplicas independientes de un experimento binario, normalmente
+no nos interesaría saber si cada caso es un éxito o un fracaso, sino más bien el
+número total de éxitos (o fracasos). Obviamente, este número es aleatorio ya que
+depende de la salida aleatoria individual, y por lo tanto se le llama variable
+aleatoria. En este caso, es una \textit{variable aleatoria} de valor discreto
+que puede tomar valores 0, 1, .... \textit{n}, donde \textit{n} es el número de
+réplicas. Las variables aleatorias continuas se verán más tarde.
+
+A random variable X has a probability distribution that can be described using
+point probabilities f ( x ) = P ( X = x ) or the cumulative distribution
+function F ( x ) = P ( X <= x ) . In the case at hand, the distribution can be
+worked out as having the point probabilities
+
+
 \section{Continuous distributions}
 \section{The built-in distributions in R}
 \subsection{Densities}
@@ -136,5 +150,6 @@ número, y por lo tanto la probabilidad es:
 \subsection{Quantiles}
 \subsection{Random numbers}
 \section{Ejercicios}
+\newpage
 
 

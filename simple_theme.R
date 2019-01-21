@@ -33,6 +33,10 @@ simple_theme <- function() {
         theme(legend.position="none") +
         theme(legend.background = element_rect(fill=color.background)) +
         theme(legend.text = element_text(size=7,color=color.axis.title, family="Raleway")) +
+        theme(strip.text.x = element_text(size=10,color=color.axis.title, family="Raleway").
+              strip.background.x = color.grid.major) +
+        theme(strip.text.y = element_text(size=10,color=color.axis.title, family="Raleway")) +
+        
 
         # Set title and axis labels, and format these and tick marks
         theme(plot.title=element_text(color=color.title, 
@@ -51,14 +55,19 @@ simple_theme <- function() {
         
         # Legend  
         
-        theme(legend.text=element_text(size=10,color=color.axis.text, family="Raleway", margin = margin(r = 0.1, l = 0.1, unit = 'cm'))) +
+        theme(legend.text=element_text(size=10,color=color.axis.text, family="Raleway")) +
         theme(legend.title=element_text(size=10,color=color.axis.text, family="Raleway")) +
-        theme(legend.key=element_rect(colour = NA, fill = NA, size = 5)) +
+        theme(legend.key=element_rect(colour = color.background, fill = color.background)) +
         theme(legend.position="bottom", 
               legend.box = "horizontal", 
-              legend.title=element_blank(),
-              legend.spacing = unit(0.5, 'cm'), 
-              legend.key.size = unit(1.5, 'lines')) +
+              legend.title = element_blank(),
+              legend.key.width = unit(.75, "cm"),
+              legend.key.height = unit(.75, "cm"),
+              legend.spacing.x = unit(.25, 'cm'),
+              legend.spacing.y = unit(.25, 'cm'),
+              legend.margin = margin(t=0, r=0, b=0, l=0, unit="cm")) +
+        
+    
         
         # Plot margins
         theme(plot.margin = unit(c(.5, .5, .5, .5), "cm"))

@@ -7,26 +7,47 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-## Colores
-
-
-```{r cars}
 library("tidyverse")
-
-
 
 draw_cols <-  function(sample_colors, show_labels=TRUE) {
     ncols <- nrow(sample_colors)
     if (show_labels) {
-        midpoints <- barplot( rep(1, ncols) , col = rgb(sample_colors[,1:3]/255), ylim=c(0,2), border = NA)
-        labels <- apply(sample_colors[, 1:3], 1, FUN=function(x) paste("rgb(", paste(x[1], x[2], x[3], sep=","), ")", sep=""))
+        midpoints <- barplot( rep(1, ncols) , 
+                              col = rgb(sample_colors[,1:3]/255), 
+                              ylim=c(0,2), 
+                              border = NA)
+        make_lbls <- function(x) paste("rgb(", paste(x[1], x[2], x[3], sep=","), ")", sep="")
+        labels <- apply(sample_colors[, 1:3], 1, make_lbls)
 	    text(midpoints, 1.5, labels=labels, srt = 90, cex=0.3)
     } else {
-        midpoints <- barplot( rep(1, ncols) , col = rgb(sample_colors[,1:3]/255), ylim=c(0,1), border = NA)
+        midpoints <- barplot( rep(1, ncols), 
+                              col = rgb(sample_colors[,1:3]/255), 
+                              ylim=c(0,1), 
+                              border = NA)
     }
 }
+
+color_data <- function(hex_colors) {
+    
+    df_colors <- as.data.frame(t(col2rgb(hex_colors)))
+
+    df_colors$lum <- sqrt(.299*df_colors$red^2 + .587*df_colors$green^2 + 0.114*df_colors$blue^2)
+    hsv <- t(apply(df_colors,1,FUN=function(x) rgb2hsv(x[1], x[2], x[3])))
+    colnames(hsv) <- c('h', 's', 'v')
+    df_colors <- cbind(df_colors, hsv)
+
+    offset <- .25
+    start <- 1 - offset
+
+    df_colors$h <- ifelse(df_colors$h >= start, df_colors$h - start, df_colors$h + start)
+    df_colors
+}
+
+```
+
+## Colores
+
+```{r}
 
 sample_colors <- tribble(
     ~r,   ~g,  ~b,
@@ -42,15 +63,14 @@ sample_colors <- tribble(
      50,  19, 20,
      50,   4, 5,
      50,   0, 0
-    )
+)
 
-hsv
 draw_cols(sample_colors)
 rojo <- sample_colors$r * .5 - (sample_colors$b * .3 + sample_colors$g * .2)
 draw_cols(sample_colors[order(rojo), ])
+```
 
-
-# RB RR RG GR GG GB BG BB BR
+```{r}
 train_colors <- tribble(
     ~red, ~green, ~blue,
     255,    0,    254,  # RB
@@ -72,16 +92,77 @@ train_colors <- tribble(
 
 train_colors$orden <- 1:nrow(train_colors)
 draw_cols(train_colors)
+```
+
+```{r}
+
+
+hex_colors <- c("#fff000", "#238923", "#aaaaa0", "#ff2300", "#2ff014", "#010203")
+alvaro_colors <- as.data.frame(t(col2rgb(hex_colors)))
+alvaro_colors$hex_colors <- hex_colors
+
+alvaro_colors <- cbind(alvaro_colors, t(apply(alvaro_colors[,1:3], 1, function(x) order(x, decreasing=TRUE)))[,1:2])
+
+pos <- t(apply(alvaro_colors[, -4], 1, function(x)  c(x[x[4]], x[x[5]])))
+alvaro_colors <- cbind(alvaro_colors, pos)
+alvaro_colors$p2 <- alvaro_colors$p2 * ifelse(alvaro_colors$subgrupo == 2, 1, -1)
+
+colnames(alvaro_colors) <- c('red', 'green', 'blue', 'hex_colors', 'grupo', 'subgrupo', 'p1', 'p2')
+
+alvaro_colors$orden <- with(alvaro_colors, order(grupo, p1, subgrupo, p2, decreasing = c(F,T, F, F)))
+draw_cols(alvaro_colors)
+draw_cols(alvaro_colors[alvaro_colors$orden,])
+
+alvaro_colors[alvaro_colors$orden,]
+```
+
+
+```{r}
+hex_colors <- c("#fff000", "#238923", "#aaaaa0", "#ff2300", "#2ff014", "#010203")
+
+hex <- "#ff2300"
+
+order_data <- function(hex) {
+    rgb <- col2rgb(hex)
+    orden <- order(rgb, decreasing = TRUE)[1:2]
+    niveles <- rgb[orden]
+    if (orden[1] != 2) {
+        niveles[2] <- niveles[2] * -1
+    }
+    setNames(c(orden[1], niveles[1], orden[2], niveles[2]), c("grupo", "grupo_valor", "subgrupo", "subgrupo_valor"))
+}    
+order_data(hex)
+
+colorRampPalette(c("red", "green", "blue"))(5)
+hex_colors <- colorRampPalette(c("red", "green", "blue"))(5)
+
+colores <- t(sapply(hex_colors, order_data))
+orden <- order(colores[,1], colores[,2], colores[,3], colores[,4])
+draw_cols(rownames(colores[orden,]))
+```
+
+```{r}
 
 model <- lm(orden ~ red * green * blue, train_colors)
+alvaro_colorscolor_group <- function(color) {
+    which(max(color))
+}
 
-hex_colors <- c("#ff2300", "#fff000", "#aaaaa0", "#2ff014", "#238923", "#010203")
-alvaro_colors <- as.data.frame(t(col2rgb(hex_colors)))
-alvaro_colors$orden <- predict(model, alvaro_colors)
+orden <- function(colores) {
+    
+    colores$is_red <- ifelse(colores$red >= colores$blue && colores$red >= colores$green, 1, 0)
+    colores$is_green <- ifelse(colores$green >= colores$blue && colores$red >= colores$green, 1, 0)
+
+}
+
+
+normalized$is_red <- ifelse(alvaro_colors$red >= alvaro_colors$blue && alvaro_colors$red >= alvaro_colors$green, 1, 0)
+normalized$red_green <- with(alvaro_colors, green/red)
+normalized$red_blue <- with(alvaro_colors, blue/red)
+normalized
 
 draw_cols(alvaro_colors)
 draw_cols(alvaro_colors[order(alvaro_colors$orden),])
-
 
 ncolors <- 50
 test_colors <- data.frame(red = sample(0:255,ncolors, replace=TRUE), 
@@ -109,21 +190,6 @@ draw_cols(alvaro_colors, show_labels = TRUE)
 draw_cols(alvaro_colors[order(alvaro_colors$h),], show_labels = TRUE)
 
 
-color_data <- function(hex_colors) {
-    
-    df_colors <- as.data.frame(t(col2rgb(hex_colors)))
-
-    df_colors$lum <- sqrt(.299*df_colors$red^2 + .587*df_colors$green^2 + 0.114*df_colors$blue^2)
-    hsv <- t(apply(df_colors,1,FUN=function(x) rgb2hsv(x[1], x[2], x[3])))
-    colnames(hsv) <- c('h', 's', 'v')
-    df_colors <- cbind(df_colors, hsv)
-
-    offset <- .25
-    start <- 1 - offset
-
-    df_colors$h <- ifelse(df_colors$h >= start, df_colors$h - start, df_colors$h + start)
-    df_colors
-}
 
 
 rgb2hsv(186, 81, 153)

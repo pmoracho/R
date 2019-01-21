@@ -6,32 +6,32 @@ loadProyeccionMujeresFromUrl <- function(url, path, year) {
 Ciudad de Buenos Aires,	1
 Buenos Aires, 2
 Catamarca, 3
-Córdoba, 4
+C?rdoba, 4
 Corrientes, 5
 Chaco,6
 Chubut,	7
-Entre Ríos, 8
+Entre R?os, 8
 Formosa, 9
 Jujuy, 10
 La Pampa, 11
 La Rioja, 12
 Mendoza, 13
 Misiones, 14
-Neuquén, 15
-Río Negro, 16
+Neuqu?n, 15
+R?o Negro, 16
 Salta, 17
 San Juan, 18
 San Luis, 19
 Santa Cruz, 20
 Santa Fe, 21
 Santiago del Estero, 22
-Tucumán, 23
+Tucum?n, 23
 Tierra del Fuego, 24"
 
     provincias <- as.data.frame(read.table(textConnection(list), header=TRUE, sep=','))
     
     #############################################################9#####################################
-    # Proyección de la Población de Argentina
+    # Proyecci?n de la Poblaci?n de Argentina
     ##################################################################################################
     file <- file.path(path,'proyeccion.poblacion.argentina.xls')
     if (!file.exists(file)) {

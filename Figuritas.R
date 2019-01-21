@@ -1,12 +1,13 @@
 FIGURITAS_POR_PAQUETE <- 5
-FIGURITAS_POR_ALBUM <- 669
+FIGURITAS_POR_ALBUM <- 168
 CANTIDAD_DE_CORRIDAS <- 1000
+PRECIO_POR_PAQUETE <- 15
 
 completar_album <- function(x) {
-    total <- 669
+    total <- FIGURITAS_POR_ALBUM
     completo <- c()
     compras <- 0
-    while (length(completo) != total) {
+    while (length(completo) < total) {
         completo <- union(completo, sample(1:FIGURITAS_POR_ALBUM,FIGURITAS_POR_PAQUETE))
         compras <- compras + 1
     }
@@ -14,9 +15,16 @@ completar_album <- function(x) {
 }
 paquetes_intentos <- sapply(1:CANTIDAD_DE_CORRIDAS,completar_album)
 
+
 min(paquetes_intentos)
 max(paquetes_intentos)
 mean(paquetes_intentos)
+
+# Costo
+min(paquetes_intentos) * PRECIO_POR_PAQUETE
+max(paquetes_intentos) * PRECIO_POR_PAQUETE
+mean(paquetes_intentos) * PRECIO_POR_PAQUETE
+
 
 library("ggplot2")
 

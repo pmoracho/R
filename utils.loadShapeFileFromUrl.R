@@ -13,10 +13,10 @@
 #' @examples
 #' loadShapeFileFromUrl(url = "http://biogeo.ucdavis.edu/data/diva/adm/ARG_adm.zip")
 
-require(rgdal)
 
 loadShapeFileFromUrl <- function(url, layer, path, force.download = FALSE) {
     
+    require(rgdal)
     fileext <- basename(url)
     zipfile <- file.path(path, fileext)
     datapath <- file.path(path, tools::file_path_sans_ext(fileext))

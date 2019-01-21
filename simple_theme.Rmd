@@ -82,6 +82,14 @@ ggplot(data=diamonds, aes(x = carat, y = price, color = cut)) +
     scale_y_continuous(labels=dollar_format(prefix="$")) +
     simple_theme()
 ```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(mpg, aes(displ, cty)) + 
+    geom_point() +
+    # Use vars() to supply variables from the dataset:
+    facet_grid(vars(drv), vars(cyl)) +
+    simple_theme()
+
+```
 
 ## Ridgeline plot
 
@@ -236,4 +244,19 @@ p = ggplot(data, aes(x=as.factor(id), y=value)) +       # Note that id is a fact
  
 p
 
+```
+
+## mosaic Plot
+
+Para instalarlo:  
+
+devtools::install_github("haleyjeppson/ggmosaic")
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggmosaic)
+#> Loading required package: ggplot2
+
+ggplot(data = fly) +
+    geom_mosaic(aes(x = product(RudeToRecline), fill=DoYouRecline)) +
+    simple_theme()
 ```

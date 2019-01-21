@@ -572,7 +572,7 @@ gráfica, evalúe lo siguiente:
 > title(main="Main title", sub="subtitle",xlab="x-label", ylab="y-label")
 \end{lstlisting}
 
-Observe cómo la llamada a \textt{axis} especifica un conjunto alternativo de
+Observe cómo la llamada a \texttt{axis} especifica un conjunto alternativo de
 marcas de verificación (y etiquetas). Esta es una técnica común utilizada para
 crear ejes especiales en un gráfico y también se puede utilizar para crear ejes
 no equidistantes, así como ejes con etiquetado no numérico.
@@ -623,7 +623,7 @@ completa en este momento. Ya volveremos a ellos, cuando los utilicemos
 para gráficos específicos.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Combinando gráficos}
+\subsection{Combinando gráficos}\label{combigraf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Algunas consideraciones especiales surgen cuando usted desea poner varios
@@ -667,10 +667,54 @@ curve(dnorm(x), add=T)
   \label{fig:fig-6}
 \end{figure}
 
+Cuando invocamos \texttt{hist} con \texttt{plot=F}, no trazará ningún gráfico,
+pero retornará una estructura que contiene las alturas de las barras en la
+escala de densidad. Esto y el hecho de que el máximo de \texttt{dnorm(x)} sea
+\texttt{dnorm(0)} nos permite calificar un rango que cubre tanto las barras como
+la densidad normal. El cero en el rango de llamada asegura que la parte inferior
+de las barras también estará dentro del rango.  El rango de valores de
+\texttt{y} se pasa a la función \texttt{hist} mediante el parámetro
+\texttt{ylim}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Programando en \textbf{R}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Es posible escribir nuestras propias funciones \textbf{R}. De hecho, esto es un
+gran atractivo para trabajar con el sistema a largo plazo. Este libro evita en
+gran medida este tema a favor de cubrir un conjunto más amplio de
+procedimientos estadísticos básicos que pueden ejecutarse desde la línea de
+comandos. Sin embargo, para darle una idea de lo que se puede hacer, considere
+la siguiente función, que contiene el código del ejemplo de la Sección
+\ref{combigraf} para que pueda decir simplemente
+\texttt{hist.with.normal(rnorm(200))}. Se ha ampliado ligeramente, de modo que
+ahora utiliza la media empírica y la desviación estándar de los datos en lugar
+de sólo 0 y 1.
+
+\begin{lstlisting}[language=R]
+> hist.with.normal <- function(x, xlab=deparse(substitute(x)),...) {
++     h <- hist(x, plot=F, ...)
++     s <- sd(x)
++     m <- mean(x)
++     ylim <- range(0,h$density,dnorm(0,sd=s))
++     hist(x, freq=F, ylim=ylim, xlab=xlab, ...)
++     curve(dnorm(x,m,s), add=T)
++ }
+\end{lstlisting}
+
+Note el uso de un parámetro por defecto para \texttt{xlab}. Si no se especifica
+\texttt{xlab}, entonces se obtiene a partir de esta expresión, que evalúa a una forma de
+carácter de la expresión dada para x; es decir, si se pasa \texttt{rnorm}(100) para x,
+entonces la etiqueta x se convierte en "rnorm(100)". Observe también el uso de
+un argumento ...., que recoge cualquier argumento adicional y lo pasa a la
+historia en las dos llamadas.
+
+
+Traducción realizada con el traductor www.DeepL.com/Translator
+
+Notice the use of a default argument for xlab. If xlab is not specified, then it is obtained from this expression, which evaluates to a character form of the expression given for x; that is, if you pass rnorm(100) for x, then the x label becomes “rnorm(100)”. Notice also the use of a ...  argument, which collects any additional arguments and passes them on to hist in the two calls.
 
 \newpage
-
-\section{R programming}
 \subsection{Flow control} \label{flowcontrol}
 \subsection{Classes and generic functions}
 
