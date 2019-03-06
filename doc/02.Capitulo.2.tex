@@ -703,24 +703,65 @@ de sólo 0 y 1.
 \end{lstlisting}
 
 Note el uso de un parámetro por defecto para \texttt{xlab}. Si no se especifica
-\texttt{xlab}, entonces se obtiene a partir de esta expresión, que evalúa a una forma de
-carácter de la expresión dada para x; es decir, si se pasa \texttt{rnorm}(100) para x,
-entonces la etiqueta x se convierte en "rnorm(100)". Observe también el uso de
-un argumento ...., que recoge cualquier argumento adicional y lo pasa a la
-historia en las dos llamadas.
+\texttt{xlab}, la etiqueta del eje \texttt{x}, entonces se obtiene la expresión
+indicada en el parámetro \texttt{x} para transformarla luego en una cadena y así
+poder usarla; esto quiere decir, que si le pasamos \texttt{rnorm(100)} al
+parámetro \texttt{x} entonces la etiqueta para el eje se convertirá en
+\texttt{"rnom(100)"}. Observe también el uso de un parámetro \texttt{...}, que
+recoge cualquier parámetro  y lo pasa a las dos llamadas a la función
+\texttt{hist}.
 
+Se puede aprender más sobre programación en \textbf{R} estudiando las funciones
+incorporadas, empezando por las sencillas como \texttt{log10} o
+\texttt{weighted.mean}.
+\newpage
 
-Traducción realizada con el traductor www.DeepL.com/Translator
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Control de flujo} \label{flowcontrol}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Notice the use of a default argument for xlab. If xlab is not specified, then it is obtained from this expression, which evaluates to a character form of the expression given for x; that is, if you pass rnorm(100) for x, then the x label becomes “rnorm(100)”. Notice also the use of a ...  argument, which collects any additional arguments and passes them on to hist in the two calls.
+Hasta ahora, hemos visto componentes del lenguaje \textbf{R} que causan la
+evaluación de expresiones individuales. Sin embargo, \textbf{R} es un verdadero
+lenguaje de programación que permite la ejecución condicional y las
+construcciones cíclicas también. Considere, por ejemplo, el siguiente código.
+(El código implementa una versión del método de Newton para calcular la raíz
+cuadrada de y.)
+
+\begin{lstlisting}[language=R]
+y <- 12345
+x <- y/2
+while (abs(x*x-y) > 1e-10) x <- (x + y/x)/2
+x
+[1] 111.1081
+x^2
+\end{lstlisting}
 
 \newpage
-\subsection{Flow control} \label{flowcontrol}
-\subsection{Classes and generic functions}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Classes and generic functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data entry}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Leyendo desde un archivo de texto} \label{readtextfile}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Further details on read.table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The data editor}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Interfacing to other programs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicios}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

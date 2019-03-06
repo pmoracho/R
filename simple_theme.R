@@ -5,21 +5,23 @@ library(extrafont)
 
 # Create Base Theme
 #------------------
-simple_theme <- function() {
-
-    # Brand Colors
+theme_elegante <- function(base_size = 12,
+                           base_family = "Raleway"
+                           )
+    {
     color.background = "#FFFFFF" # Chart Background
     color.grid.major = "#D9D9D9" # Chart Gridlines
     color.axis.text = "#666666" # 
     color.axis.title = "#666666" # 
     color.title = "#666666"
     color.subtitle = "#666666"
+    strip.background.color = '#9999CC'
     
-    # Begin construction of chart
-    theme_bw(base_size=12) +
+    ret <-
+        theme_foundation(base_size = base_size, base_family = base_family) +
+        theme_bw(base_size=base_size) +
         
         # Set the entire chart region to a light gray color
-        
         theme(panel.background=element_rect(fill=color.background, color=color.background)) +
         theme(plot.background=element_rect(fill=color.background, color=color.background)) +
         theme(panel.border=element_rect(color=color.background)) +
@@ -32,11 +34,11 @@ simple_theme <- function() {
         # Format the legend, but hide by default
         theme(legend.position="none") +
         theme(legend.background = element_rect(fill=color.background)) +
-        theme(legend.text = element_text(size=7,color=color.axis.title, family="Raleway")) +
-        theme(strip.text.x = element_text(size=10,color=color.axis.title, family="Raleway").
-              strip.background.x = color.grid.major) +
-        theme(strip.text.y = element_text(size=10,color=color.axis.title, family="Raleway")) +
+        theme(legend.text = element_text(size=7,color=color.axis.title, family = base_family)) +
         
+        theme(strip.text.x = element_text(size=10,color=color.background, family = base_family)) +
+        theme(strip.text.y = element_text(size=10,color=color.background, family = base_family)) +
+        theme(strip.background = element_rect(fill=strip.background.color, linetype="blank")) +
 
         # Set title and axis labels, and format these and tick marks
         theme(plot.title=element_text(color=color.title, 
@@ -46,17 +48,16 @@ simple_theme <- function() {
                                       hjust = 0.5
                                       )) +
         
-        theme(plot.subtitle=element_text(color=color.subtitle, size=12, family="Raleway",  hjust = 0.5))  +
-        theme(axis.text.x=element_text(size=10,color=color.axis.text, family="Raleway")) +
-        theme(axis.text.y=element_text(size=10,color=color.axis.text, family="Raleway")) +
-        theme(axis.title.x=element_text(size=12,color=color.axis.title, vjust=0, family="Raleway")) +
-        theme(axis.title.y=element_text(size=12,color=color.axis.title, vjust=1.25, family="Raleway")) +
-        theme(plot.caption=element_text(size=8,color=color.axis.title, vjust=1.25, family="Raleway")) +
+        theme(plot.subtitle=element_text(color=color.subtitle, size=12, family = base_family,  hjust = 0.5))  +
+        theme(axis.text.x=element_text(size=10,color=color.axis.text, family = base_family)) +
+        theme(axis.text.y=element_text(size=10,color=color.axis.text, family = base_family)) +
+        theme(axis.title.x=element_text(size=12,color=color.axis.title, vjust=0, family = base_family)) +
+        theme(axis.title.y=element_text(size=12,color=color.axis.title, vjust=1.25, family = base_family)) +
+        theme(plot.caption=element_text(size=8,color=color.axis.title, vjust=1.25, family = base_family)) +
         
         # Legend  
-        
-        theme(legend.text=element_text(size=10,color=color.axis.text, family="Raleway")) +
-        theme(legend.title=element_text(size=10,color=color.axis.text, family="Raleway")) +
+        theme(legend.text=element_text(size=10,color=color.axis.text, family = base_family)) +
+        theme(legend.title=element_text(size=10,color=color.axis.text, family = base_family)) +
         theme(legend.key=element_rect(colour = color.background, fill = color.background)) +
         theme(legend.position="bottom", 
               legend.box = "horizontal", 
@@ -66,13 +67,10 @@ simple_theme <- function() {
               legend.spacing.x = unit(.25, 'cm'),
               legend.spacing.y = unit(.25, 'cm'),
               legend.margin = margin(t=0, r=0, b=0, l=0, unit="cm")) +
-        
-    
-        
+
         # Plot margins
         theme(plot.margin = unit(c(.5, .5, .5, .5), "cm"))
     
+    ret
 }
 
-# Set Theme
-# theme_set(simple_theme())

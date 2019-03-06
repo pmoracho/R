@@ -1,8 +1,10 @@
 ---
-title: "Untitled"
-author: "Patricio Moracho"
+title: "Gráfico Ggplot + theme_elegante.R()"
+author: '`r Sys.Date()`'
 date: "19 de enero de 2019"
 output:
+  md_document:
+    variant: markdown_github    
   html_document:
     df_print: paged
   pdf_document: default
@@ -12,16 +14,15 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(scales) 
-source("simple_theme.R")
+source("theme_elegante.R")
 ```
 
-## Ejemplos de gráficos con Ggplot2 + simple_theme()
+## Ejemplos de gráficos con Ggplot2
+### Cómo se ven con theme_elegante()
 
 ## Box plot
 
 El Boxplot es probablemente uno de los tipos de gráficos más comunes. Da un buen resumen de una o varias variables numéricas. La línea que divide la caja en 2 partes representa la mediana de los datos. El final de la caja muestra los cuartiles superior e inferior. Las líneas extremas muestran el valor más alto y el más bajo excluyendo los valores atípicos. Tenga en cuenta que Boxplot oculta el número de valores detrás de la variable. Por lo tanto, es muy recomendable imprimir el número de observaciones, añadir una observación única con fluctuaciones o usar un Violinplot si tiene muchas observaciones.
-
-fuente: https://www.r-graph-gallery.com/boxplot/
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(ToothGrowth, aes(x=factor(dose), y=len, fill=factor(dose))) + 
@@ -32,10 +33,69 @@ ggplot(ToothGrowth, aes(x=factor(dose), y=len, fill=factor(dose))) +
          y="Longitud %", 
          x="Dosis",
          color=NULL) +  # title and caption
-    simple_theme()
+    theme_elegante()
+
+
+ggplot(mpg, aes(x=class, y=hwy)) + 
+    geom_boxplot(
+        
+        # custom boxes
+        color="blue",
+        fill="blue",
+        alpha=0.2,
+        
+        # Notch?
+        notch=TRUE,
+        notchwidth = 0.8,
+        
+        # custom outliers
+        outlier.colour="red",
+        outlier.fill="red",
+        outlier.size=3
+    
+    ) +
+    labs(title="Fuel economy data", 
+         subtitle="Distribución de las millas por galón según la clase", 
+         caption="fuente: http://fueleconomy.gov", 
+         y="Millas por galon (autopista)", 
+         x="Clase",
+         color=NULL) +  # title and caption
+    theme_elegante()
+
 
 ```
 
+## Violin plot
+
+Las gráficas de violín permiten visualizar la distribución de una variable numérica para uno o varios grupos. Está muy cerca de una boxplot, pero permite una comprensión más profunda de la densidad. Los violines se adaptan especialmente cuando la cantidad de datos es enorme y resulta imposible mostrar observaciones individuales. Los gráficos de violín son una forma muy conveniente de mostrar los datos y probablemente merezcan más atención en comparación con los gráficos de caja que a veces pueden ocultar características de los datos.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# reorder is close to order, but is made to change the order of the factor levels.
+iris$Species = with(iris, reorder(Species, Sepal.Width, mean))
+ 
+# Now you can plot
+ggplot(iris, aes(x=Species, y=Sepal.Width, fill=Species)) +
+    geom_violin(alpha=0.6) +
+    labs(title="Iris", 
+         subtitle="Distribución del ancho del sépalo por especie", 
+         caption="Fuente: Edgar Anderson's Iris Data", 
+         y="Ancho del sépalo", 
+         x="Especie",
+         color=NULL) +
+    theme_elegante()
+
+# Second type
+ggplot(mtcars, aes(factor(cyl), mpg)) +
+    geom_violin(aes(fill = factor(cyl))) +
+    labs(title="Motor Trend Car Road Tests", 
+         subtitle="Distribución de las millas por galón según # de cilindros", 
+         caption="fuente: Motor Trend US magazine", 
+         y="millas por galon", 
+         x="# de cilindros",
+         color=NULL) +
+    theme_elegante()
+
+```
 ## Scatter plot
 
 Una gráfica de dispersión (scatterplot) muestra el valor de 2 conjuntos de datos en 2 dimensiones. Cada punto representa una observación. La posición en los ejes X (horizontal) e Y (vertical) representa los valores del valor de 2 variables. Es realmente útil estudiar la relación entre ambas variables. Es común proporcionar aún más información usando colores o formas (para mostrar grupos, o una tercera variable). También es posible mapear otra variable al tamaño de cada punto, lo que hace un gráfico de burbujas. Si tiene muchos puntos y lucha con el sobretrazado, considere la posibilidad de usar un gráfico de densidad en 2D.
@@ -55,7 +115,7 @@ ggplot(midwest, aes(x=area, y=poptotal)) +
          x="Area", 
          title="Ejemplo de un Scatterplot", 
          caption = "Fuente: midwest") +
-    simple_theme()
+    theme_elegante()
 
 ggplot(mpg, aes(cty, hwy)) +
     geom_point() + 
@@ -65,7 +125,7 @@ ggplot(mpg, aes(cty, hwy)) +
          x="Ciudad", 
          title="Millas por galón", 
          caption="Fuente: midwest") +
-    simple_theme()
+    theme_elegante()
 
 data("diamonds")
 levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
@@ -80,16 +140,230 @@ ggplot(data=diamonds, aes(x = carat, y = price, color = cut)) +
     guides(colour = guide_legend(override.aes = list(size=10))) +
     theme(legend.key = element_rect(colour = "transparent", fill = "white")) +
     scale_y_continuous(labels=dollar_format(prefix="$")) +
-    simple_theme()
-```
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+    theme_elegante()
+
 ggplot(mpg, aes(displ, cty)) + 
     geom_point() +
     # Use vars() to supply variables from the dataset:
     facet_grid(vars(drv), vars(cyl)) +
-    simple_theme()
+    theme_elegante() +
+    theme(panel.border= element_rect(fill = NA, colour = "grey70", size = rel(1)))
 
 ```
+
+## Connected scatter plot 
+
+Una gráfica de dispersión conectada está realmente cerca de una gráfica de línea, excepto que cada una de las rupturas en las líneas se muestran usando un punto. También está bastante cerca de la gráfica de dispersión, pero tiene una especificidad: su eje X debe ser ordenado para hacer este tipo de representación. Por lo tanto, las gráficas de dispersión conectadas se utilizan a menudo para series temporales en las que el eje X representa el tiempo. Si desea rellenar el área debajo de la línea, obtendrá un gráfico de área
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+ 
+# Build a Time serie data set for last year
+day=as.Date("2017-06-14") - 0:364
+value=runif(365) + seq(-140, 224)^2 / 10000
+data=data.frame(day, value)
+ 
+# Calculate mean value per month
+data %>% mutate(month = as.Date(cut(day, breaks = "month"))) %>%
+    group_by(month) %>% 
+    summarise(average = mean(value)) -> don
+ 
+# And make the plot
+ggplot(don, aes(x=month, y=average)) +
+      geom_line() + 
+      geom_point() +
+     scale_x_date(date_labels = "%b-%Y", date_breaks="1 month") +
+    theme_elegante()
+
+ 
+# Calculate agregated data per week
+don=data %>% mutate(week = as.Date(cut(day, breaks = "week"))) %>%
+    group_by(week) %>% 
+    summarise(average = mean(value)) 
+ 
+# And make the plot
+ggplot(don, aes(x=week, y=average)) +
+      geom_line() + 
+      geom_point() +
+      geom_area(fill=alpha('slateblue',0.2)) +
+     scale_x_date(date_labels = "%W-%b", date_breaks="1 week") +
+    theme_elegante() +
+     theme(axis.text.x=element_text(angle=60, hjust=1))
+```
+
+## Density plot
+
+Un gráfico de densidad muestra la distribución de una variable numérica. Sólo toma como entrada un conjunto de valores numéricos. Está muy cerca de un histograma. Tenga en cuenta que es muy recomendable jugar con el argumento de ancho de banda para no perder un patrón específico en los datos.  Tenga en cuenta que puede comparar la distribución de varias variables graficándolas en el mismo eje, usando facetas o a través de un gráfico de gozo.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+data("diamonds")
+levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
+
+# plot 1: Density of price for each type of cut of the diamond:
+ggplot(data=diamonds,aes(x=price, group=cut, fill=cut)) + 
+    geom_density(adjust=1.5) +
+    labs(title = "Precio vs. Densidad", 
+       subtitle = "Distribución del precio en relación a la densidad",
+       x = "Precio", 
+       y = "Densidad",
+       caption = "Fuente: pmoracho.github.io" ) +
+    theme_elegante()
+ 
+# plot 2: Density plot with transparency (using the alpha argument):
+ggplot(data=diamonds,aes(x=price, group=cut, fill=cut)) + 
+    geom_density(adjust=1.5 , alpha=0.2) +
+    labs(title = "Precio vs. Densidad", 
+       subtitle = "Distribución del precio en relación a la densidad",
+       x = "Precio", 
+       y = "Densidad",
+       caption = "Fuente: pmoracho.github.io" ) +
+    theme_elegante()
+
+# plot 3: Stacked density plot:
+ggplot(data=diamonds,aes(x=price, group=cut, fill=cut)) + 
+    geom_density(adjust=1.5, position="fill") +
+    labs(title = "Precio vs. Densidad", 
+       subtitle = "Distribución del precio en relación a la densidad",
+       x = "Precio", 
+       y = "Densidad",
+       caption = "Fuente: pmoracho.github.io" ) +
+    theme_elegante()
+ 
+# plot 4
+ggplot(diamonds, aes(x=depth, y=..density..)) + 
+    geom_density(aes(fill=cut), position="stack") +
+    xlim(50,75) + 
+    labs(title = "Precio vs. Densidad", 
+       subtitle = "Distribución del precio en relación a la densidad",
+       x = "Precio", 
+       y = "Densidad",
+       caption = "Fuente: pmoracho.github.io" ) +
+    theme(legend.position="none") +
+    theme_elegante()
+
+```    
+
+## Stacked area chart
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# DATA
+set.seed(345)
+Sector <- rep(c("S01","S02","S03","S04","S05","S06","S07"),times=7)
+Year <- as.numeric(rep(c("1950","1960","1970","1980","1990","2000","2010"),each=7))
+Value <- runif(49, 10, 100)
+data <- data.frame(Sector,Year,Value)
+
+ggplot(data, aes(x=Year, y=Value, fill=Sector)) + 
+    geom_area() +
+    theme_elegante()
+
+ggplot(data, aes(x=Year, y=Value, fill=Sector)) +
+    geom_area(colour="black", size=.2, alpha=.4) +
+    scale_fill_brewer(palette="Greens", breaks=rev(levels(data$Sector))) +
+    theme_elegante()
+
+my_fun=function(vec){ as.numeric(vec[3]) / sum(data$Value[data$Year==vec[2]]) *100 }
+data$prop=apply(data , 1 , my_fun)
+ 
+ggplot(data, aes(x=Year, y=prop, fill=Sector)) + 
+    geom_area(alpha=0.6 , size=1, colour="black") +
+        theme_elegante()
+
+```
+
+## Sreamgraphs
+
+Un gráfico Stream está muy cerca de un gráfico de área apilada. Muestra la evolución de un valor numérico (eje Y) en función de otro valor numérico (eje X). Esta evolución está representada por varios grupos, todos con un color distinto. A diferencia de un área apilada, no hay ninguna esquina: los bordes son redondeados, lo que da esta agradable impresión de flujo. Los gráficos de streaming son muy útiles cuando se muestran en modo interactivo: resaltar un grupo le da directamente una idea de su evolución. R permite crear fácilmente gráficos streaming gracias a la biblioteca de gráficos streaming.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggTimeSeries)
+library(ggplot2)
+
+set.seed(10)
+dfData = data.frame(
+   Time = 1:1000,
+   Signal = abs(
+      c(
+         cumsum(rnorm(1000, 0, 3)), 
+         cumsum(rnorm(1000, 0, 4)), 
+         cumsum(rnorm(1000, 0, 1)),
+         cumsum(rnorm(1000, 0, 2))
+      )
+   ),
+   VariableLabel = c(rep('Class A', 1000),
+                     rep('Class B', 1000),
+                     rep('Class C', 1000),
+                     rep('Class D', 1000))
+)
+
+# base plot
+ggplot(dfData,
+       aes(x = Time,
+           y = Signal,
+           group = VariableLabel,
+           fill = VariableLabel)) +
+   stat_steamgraph() +
+   theme_elegante()
+```
+
+## 2D density plot
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+ 
+# Data
+a <- data.frame( x=rnorm(20000, 10, 1.9), y=rnorm(20000, 10, 1.2) )
+b <- data.frame( x=rnorm(20000, 14.5, 1.9), y=rnorm(20000, 14.5, 1.9) )
+c <- data.frame( x=rnorm(20000, 9.5, 1.9), y=rnorm(20000, 15.5, 1.9) )
+data <- rbind(a,b,c)
+
+# Basic scatterplot
+ggplot(data, aes(x=x, y=y) ) + 
+    geom_point() + 
+    theme_elegante()
+
+ggplot(data, aes(x=x, y=y) ) + 
+    geom_bin2d(bins = 70) +
+    theme_elegante()
+
+ggplot(data, aes(x=x, y=y) ) +
+  geom_hex() +
+  theme_elegante()
+
+# Show the contour only
+ggplot(data, aes(x=x, y=y) ) +
+  geom_density_2d() +
+    theme_elegante()
+ 
+# Show the area only
+ggplot(data, aes(x=x, y=y) ) +
+  stat_density_2d(aes(fill = ..level..), geom = "polygon") +
+    theme_elegante()
+
+```
+## Buble plot
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# library
+library(tidyverse)
+ 
+# Let's use the diamonds data set (available in base R)
+data = diamonds %>% sample_n(200)
+ 
+# Now we see there is a link between caract and price
+# But what if we want to know about depth in the same time?
+ggplot(data, aes(x=carat, y=price, size=depth)) +
+  geom_point(alpha=0.2) +
+    theme_elegante()
+
+ggplot(data, aes(x=carat, y=price, size=depth, color=carat)) +
+  geom_point(alpha=0.4) +
+  scale_size_continuous( trans="exp", range=c(1, 25)) +
+  scale_colour_continuous(guide = FALSE) +
+    theme_elegante()
+
+```  
 
 ## Ridgeline plot
 
@@ -108,17 +382,20 @@ levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
 ggplot(diamonds, aes(x = price, y = cut, fill = cut)) +
   geom_density_ridges() +
     labs(title = "Precio vs. Corte", 
-       subtitle = "¿Cual es la corelación entre el precio y el corte?",
+       subtitle = "¿Cual es la distribución del precio con relación al corte?",
        x = "Precio", 
        y = "Corte",
        caption = "source: pmoracho.github.io" ) + 
     scale_x_continuous(labels=dollar_format(prefix="$")) +
     scale_color_manual(values=c('#25AAE2','#F2B53A', '#8BC540', '#DC5D42', '#666666',
                                 '9FAFBE')) +
-  simple_theme()
+  theme_elegante()
 ```
 
-## Correlogram
+## Correlograma
+
+Un correlograma o matriz de correlación permite analizar la relación entre cada par de variables numéricas de una matriz. La correlación entre cada par de variables se visualiza a través de una gráfica de dispersión, o un símbolo que representa la correlación (burbuja, línea, número...). La diagonal representa la distribución de cada variable, utilizando un histograma o un gráfico de densidad. Esta técnica es ampliamente utilizada para el análisis exploratorio ya que evita hacer cientos de gráficos para observar una matriz.
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
@@ -136,18 +413,15 @@ ggcorrplot(corr, hc.order = TRUE,
            method="circle", 
            colors = c("tomato2", "white", "springgreen3"), 
            title="Correlogram of mtcars", 
-           ggtheme=simple_theme)
+           ggtheme=theme_elegante)
 ```
 
 ## Line plot
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-data("diamonds")
-
-# Time Series 
 
 ggplot(data = diamonds, aes(x = carat, y = price, color = cut)) + 
-    labs(title = "Price vs. Carat", 
+    labs(title = "Precio vs. Quilatest", 
        subtitle = "What is the correlation between the price of a diamond its carat? ",
        x = "Carat", 
        y = "Price",
@@ -157,8 +431,35 @@ ggplot(data = diamonds, aes(x = carat, y = price, color = cut)) +
     geom_smooth(alpha = 0.2, size = 1.5, span = 4, se=FALSE) + 
     theme(legend.key = element_rect(fill = "white")) +
     scale_y_continuous(labels=dollar_format(prefix="$")) +
-    simple_theme()
+    theme_elegante()
 
+# Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables 
+library(GGally)
+ 
+# Create data 
+sample_data <- data.frame( v1 = 1:100 + rnorm(100,sd=20), v2 = 1:100 + rnorm(100,sd=27), v3 = rep(1, 100) + rnorm(100, sd = 1)) 
+sample_data$v4 = sample_data$v1 ** 2 
+sample_data$v5 = -(sample_data$v1 ** 2) 
+ 
+# Check correlations (as scatterplots), distribution and print corrleation coefficient 
+ggpairs(sample_data) + 
+    theme_elegante() +
+    theme(panel.border= element_rect(fill = NA, colour = "grey70", size = rel(1)))
+
+library(ggcorrplot)
+
+ggcorrplot(corr, hc.order = TRUE, type = "lower",
+   outline.col = "white",
+   ggtheme = theme_elegante,
+   colors = c("#6D9EC1", "white", "#E46726")) +
+    labs(title="Motor Trend Car Road Tests", 
+         subtitle="Correlación de las variables", 
+         caption="fuente: Motor Trend US magazine", 
+         color=NULL) +
+    theme(legend.position="right")
+
+
+ 
 ```
 
 ## Dendograma
@@ -166,7 +467,7 @@ ggplot(data = diamonds, aes(x = carat, y = price, color = cut)) +
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(ggdendro)
-theme_set(simple_theme())
+theme_set(theme_elegante())
 
 hc <- hclust(dist(USArrests), "ave")  # hierarchical clustering
 
@@ -179,7 +480,7 @@ ggdendrogram(hc, rotate = TRUE, size = 2)
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(lubridate)
-theme_set(simple_theme())
+theme_set(theme_elegante())
 
 df <- economics_long[economics_long$variable %in% c("psavert", "uempmed"), ]
 df <- df[lubridate::year(df$date) %in% c(1967:1981), ]
@@ -232,7 +533,7 @@ label_data$angle<-ifelse(angle < -90, angle+180, angle)
 p = ggplot(data, aes(x=as.factor(id), y=value)) +       # Note that id is a factor. If x is numeric, there is some space between the first bar
   geom_bar(stat="identity", fill=alpha("green", 0.3)) +
   ylim(-100,120) +
-  simple_theme() +
+  theme_elegante() +
   theme(
     axis.text = element_blank(),
     axis.title = element_blank(),
@@ -246,11 +547,9 @@ p
 
 ```
 
-## mosaic Plot
+## Mosaic Plot
 
-Para instalarlo:  
-
-devtools::install_github("haleyjeppson/ggmosaic")
+Para instalarlo: `devtools::install_github("haleyjeppson/ggmosaic")`
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggmosaic)
@@ -258,5 +557,107 @@ library(ggmosaic)
 
 ggplot(data = fly) +
     geom_mosaic(aes(x = product(RudeToRecline), fill=DoYouRecline)) +
-    simple_theme()
+    theme_elegante()
 ```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(reshape2)
+library(plyr)
+nba <- read.csv("http://datasets.flowingdata.com/ppg2008.csv")
+nba$Name <- with(nba, reorder(Name, PTS))
+nba.m <- melt(nba)
+
+nba.m <- ddply(nba.m, .(variable), transform, rescale = rescale(value))
+(p <- ggplot(nba.m, aes(variable, Name)) + 
+        geom_tile(aes(fill = rescale), colour = "white") + 
+        scale_fill_gradient(low = "white", high = "steelblue")+
+        theme_elegante())
+
+# ======================================================== 
+# Data: example with mtcars dataset 
+# ======================================================== 
+# load RColorBrewer 
+library(ggplot2) 
+library(reshape) 
+ 
+# load data 'mtcars' 
+data(mtcars) 
+ 
+# scale data by "columns" 
+carsdf = data.frame(scale(mtcars)) 
+carsdf$model = rownames(mtcars) 
+cars_melt = melt(carsdf, id.vars = "model") 
+
+# ======================================================== 
+# Plot 
+# ======================================================== 
+ggplot(data = cars_melt, aes(x = variable, y = model)) + 
+  geom_tile(aes(fill = value), color = "white", size = 1) + 
+  scale_fill_gradient(low = "gray95", high = "tomato") + 
+  xlab("characteristics") + 
+  theme_grey(base_size = 10) + 
+  ggtitle("Heatmap (ggplot)") + 
+  theme(axis.ticks = element_blank(), 
+        panel.background = element_blank(), 
+        plot.title = element_text(size = 12, colour = "gray50")) +
+      theme_elegante(base_size=6)
+
+
+```
+
+## ggTimeSeries
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggTimeSeries)
+library(data.table)
+# creating some data
+set.seed(1)
+dtData = data.table(
+      DateCol = seq(
+         as.Date("1/01/2014", "%d/%m/%Y"),
+         as.Date("31/12/2015", "%d/%m/%Y"),
+         "days"
+      ),
+      ValueCol = runif(730)
+   )
+dtData[, ValueCol := ValueCol + (strftime(DateCol,"%u") %in% c(6,7) * runif(1) * 0.75), .I]
+dtData[, ValueCol := ValueCol + (abs(as.numeric(strftime(DateCol,"%m")) - 6.5)) * runif(1) * 0.75, .I]
+
+# base plot
+p1 = ggplot_calendar_heatmap(
+   dtData,
+   'DateCol',
+   'ValueCol'
+)
+
+# adding some formatting
+p1 +
+   xlab(NULL) +
+   ylab(NULL) +
+   scale_fill_continuous(low = 'green', high = 'red') +
+   facet_wrap(~Year, ncol = 1) +
+    theme_elegante()
+
+
+# creating some categorical data
+dtData[, CategCol := letters[1 + round(ValueCol * 7)]]
+
+# base plot
+p2 = ggplot_calendar_heatmap(
+   dtData,
+   'DateCol',
+   'CategCol'
+)
+
+# adding some formatting
+p2 +
+   xlab(NULL) +
+   ylab(NULL) +
+   facet_wrap(~Year, ncol = 1) +
+    theme_elegante()
+```
+
+
+fuentes:
+
+* https://www.r-graph-gallery.com
