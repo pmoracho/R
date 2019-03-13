@@ -1,0 +1,479 @@
+---
+title: "Ejemplos de gráficas Ggplot2 con tema personalizado"
+author: Patricio Moracho
+post_date: 2019-03-09
+layout: post
+categories: cat
+excerpt_separator: <!--more-->
+published: true
+show_meta: true
+comments: true
+mathjax: false
+gistembed: false
+noindex: false
+hide_printmsg: false
+sitemap: true
+summaryfeed: false
+description: Ejemplos de gráficos con Ggplot2 y el theme_elegante()
+tags:
+  - desarrollo
+  - R
+output:
+  github_page:    
+    jekyllthat::jekylldown
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_knit$set(base.url='/images/2019/')
+library(tidyverse)
+library(ggplot2)
+library(scales) 
+```
+
+Hace un tiempo que estoy robando ideas de todos lados como para armar un tema de **ggplot2** que sea elegante, simple y visualmente atractivo. Lo llame `theme_elegante()`, muy original lo mio. El código es el siguiente:
+
+```{r theme_elegante, echo=TRUE, message=FALSE, warning=FALSE}
+#######################
+# CREATING PLOT THEMES
+#######################
+library(extrafont)
+
+# Create Base Theme
+#------------------
+theme_elegante <- function(base_size = 10,
+                           base_family = "Raleway"
+                           )
+    {
+    color.background = "#FFFFFF" # Chart Background
+    color.grid.major = "#D9D9D9" # Chart Gridlines
+    color.axis.text = "#666666" # 
+    color.axis.title = "#666666" # 
+    color.title = "#666666"
+    color.subtitle = "#666666"
+    strip.background.color = '#9999CC'
+    
+    ret <-
+        theme_bw(base_size=base_size) +
+        
+        # Set the entire chart region to a light gray color
+        theme(panel.background=element_rect(fill=color.background, color=color.background)) +
+        theme(plot.background=element_rect(fill=color.background, color=color.background)) +
+        theme(panel.border=element_rect(color=color.background)) +
+        
+        # Format the grid
+        theme(panel.grid.major=element_line(color=color.grid.major,size=.55, linetype="dotted")) +
+        theme(panel.grid.minor=element_line(color=color.grid.major,size=.55, linetype="dotted")) +
+        theme(axis.ticks=element_blank()) +
+        
+        # Format the legend, but hide by default
+        theme(legend.position="none") +
+        theme(legend.background = element_rect(fill=color.background)) +
+        theme(legend.text = element_text(size=base_size-3,color=color.axis.title, family = base_family)) +
+        
+        theme(strip.text.x = element_text(size=base_size,color=color.background, family = base_family)) +
+        theme(strip.text.y = element_text(size=base_size,color=color.background, family = base_family)) +
+        #theme(strip.background = element_rect(fill=strip.background.color, linetype="blank")) +
+        theme(strip.background = element_rect(fill = "grey70", colour = NA)) +
+        # theme(panel.border= element_rect(fill = NA, colour = "grey70", size = rel(1)))+
+        # Set title and axis labels, and format these and tick marks
+        theme(plot.title=element_text(color=color.title, 
+                                      size=20, 
+                                      vjust=1.25, 
+                                      family=base_family, 
+                                      hjust = 0.5
+                                      )) +
+        
+        theme(plot.subtitle=element_text(color=color.subtitle, size=base_size+2, family = base_family,  hjust = 0.5))  +
+        
+        theme(axis.text.x=element_text(size=base_size,color=color.axis.text, family = base_family)) +
+        theme(axis.text.y=element_text(size=base_size,color=color.axis.text, family = base_family)) +
+        theme(text=element_text(size=base_size, color=color.axis.text, family = base_family)) +
+        
+        theme(axis.title.x=element_text(size=base_size+2,color=color.axis.title, vjust=0, family = base_family)) +
+        theme(axis.title.y=element_text(size=base_size+2,color=color.axis.title, vjust=1.25, family = base_family)) +
+        theme(plot.caption=element_text(size=base_size-2,color=color.axis.title, vjust=1.25, family = base_family)) +
+        
+        # Legend  
+        theme(legend.text=element_text(size=base_size,color=color.axis.text, family = base_family)) +
+        theme(legend.title=element_text(size=base_size,color=color.axis.text, family = base_family)) +
+        theme(legend.key=element_rect(colour = color.background, fill = color.background)) +
+        theme(legend.position="bottom", 
+              legend.box = "horizontal", 
+              legend.title = element_blank(),
+              legend.key.width = unit(.75, "cm"),
+              legend.key.height = unit(.75, "cm"),
+              legend.spacing.x = unit(.25, 'cm'),
+              legend.spacing.y = unit(.25, 'cm'),
+              legend.margin = margin(t=0, r=0, b=0, l=0, unit="cm")) +
+
+        # Plot margins
+        theme(plot.margin = unit(c(.5, .5, .5, .5), "cm"))
+    
+    ret
+}
+```
+
+Y a continuación algunos ejemplos de gráficas tradicionales de **ggplot2**. 
+
+## Box plot
+
+El Boxplot es probablemente uno de los tipos de gráficos más comunes. Da un buen resumen de una o varias variables numéricas. La línea que divide la caja en 2 partes representa la mediana de los datos. El final de la caja muestra los cuartiles superior e inferior. Las líneas extremas muestran el valor más alto y el más bajo excluyendo los valores atípicos. Tenga en cuenta que Boxplot oculta el número de valores detrás de la variable. Por lo tanto, es muy recomendable imprimir el número de observaciones, añadir una observación única con fluctuaciones o usar un Violinplot si tiene muchas observaciones.
+
+```{r box_plots, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggplot2)
+
+ggplot(ToothGrowth, aes(x=factor(dose), y=len, fill=factor(dose))) + 
+    geom_boxplot() +
+    labs(title="El efecto de la vitamina C", 
+         subtitle="en el crecimiento de los dientes de los cerdos de Guinea", 
+         caption="fuente: C. I. Bliss (1952) The Statistics of Bioassay. Academic Press.", 
+         y="Longitud %", 
+         x="Dosis",
+         color=NULL) +  # title and caption
+    theme_elegante()
+
+ggplot(mpg, aes(x=class, y=hwy)) + 
+    geom_boxplot(
+        # custom boxes
+        color="blue",
+        fill="blue",
+        alpha=0.2,
+        # Notch?
+        notch=TRUE,
+        notchwidth = 0.8,
+        # custom outliers
+        outlier.colour="red",
+        outlier.fill="red",
+        outlier.size=3
+    ) +
+    labs(title="Fuel economy data", 
+         subtitle="Distribución de las millas por galón según la clase", 
+         caption="fuente: http://fueleconomy.gov", 
+         y="Millas por galon (autopista)", 
+         x="Clase",
+         color=NULL) +  # title and caption
+    theme_elegante()
+```
+
+## Violin plot
+
+Las gráficas de violín permiten visualizar la distribución de una variable numérica para uno o varios grupos. Está muy cerca de una boxplot, pero permite una comprensión más profunda de la densidad. Los violines se adaptan especialmente cuando la cantidad de datos es enorme y resulta imposible mostrar observaciones individuales. Los gráficos de violín son una forma muy conveniente de mostrar los datos y probablemente merezcan más atención en comparación con los gráficos de caja que a veces pueden ocultar características de los datos.
+
+```{r violin_plot, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto;"'}
+library(ggplot2)
+
+# reorder is close to order, but is made to change the order of the factor levels.
+iris$Species = with(iris, reorder(Species, Sepal.Width, mean))
+ 
+# Now you can plot
+ggplot(iris, aes(x=Species, y=Sepal.Width, fill=Species)) +
+    geom_violin(alpha=0.6) +
+    labs(title="Iris", 
+         subtitle="Distribución del ancho del sépalo por especie", 
+         caption="Fuente: Edgar Anderson's Iris Data", 
+         y="Ancho del sépalo", 
+         x="Especie",
+         color=NULL) +
+    theme_elegante()
+
+# Second type
+ggplot(mtcars, aes(factor(cyl), mpg)) +
+    geom_violin(aes(fill = factor(cyl))) +
+    labs(title="Motor Trend Car Road Tests", 
+         subtitle="Distribución de las millas por galón según # de cilindros", 
+         caption="fuente: Motor Trend US magazine", 
+         y="millas por galon", 
+         x="# de cilindros",
+         color=NULL) +
+    theme_elegante()
+
+```
+
+## Scatter plot
+
+Una gráfica de dispersión (scatterplot) muestra el valor de 2 conjuntos de datos en 2 dimensiones. Cada punto representa una observación. La posición en los ejes X (horizontal) e Y (vertical) representa los valores del valor de 2 variables. Es realmente útil estudiar la relación entre ambas variables. Es común proporcionar aún más información usando colores o formas (para mostrar grupos, o una tercera variable). También es posible mapear otra variable al tamaño de cada punto, lo que hace un gráfico de burbujas. Si tiene muchos puntos y lucha con el sobretrazado, considere la posibilidad de usar un gráfico de densidad en 2D.
+
+```{r scatter_plot, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggplot2)
+
+options(scipen=999)  # turn-off scientific notation like 1e+48
+data("midwest", package = "ggplot2")
+
+# Scatterplot
+ggplot(midwest, aes(x=area, y=poptotal)) + 
+    geom_point(aes(col=state, size=popdensity)) + 
+    geom_smooth(method="loess", se=F) + 
+    xlim(c(0, 0.1)) + 
+    ylim(c(0, 500000)) + 
+    labs(subtitle="Area Vs Población", 
+         y="Poblacíon", 
+         x="Area", 
+         title="Ejemplo de un Scatterplot", 
+         caption = "Fuente: midwest") +
+    theme_elegante()
+
+ggplot(mpg, aes(cty, hwy)) +
+    geom_point() + 
+    geom_smooth(method="lm", se=F) +
+    labs(subtitle="Consumo en la ciudad versus autopista", 
+         y="Autopista", 
+         x="Ciudad", 
+         title="Millas por galón", 
+         caption="Fuente: midwest") +
+    theme_elegante()
+
+data("diamonds")
+levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
+ggplot(data=diamonds, aes(x = carat, y = price, color = cut)) + 
+    geom_point(alpha = 1, size = .01, aes(color = cut)) + 
+    labs(title = "Precio vs. Quilates", 
+       subtitle = "¿Cual es la corelación entre el precio y los quilates?",
+       x = "Quilates", 
+       y = "Precio",
+       caption = "pmoracho.github.io" ) + 
+    scale_color_manual(values=c('#25AAE2','#F2B53A', '#8BC540', '#DC5D42', '#666666', '9FAFBE')) +
+    guides(colour = guide_legend(override.aes = list(size=10))) +
+    theme(legend.key = element_rect(colour = "transparent", fill = "white")) +
+    scale_y_continuous(labels=dollar_format(prefix="$")) +
+    theme_elegante()
+```
+
+Y también veamos como se ve un "facetado""
+
+```{r scatter_plot_facet, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggplot2)
+
+ggplot(mpg, aes(displ, cty)) + 
+    geom_point() +
+    # Use vars() to supply variables from the dataset:
+    facet_grid(vars(drv), vars(cyl)) +
+    theme_elegante() +
+    theme(panel.border= element_rect(fill = NA, colour = "grey70", size = rel(1))) +
+    labs(title = "Cilindrda vs consumo en ciudad", 
+       subtitle = "¿Cual es la relación entre la cilindarada y el consumo por cilindros/transmisión?",
+       x = "Cilindrada", 
+       y = "Consumo",
+       caption = "pmoracho.github.io" ) + 
+    scale_color_manual(values=c('#25AAE2','#F2B53A', '#8BC540', '#DC5D42', '#666666', '9FAFBE')) 
+
+```
+
+## Density plot
+
+Un gráfico de densidad muestra la distribución de una variable numérica. Sólo toma como entrada un conjunto de valores numéricos. Está muy cerca de un histograma. Tenga en cuenta que es muy recomendable jugar con el argumento de ancho de banda para no perder un patrón específico en los datos.  Tenga en cuenta que puede comparar la distribución de varias variables graficándolas en el mismo eje, usando facetas o a través de un gráfico de gozo.
+
+```{r density, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggplot2)
+
+data("diamonds")
+options(scipen=999)
+levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
+
+# plot 1: Density of price for each type of cut of the diamond:
+ggplot(data=diamonds,aes(x=price, group=cut, fill=cut)) + 
+    geom_density(adjust=1.5) +
+    labs(title = "Precio vs. Densidad", 
+       subtitle = "Distribución del precio en relación a la densidad",
+       x = "Precio", 
+       y = "Densidad",
+       caption = "Fuente: pmoracho.github.io" ) +
+    theme_elegante()
+ 
+# plot 2: Density plot with transparency (using the alpha argument):
+ggplot(data=diamonds,aes(x=price, group=cut, fill=cut)) + 
+    geom_density(adjust=1.5 , alpha=0.2) +
+    labs(title = "Precio vs. Densidad", 
+       subtitle = "Distribución del precio en relación a la densidad",
+       x = "Precio", 
+       y = "Densidad",
+       caption = "Fuente: pmoracho.github.io" ) +
+    theme_elegante()
+
+# plot 3: Stacked density plot:
+ggplot(data=diamonds,aes(x=price, group=cut, fill=cut)) + 
+    geom_density(adjust=1.5, position="fill") +
+    labs(title = "Precio vs. Densidad", 
+       subtitle = "Distribución del precio en relación a la densidad",
+       x = "Precio", 
+       y = "Densidad",
+       caption = "Fuente: pmoracho.github.io" ) +
+    theme_elegante()
+ 
+# plot 4
+ggplot(diamonds, aes(x=depth, y=..density..)) + 
+    geom_density(aes(fill=cut), position="stack") +
+    xlim(50,75) + 
+    labs(title = "Precio vs. Densidad", 
+       subtitle = "Distribución del precio en relación a la densidad",
+       x = "Precio", 
+       y = "Densidad",
+       caption = "Fuente: pmoracho.github.io" ) +
+    theme(legend.position="none") +
+    theme_elegante()
+
+```    
+
+## Stacked area chart
+
+Un gráfico de área apilada es la extensión de un gráfico de área básico para mostrar la evolución del valor de varios grupos en el mismo gráfico. Los valores de cada grupo se muestran uno encima del otro. Permite comprobar en una misma figura, la evolución tanto del total de una variable numérica, como de la importancia de cada grupo. Si sólo le interesa la importancia relativa de cada grupo, probablemente debería dibujar un gráfico de área apilada en porcentaje. Tenga en cuenta que esta tabla se vuelve difícil de leer si se muestran demasiados grupos y si los patrones son realmente diferentes entre grupos. En este caso, piense en utilizar facetas en su lugar.
+
+```{r stacked_areas, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+# DATA
+library(ggplot2)
+
+set.seed(345)
+Sector <- rep(c("S01","S02","S03","S04","S05","S06","S07"),times=7)
+Year <- as.numeric(rep(c("1950","1960","1970","1980","1990","2000","2010"),each=7))
+Value <- runif(49, 10, 100)
+data <- data.frame(Sector,Year,Value)
+
+ggplot(data, aes(x=Year, y=Value, fill=Sector)) + 
+    geom_area() +
+    labs(title="Titulo del gráfico", 
+         subtitle="Subtitulo del gráfico", 
+         caption="Fuente: pmoracho.github.io", 
+         y="Valor", 
+         x="Año") +
+    theme_elegante()
+
+ggplot(data, aes(x=Year, y=Value, fill=Sector)) +
+    geom_area(colour="black", size=.2, alpha=.4) +
+    scale_fill_brewer(palette="Greens", breaks=rev(levels(data$Sector))) +
+    labs(title="Titulo del gráfico", 
+         subtitle="Subtitulo del gráfico", 
+         caption="Fuente: pmoracho.github.io", 
+         y="Valor", 
+         x="Año") +
+    theme_elegante()
+
+my_fun=function(vec){ as.numeric(vec[3]) / sum(data$Value[data$Year==vec[2]]) *100 }
+data$prop=apply(data , 1 , my_fun)
+ 
+ggplot(data, aes(x=Year, y=prop, fill=Sector)) + 
+    geom_area(alpha=0.6 , size=1, colour="black") +
+    labs(title="Titulo del gráfico", 
+         subtitle="Subtitulo del gráfico", 
+         caption="Fuente: pmoracho.github.io", 
+         y="Valor", 
+         x="Año") +
+        theme_elegante()
+
+```
+
+## Streamgraphs
+
+Un gráfico Stream está muy cerca de un gráfico de área apilada. Muestra la evolución de un valor numérico (eje Y) en función de otro valor numérico (eje X). Esta evolución está representada por varios grupos, todos con un color distinto. A diferencia de un área apilada, no hay ninguna esquina: los bordes son redondeados, lo que da esta agradable impresión de flujo. Los gráficos de streaming son muy útiles cuando se muestran en modo interactivo: resaltar un grupo le da directamente una idea de su evolución. R permite crear fácilmente gráficos streaming gracias a la biblioteca de gráficos streaming.
+
+```{r streamgraphs, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggTimeSeries)
+library(ggplot2)
+
+set.seed(10)
+dfData = data.frame(
+   Time = 1:1000,
+   Signal = abs(
+      c(
+         cumsum(rnorm(1000, 0, 3)), 
+         cumsum(rnorm(1000, 0, 4)), 
+         cumsum(rnorm(1000, 0, 1)),
+         cumsum(rnorm(1000, 0, 2))
+      )
+   ),
+   VariableLabel = c(rep('Class A', 1000),
+                     rep('Class B', 1000),
+                     rep('Class C', 1000),
+                     rep('Class D', 1000))
+)
+
+# base plot
+ggplot(dfData,
+       aes(x = Time,
+           y = Signal,
+           group = VariableLabel,
+           fill = VariableLabel)) +
+    stat_steamgraph() +
+    labs(title="Titulo del gráfico", 
+         subtitle="Subtitulo del gráfico", 
+         caption="Fuente: pmoracho.github.io", 
+         y="Señal", 
+         x="Tiempo") +
+    theme_elegante()
+```
+
+## 2D density plot
+
+Un gráfico de densidad 2d es útil para estudiar la relación entre dos variables numéricas si tiene un gran número de puntos. Para evitar la superposición (como en la gráfica de dispersión al lado), divide el área de la gráfica en una multitud de pequeños fragmentos y representa el número de puntos en este fragmento.
+
+```{r 2D_density, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggplot2)
+
+a <- data.frame( x=rnorm(20000, 10, 1.9), y=rnorm(20000, 10, 1.2) )
+b <- data.frame( x=rnorm(20000, 14.5, 1.9), y=rnorm(20000, 14.5, 1.9) )
+c <- data.frame( x=rnorm(20000, 9.5, 1.9), y=rnorm(20000, 15.5, 1.9) )
+data <- rbind(a,b,c)
+
+# Basic scatterplot
+ggplot(data, aes(x=x, y=y) ) + 
+    geom_point() + 
+    labs(title="Titulo del gráfico", 
+         subtitle="Subtitulo del gráfico", 
+         caption="Fuente: pmoracho.github.io", 
+         y="x", 
+         x="y") +
+    theme_elegante()
+
+ggplot(data, aes(x=x, y=y) ) +
+    geom_hex() +
+    labs(title="Titulo del gráfico", 
+         subtitle="Subtitulo del gráfico", 
+         caption="Fuente: pmoracho.github.io", 
+         y="x", 
+         x="y") +
+  theme_elegante()
+
+# Show the contour only
+ggplot(data, aes(x=x, y=y) ) +
+    geom_density_2d() +
+    labs(title="Titulo del gráfico", 
+         subtitle="Subtitulo del gráfico", 
+         caption="Fuente: pmoracho.github.io", 
+         y="x", 
+         x="y") +
+    theme_elegante()
+ 
+# Show the area only
+ggplot(data, aes(x=x, y=y) ) +
+    stat_density_2d(aes(fill = ..level..), geom = "polygon") +
+    labs(title="Titulo del gráfico", 
+         subtitle="Subtitulo del gráfico", 
+         caption="Fuente: pmoracho.github.io", 
+         y="x", 
+         x="y") +
+    theme_elegante()
+```
+
+## Bubble plot
+
+Un gráfico de burbujas es un gráfico multivariable que es un cruce entre un gráfico de dispersión y un gráfico de área proporcional. Al igual que una gráfica de dispersión, los gráficos de burbujas utilizan un sistema de coordenadas cartesianas para trazar puntos a lo largo de una cuadrícula donde los ejes X e Y son variables separadas. Sin embargo, a diferencia de una gráfica de dispersión, a cada punto se le asigna una etiqueta o categoría (ya sea que se muestre al lado o en una leyenda). Cada punto trazado representa entonces una tercera variable por el área de su círculo. Los colores también pueden utilizarse para distinguir entre categorías o para representar una variable de datos adicional. El tiempo puede ser mostrado ya sea teniendo una variable en uno de los ejes o animando las variables de datos que cambian con el tiempo. Los gráficos de burbujas se utilizan normalmente para comparar y mostrar las relaciones entre los círculos categorizados, mediante el uso de la posición y las proporciones. La imagen general de los gráficos de burbujas se puede utilizar para analizar patrones/correlaciones. Demasiadas burbujas pueden hacer que el gráfico sea difícil de leer, por lo que los gráficos de burbujas tienen una capacidad limitada de tamaño de datos. Esto se puede remediar de alguna manera con la interactividad: haciendo clic o pasando el ratón por encima de las burbujas para mostrar información oculta, teniendo la opción de reorganizar o filtrar las categorías agrupadas. Al igual que con las Tablas de Área Proporcional, los tamaños de los círculos necesitan ser dibujados basados en el área del círculo, no en su radio o diámetro. No sólo el tamaño de los círculos cambiará exponencialmente, sino que esto llevará a interpretaciones erróneas por parte del sistema visual humano.
+
+```{r bubble_plots, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+# Let's use the diamonds data set (available in base R)
+data = diamonds %>% sample_n(200)
+ 
+ggplot(data, aes(x=carat, y=price, size=depth, color=carat)) + 
+    geom_point(alpha=0.4) +
+    scale_size_continuous( trans="exp", range=c(1, 25)) +
+    scale_colour_continuous(guide = FALSE) +
+        labs(title="Relación precio / quilates", 
+         subtitle="Tamaño de las burbujas por profundidad", 
+         caption="Fuente: pmoracho.github.io", 
+         y="precio", 
+         x="Quilates") +
+    theme_elegante()
+```  
+
