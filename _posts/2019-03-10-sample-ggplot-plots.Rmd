@@ -263,6 +263,73 @@ ggplot(mpg, aes(displ, cty)) +
 
 ```
 
+## Connected scatter plot 
+
+Una gráfica de dispersión conectada está realmente cerca de una gráfica de línea, excepto que cada una de las rupturas en las líneas se muestran usando un punto. También está bastante cerca de la gráfica de dispersión, pero tiene una especificidad: su eje X debe ser ordenado para hacer este tipo de representación. Por lo tanto, las gráficas de dispersión conectadas se utilizan a menudo para series temporales en las que el eje X representa el tiempo. Si desea rellenar el área debajo de la línea, obtendrá un gráfico de área.
+
+```{r con_scatter, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+tu <- expand.grid(Land       = gl(2, 1, labels = c("DE", "BB")),
+                  Altersgr   = gl(5, 1, labels = letters[1:5]),
+                  Geschlecht = gl(2, 1, labels = c('m', 'w')),
+                  Jahr       = 2000:2009)
+
+set.seed(42)
+tu$Wert <- unclass(tu$Altersgr) * 200 + rnorm(200, 0, 10)
+
+ggplot(tu, aes(x = Jahr, y = Wert, color = Altersgr, group = Altersgr)) + 
+    geom_point() + 
+    geom_line() + 
+    facet_grid(Geschlecht ~ Land) +
+    theme_elegante()
+```
+
+## Line graphs / plots
+
+Los gráficos de líneas se utilizan para visualizar valores cuantitativos a lo largo de un intervalo o período de tiempo continuo. Un gráfico de líneas se utiliza con mayor frecuencia para mostrar tendencias y analizar cómo han cambiado los datos con el paso del tiempo. Los gráficos de líneas se dibujan primero trazando puntos de datos en una cuadrícula de coordenadas cartesianas y luego conectando una línea entre todos estos puntos. Típicamente, el eje y tiene un valor cuantitativo, mientras que el eje x es una escala de tiempo o una secuencia de intervalos. Los valores negativos se pueden mostrar debajo del eje x.  La dirección de las líneas en el gráfico funciona como una buena metáfora de los datos: una pendiente ascendente indica dónde han aumentado los valores y una pendiente descendente indica dónde han disminuido los valores. El viaje de la línea a través del gráfico puede crear patrones que revelan tendencias en un conjunto de datos. Cuando se agrupan con otras líneas (otras series de datos), las líneas individuales pueden compararse entre sí. Sin embargo, evite usar más de 3-4 líneas por gráfico, ya que esto hace que el gráfico esté más desordenado y sea más difícil de leer. Una solución a esto es dividir el gráfico en múltiplos más pequeños (tener un gráfico de líneas pequeño para cada serie de datos).
+
+fuente: [The Data Visualisation Catalogue](https://datavizcatalogue.com/methods/line_graph.html)
+
+```{r line_plot, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggplot2)
+library(lubridate)
+
+ggplot(data = diamonds, aes(x = carat, y = price, color = cut)) + 
+    labs(title = "Precio vs. Quilatest", 
+       subtitle = "What is the correlation between the price of a diamond its carat? ",
+       x = "Carat", 
+       y = "Price",
+       caption = "www.datatoinsight.io" ) + 
+    scale_color_manual(values=c('#25AAE2','#F2B53A', '#8BC540', '#DC5D42', '#666666', '9FAFBE')) +
+    guides(colour = guide_legend(override.aes = list(size=10))) +
+    geom_smooth(alpha = 0.2, size = 1.5, span = 4, se=FALSE) + 
+    theme(legend.key = element_rect(fill = "white")) +
+    scale_y_continuous(labels=dollar_format(prefix="$")) +
+    theme_elegante()
+
+df <- economics_long[economics_long$variable %in% c("psavert", "uempmed"), ]
+df <- df[lubridate::year(df$date) %in% c(1967:1981), ]
+
+# labels and breaks for X axis text
+brks <- df$date[seq(1, length(df$date), 12)]
+lbls <- lubridate::year(brks)
+
+# plot
+ggplot(df, aes(x=date)) + 
+    geom_line(aes(y=value, col=variable)) + 
+    theme_elegante() +
+    labs(title="Time Series of Returns Percentage", 
+       subtitle="Drawn from Long Data format", 
+       caption="Source: Economics", 
+       y="Returns %", 
+       color=NULL) +  # title and caption
+    scale_x_date(labels = lbls, breaks = brks) +  # change to monthly ticks and labels
+    scale_color_manual(labels = c("psavert", "uempmed"), 
+                     values = c("psavert"="#00ba38", "uempmed"="#f8766d")) +  # line color
+    theme(axis.text.x = element_text(angle = 90, vjust=0.5, size = 8),  # rotate x axis text 
+          panel.grid.minor = element_blank())  # turn off minor grid
+```
+
+
 ## Density plot
 
 Un gráfico de densidad muestra la distribución de una variable numérica. Sólo toma como entrada un conjunto de valores numéricos. Está muy cerca de un histograma. Tenga en cuenta que es muy recomendable jugar con el argumento de ancho de banda para no perder un patrón específico en los datos.  Tenga en cuenta que puede comparar la distribución de varias variables graficándolas en el mismo eje, usando facetas o a través de un gráfico de gozo.
@@ -477,3 +544,156 @@ ggplot(data, aes(x=carat, y=price, size=depth, color=carat)) +
     theme_elegante()
 ```  
 
+## Ridgeline plot
+
+Un gráfico Ridgeline o Joyplot muestra la distribución de un valor numérico para varios grupos. Pueden ser muy útiles para visualizar los cambios en las distribuciones a lo largo del tiempo o del espacio. La distribución puede representarse mediante histogramas o gráficos de densidad, todos alineados a la misma escala horizontal y presentados con un ligero solapamiento. Las gráficas son especialmente interesantes cuando el número de grupos a representar es alto y, por lo tanto, una separación clásica de ventanas requeriría de mucho más espacio. Sin embargo, hay que tener cuidado, ya que está gráfica suele ocultar una parte de los datos, donde se produce el solapamiento. En R, los gráficos de Ridgeline se pueden hacer fácilmente gracias a la librería [ggridges](https://github.com/clauswilke/ggridges) de [Claus Wilke](http://wilkelab.org/), que es una extensión de ggplot2.
+
+source: https://www.r-graph-gallery.com/ridgeline-plot/
+
+```{r ridgeline_plot, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggridges)
+library(ggplot2)
+ 
+data("diamonds")
+levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
+ 
+# basic example
+ggplot(diamonds, aes(x = price, y = cut, fill = cut)) +
+  geom_density_ridges() +
+    labs(title = "Precio vs. Corte", 
+       subtitle = "¿Cual es la distribución del precio con relación al corte?",
+       x = "Precio", 
+       y = "Corte",
+       caption = "source: pmoracho.github.io" ) + 
+    scale_x_continuous(labels=dollar_format(prefix="$")) +
+    scale_color_manual(values=c('#25AAE2','#F2B53A', '#8BC540', '#DC5D42', '#666666',
+                                '9FAFBE')) +
+  theme_elegante()
+```
+
+## Correlograma
+
+Un correlograma o matriz de correlación permite analizar la relación entre cada par de variables numéricas de una matriz. La correlación entre cada par de variables se visualiza a través de una gráfica de dispersión, o un símbolo que representa la correlación (burbuja, línea, número...). La diagonal representa la distribución de cada variable, utilizando un histograma o un gráfico de densidad. Esta técnica es ampliamente utilizada para el análisis exploratorio ya que evita hacer cientos de gráficos para observar una matriz.
+
+```{r correlogram, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggplot2)
+library(ggcorrplot)
+
+# Correlation matrix
+data(mtcars)
+corr <- round(cor(mtcars), 1)
+
+ggcorrplot(corr, hc.order = TRUE, type = "lower",
+   outline.col = "white",
+   ggtheme = theme_elegante,
+   colors = c("#6D9EC1", "white", "#E46726")) +
+    labs(title="Motor Trend Car Road Tests", 
+         subtitle="Correlación de las variables", 
+         caption="fuente: Motor Trend US magazine", 
+         color=NULL) +
+    theme(legend.position="right")
+```
+
+## Dendograma
+
+Un dendrograma es un tipo de representación gráfica o diagrama de datos en forma de árbol que organiza los datos en subcategorías que se van dividiendo en otros hasta llegar al nivel de detalle deseado (asemejándose a las ramas de un árbol que se van dividiendo en otras sucesivamente). Este tipo de representación permite apreciar claramente las relaciones de agrupación entre los datos e incluso entre grupos de ellos aunque no las relaciones de similitud o cercanía entre categorías. Observando las sucesivas subdivisiones podemos hacernos una idea sobre los criterios de agrupación de los mismos, la distancia entre los datos según las relaciones establecidas, etc. También podríamos referirnos al dendrograma como la ilustración de las agrupaciones derivadas de la aplicación de un algoritmo de clustering jerárquico.
+
+jerárquico.
+
+```{r dendogram, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(ggplot2)
+library(ggdendro)
+
+df       <- USArrests                         # really bad idea to muck up internal datasets
+hc       <- hclust(dist(df), "ave")           # heirarchal clustering
+dendr    <- dendro_data(hc, type="rectangle") # convert for ggplot
+clust    <- cutree(hc,k=2)                    # find 2 clusters
+clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+# dendr[["labels"]] has the labels, merge with clust.df based on label column
+dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+# plot the dendrogram; note use of color=cluster in geom_text(...)
+ggplot() + 
+  geom_segment(data=segment(dendr), aes(x=x, y=y, xend=xend, yend=yend)) + 
+  geom_text(data=label(dendr), aes(x, y, label=label, hjust=0, color=cluster), 
+           size=3) +
+  coord_flip() + scale_y_reverse(expand=c(0.2, 0)) + 
+  theme(axis.line.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.title.y=element_blank(),
+        panel.background=element_rect(fill="white"),
+        panel.grid=element_blank()) +
+     labs(title = "USArrests", 
+       subtitle = "Dendograma",
+       x = "", 
+       y = "",
+       caption = "www.datatoinsight.io" ) + 
+    theme_elegante()
+```
+
+## Population piramid
+
+Conocida como una pirámide de edad y sexo. Una pirámide de población es un par de histogramas consecutivos (para cada sexo) que muestran la distribución de una población en todos los grupos de edad y en ambos sexos. El eje X se utiliza para trazar los números de población y el eje Y enumera todos los grupos de edad. Las pirámides de población son ideales para detectar cambios o diferencias en los patrones de población. Las pirámides de poblaciones múltiples pueden utilizarse para comparar patrones entre naciones o grupos de población seleccionados. La forma de una pirámide de población puede ser usada para interpretar una población. Por ejemplo, una pirámide con una base muy ancha y una sección superior estrecha sugiere una población con altas tasas de fertilidad y mortalidad. Mientras que una pirámide con una mitad superior más ancha y una base más estrecha sugeriría una población envejecida con bajas tasas de fertilidad. Las pirámides de población también pueden utilizarse para especular sobre el desarrollo futuro de una población. Una población que envejece y que no se está reproduciendo se encontraría con problemas como tener suficiente descendencia para cuidar a los ancianos. Otras teorías, como la de "Youth Bulge", afirman que cuando hay un amplio bulto en el rango de edad de 16 a 30 años, particularmente en los hombres, esto conduce a disturbios sociales, guerra y terrorismo. Esto hace que las pirámides de población sean útiles para campos como la ecología, la sociología y la economía.
+
+fuente: [The Data Visualisation Catalogue](https://datavizcatalogue.com/methods/population_pyramid.html)
+
+```{r piramid, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+library(tidyverse)
+
+# Your data
+xy.pop<-c(3.2,3.5,3.6,3.6,3.5,3.5,3.9,3.7,3.9,3.5,3.2,2.8,2.2,1.8,1.5,1.3,0.7,0.4)
+xx.pop<-c(3.2,3.4,3.5,3.5,3.5,3.7,4,3.8,3.9,3.6,3.2,2.5,2,1.7,1.5,1.3,1,0.8)
+agelabels<-c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+            "35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74",
+            "75-79","80-44","85+")
+
+# Collect data in dataframe
+df <- rbind.data.frame(
+    cbind.data.frame(Percentage = -xy.pop, Group = agelabels, Gender = "male"),
+    cbind.data.frame(Percentage = +xx.pop, Group = agelabels, Gender = "female")
+);
+
+# Make sure agelabels have the right order
+df$Group <- factor(df$Group, levels = agelabels);
+
+# (gg)plot
+ggplot(data = df, aes(x = Group, y = Percentage, fill = Gender, group = Gender)) +
+           geom_bar(data = subset(df, Gender == "female"), stat = "identity") +
+           geom_bar(data = subset(df, Gender == "male"), stat = "identity") + 
+           coord_flip() + 
+           geom_smooth(colour = "black", method = "loess", se = FALSE, show.legend = FALSE, size = 0.5) +
+    scale_fill_manual(values=c('#25AAE2','#8BC540')) +
+           labs(
+               x = "Age", 
+               y = "Percentage", 
+               title = "Australian population pyramid 2012",
+               caption="fuente: https://stackoverflow.com/a/46955109/6836377") +
+           scale_y_continuous(
+               breaks = seq(-4, 4, by = 2), 
+               labels = c(rev(seq(0, 4, by = 2)), seq(2, 4, by = 2))) +
+           theme_elegante()
+
+```
+
+## Timeline plot
+
+Una línea de tiempo es una forma gráfica de mostrar una lista de eventos en orden cronológico. Algunas líneas de tiempo funcionan en una escala, mientras que otras simplemente muestran los eventos en secuencia. La función principal de Timelines es comunicar información relacionada con el tiempo, ya sea para el análisis o para presentar visualmente una historia o una visión de la historia. Si se basa en una escala, una línea de tiempo le permite ver cuándo ocurren o van a ocurrir las cosas, permitiendo al espectador evaluar los intervalos de tiempo entre los eventos. Esto permite al espectador ver cualquier patrón que aparezca en cualquier período de tiempo seleccionado o cómo se distribuyen los eventos en ese período de tiempo.
+
+fuente: [The Data Visualisation Catalogue](https://datavizcatalogue.com/methods/timeline.html)
+
+```{r timeplot, echo=TRUE, message=FALSE, warning=FALSE, out.extra='style="display: block; margin-left: auto; margin-right: auto"'}
+
+cambodia = data.frame(Period = c("Funan", "Chenla/Zhenla","Khmer Empire","Dark Ages of Cambodia"),StartDate = c(-500,550,802,1431), EndDate = c(550,802,1431,1863), Color = c("lightblue","lightgreen","lightyellow","pink"))
+
+ggplot(data=cambodia) +
+  geom_segment(aes(x=StartDate, xend=EndDate, y=0., yend=0., color=Period) , linetype=1, size=4) +
+  scale_colour_brewer(palette = "Pastel1")+
+  scale_y_continuous(limits=c(0,0.5))+
+  scale_x_continuous(limits=c(-500,2000),  breaks= c(seq(0,2000,by=1000), cambodia$StartDate, cambodia$EndDate[4]))+
+  xlab("Time")+
+  ylab("Periods of History")+
+  theme_bw() + theme(panel.grid.minor = element_blank(), panel.grid.major =   element_blank(), axis.title.y=element_blank(),axis.text.y=element_blank(),  axis.ticks.y=element_blank()) +
+  theme(aspect.ratio = .2)+
+  theme(legend.position="none") + 
+  geom_text(aes(x=StartDate-100 + (EndDate- StartDate)/2,y=0.05,label=Period,angle=25,hjust=0)) + theme_elegante()
+```
