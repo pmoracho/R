@@ -14,17 +14,3 @@ dummy.var <- function(type="i", rows=10, x, from=Sys.Date()) {
     
     do.call(f$fun, f$args)
 }
-
-df <- data.frame(
-    date = dummy.var("d", 100, 1:1000, from='2015-01-01'),
-    Parasitemia =  dummy.var("n", 100, 1:5),
-    Genera = dummy.var("f", 100, c('Plasmodium','Haemoproteus')),
-    Prevalence = dummy.var("n", 100, 0:55),
-    Year = dummy.var("i", 100, c(2016, 2017))
-)
-
-date 
-
-dummy.df <- function(rows, col, colclass) {
-    
-}

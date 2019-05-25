@@ -7,8 +7,8 @@ Notas del curso
 
 ### Lección 1.1 Probabilidad clásica y frecuentista
 
-Estadísticas es el estudio de la incertidumbre. ¿Cómo la medimos? ¿Y cómo tomamos
-las decisiones en presencia de ella? Una de las formas de tratar la
+Estadísticas es el estudio de la incertidumbre. ¿Cómo la medimos? ¿Y cómo
+tomamos las decisiones en presencia de ella? Una de las formas de tratar la
 incertidumbre, de una manera más cuantificada, es pensar en las probabilidades.
 Pensemos en algunos ejemplos de probabilidades. Supongamos que estamos lanzando
 un dado de seis caras y queremos preguntar cuál es la probabilidad de que el
@@ -85,14 +85,43 @@ veces también recibimos interpretaciones que no son particularmente intuitivas.
 
 ### Lección 1.2 Probabilidad y coherencia bayesiana
 
-Otra forma de definir probabilidades es bajo la perspectiva bayesiana. La perspectiva bayesiana es una perspectiva personal.
-Su probabilidad representa su propia perspectiva, es su medida de incertidumbre, y toma en cuenta lo que usted sabe sobre un problema en particular. Pero en este caso, es el personal y, por lo tanto, lo que ves puede ser diferente de lo que otra persona cree. Por ejemplo, quieres preguntar si es una apuesta justa. Si usted tiene información diferente a la de otra persona, entonces su probabilidad de un dado es justa, puede ser diferente a la probabilidad de esa persona. Así que es inherentemente un enfoque subjetivo de la probabilidad, pero puede funcionar bien en una base matemáticamente rigurosa, y conduce a resultados mucho más intuitivos en muchos casos que el enfoque de Frecuentista.
-Podemos cuantificar las probabilidades pensando en lo que es una apuesta justa.
-Así que, por ejemplo, queremos preguntar: ¿cuál es la probabilidad de que llueva mañana?
-Entonces podemos preguntarle acerca de una apuesta que usted podría estar dispuesto a aceptar si cree que es justa. Suponga que está dispuesto a aceptar la apuesta de que si llueve mañana, usted gana $4. Si no llueve mañana, pierde $1, o lo que sea su moneda local.
-Usted puede pensar en esto como probabilidades de 4 a 1. Si usted piensa que la apuesta, la apuesta justa que usted debe estar dispuesto a tomar en cualquier dirección que también significaría
-Si llueve, pierdes $4. Y si no llueve, ganas $1. Si crees que ambos son justos, entonces estás definiendo la probabilidad de lluvia como 1 sobre 1 más 4 que es igual a 1 y 5. Podemos ver que esto es justo si observamos su rentabilidad esperada.
-Bajo la primera apuesta, su retorno esperado es que usted gana 4 con probabilidad 1 y 5 y pierde 1 con probabilidad 4 y 5. Y puedes ver que es una apuesta justa de 0. En el segundo caso, ganas 1 con probabilidad de 4 y 5, y pierdes 4 con probabilidad de 1 y 5, y eso también es 0. Así que se equilibra.
-Sólo se equilibra si sus probabilidades coinciden.
-Por lo tanto, puede utilizar este marco de apuestas para pensar cuál es su probabilidad personal en función de las apuestas que estaría dispuesto a realizar. En la mayoría de los casos, es bastante fácil ponerlo entre paréntesis. Aceptas una apuesta que era de mil y una a favor, pero no aceptas una que era de mil y una en contra. Así que tu probabilidad personal está en algún punto intermedio.
-Por último, quiero mencionar el concepto de coherencia. Las probabilidades deben seguir todas las reglas estándar de probabilidad, las que fueron definidas en el material suplementario de esta conferencia. Si no sigues todas las reglas de la probabilidad, entonces puedes ser incoherente, lo que lleva a que alguien construya una serie de apuestas en las que se garantiza que perderás dinero. A esto se le llama libro holandés. Si se siguen todas las reglas y se sigue el marco de las estadísticas bayesianas, se puede garantizar la coherencia.
+Otra forma de definir probabilidades es bajo la perspectiva bayesiana. La
+perspectiva bayesiana es una perspectiva personal.  Su probabilidad representa
+su propia perspectiva, es su medida de incertidumbre, y toma en cuenta lo que
+usted sabe sobre un problema en particular. Pero en este caso, es personal
+y, por lo tanto, lo que ves puede ser diferente de lo que otra persona cree.
+Por ejemplo, quieres preguntar si es una apuesta justa. Si usted tiene
+información diferente a la de otra persona, entonces su probabilidad de un dado
+es justa, puede ser diferente a la probabilidad de esa persona. Así que es
+inherentemente un enfoque subjetivo de la probabilidad, pero puede funcionar
+bien en una base matemáticamente rigurosa, y conduce a resultados mucho más
+intuitivos en muchos casos que el enfoque Frecuentista.  Podemos cuantificar
+las probabilidades pensando en lo que es una apuesta justa.  Así que, por
+ejemplo, queremos preguntar: ¿cuál es la probabilidad de que llueva mañana?
+Entonces podemos preguntarle acerca de una apuesta que usted podría estar
+dispuesto a aceptar si cree que es justa. Suponga que está dispuesto a aceptar
+la apuesta de que si llueve mañana, usted gana $4. Si no llueve mañana, pierde
+$1, o lo que sea su moneda local.  Usted puede pensar en esto como
+probabilidades de 4 a 1. Si usted piensa que la apuesta, la apuesta justa que
+usted debe estar dispuesto a tomar en cualquier dirección que también
+significaría Si llueve, pierdes $4. Y si no llueve, ganas $1. Si crees que
+ambos son justos, entonces estás definiendo la probabilidad de lluvia como 1
+sobre 1 más 4 que es igual a 1 y 5. Podemos ver que esto es justo si observamos
+su rentabilidad esperada.  Bajo la primera apuesta, su retorno esperado es que
+usted gana 4 con probabilidad 1 y 5 y pierde 1 con probabilidad 4 y 5. Y puedes
+ver que es una apuesta justa de 0. En el segundo caso, ganas 1 con probabilidad
+de 4 y 5, y pierdes 4 con probabilidad de 1 y 5, y eso también es 0. Así que se
+equilibra.  Sólo se equilibra si sus probabilidades coinciden.  Por lo tanto,
+puede utilizar este marco de apuestas para pensar cuál es su probabilidad
+personal en función de las apuestas que estaría dispuesto a realizar. En la
+mayoría de los casos, es bastante fácil ponerlo entre paréntesis. Aceptas una
+apuesta que era de mil y una a favor, pero no aceptas una que era de mil y una
+en contra. Así que tu probabilidad personal está en algún punto intermedio.
+Por último, quiero mencionar el concepto de coherencia. Las probabilidades
+deben seguir todas las reglas estándar de probabilidad, las que fueron
+definidas en el material suplementario de esta conferencia. Si no sigues todas
+las reglas de la probabilidad, entonces puedes ser incoherente, lo que lleva a
+que alguien construya una serie de apuestas en las que se garantiza que
+perderás dinero. A esto se le llama libro holandés. Si se siguen todas las
+reglas y se sigue el marco de las estadísticas bayesianas, se puede garantizar
+la coherencia.
