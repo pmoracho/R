@@ -19,11 +19,11 @@ tags:
   - desarrollo
   - R
 output:
-  html_document:
-    df_print: paged
-  pdf_document: default
   github_page:    
     jekyllthat::jekylldown
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE, cache=FALSE}
@@ -211,20 +211,20 @@ ggplot(midwest, aes(x=area, y=poptotal)) +
     xlim(c(0, 0.1)) + 
     ylim(c(0, 500000)) + 
     labs(subtitle="Area Vs Población", 
-         y="Poblacíon", 
-         x="Area", 
-         title="Ejemplo de un Scatterplot", 
+         y = "Poblacíon", 
+         x = "Area", 
+         title = "Ejemplo de un Scatterplot", 
          caption = "Fuente: midwest") +
     theme_elegante()
 
 ggplot(mpg, aes(cty, hwy)) +
     geom_point() + 
     geom_smooth(method="lm", se=F) +
-    labs(subtitle="Consumo en la ciudad versus autopista", 
-         y="Autopista", 
-         x="Ciudad", 
-         title="Millas por galón", 
-         caption="Fuente: midwest") +
+    labs(subtitle = "Consumo en la ciudad versus autopista", 
+         y = "Autopista", 
+         x = "Ciudad", 
+         title = "Millas por galón", 
+         caption = "Fuente: midwest") +
     theme_elegante()
 
 data("diamonds")
@@ -232,7 +232,7 @@ levels(diamonds$cut) <- c("Pobre", "Bueno", "Muy bueno", "Premium", "Ideal")
 ggplot(data=diamonds, aes(x = carat, y = price, color = cut)) + 
     geom_point(alpha = 1, size = .01, aes(color = cut)) + 
     labs(title = "Precio vs. Quilates", 
-       subtitle = "¿Cual es la corelación entre el precio y los quilates?",
+       subtitle = "¿Cuál es la corelación entre el precio y los quilates?",
        x = "Quilates", 
        y = "Precio",
        caption = "pmoracho.github.io" ) + 
@@ -255,7 +255,7 @@ ggplot(mpg, aes(displ, cty)) +
     theme_elegante() +
     theme(panel.border= element_rect(fill = NA, colour = "grey70", size = rel(1))) +
     labs(title = "Cilindrda vs consumo en ciudad", 
-       subtitle = "¿Cual es la relación entre la cilindarada y el consumo por cilindros/transmisión?",
+       subtitle = "¿Cuál es la relación entre la cilindarada y el consumo por cilindros/transmisión?",
        x = "Cilindrada", 
        y = "Consumo",
        caption = "pmoracho.github.io" ) + 
@@ -294,8 +294,8 @@ library(ggplot2)
 library(lubridate)
 
 ggplot(data = diamonds, aes(x = carat, y = price, color = cut)) + 
-    labs(title = "Precio vs. Quilatest", 
-       subtitle = "What is the correlation between the price of a diamond its carat? ",
+    labs(title = "Precio vs. Quilates", 
+       subtitle = "¿Cuál es la corelación entr el precio y los quilates? ",
        x = "Carat", 
        y = "Price",
        caption = "www.datatoinsight.io" ) + 
