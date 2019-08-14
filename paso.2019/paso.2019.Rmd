@@ -1,0 +1,37 @@
+---
+title: "Paso 2009"
+author: "Patricio Moracho"
+date: "13 de agosto de 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+```
+
+## Datos
+
+Los datos se pueden recuperar desde este enlace: https://t.co/a7y6igVM80?amp=1 sin embargo ya tenemos preparado un entorno de datos para cargar
+
+```{r load.data, warning=TRUE, cache=TRUE}
+load("data/paso.2019.Rda")
+```
+
+Veamos algunos datos interesantes:
+
+```{r summary.data, warning=TRUE, cache=TRUE}
+# Cantidad de mesas totales
+nrow(mesas_totales)
+
+head(mesas_totales_agrp_politica)
+head(mesas_totales_lista)
+
+unique(descripcion_postulaciones$NOMBRE_CATEGORIA)
+
+descripcion_postulaciones %>% 
+    filter(NOMBRE_CATEGORIA == "Presidente y Vicepresidente de la República") %>% 
+    select(CODIGO_CATEGORIA) %>% 
+    as.character()
+    
+```
