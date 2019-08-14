@@ -16,3 +16,4 @@
 /doc/*.tmp
 /doc/Book.R.toc
 /doc/Book.R.xref
+/*.Rcheck

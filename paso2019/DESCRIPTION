@@ -1,0 +1,10 @@
+Package: paso2019
+Type: Package
+Title: Data from the "Paso 2019" elections in Argentina 
+Version: 0.1.0
+Author: Patricio Moracho
+Maintainer: Patricio Moracho <pmoracho@gmail.com>
+Description: Data from the "Paso 2019" elections in Argentina
+License: GPL
+Encoding: UTF-8
+LazyData: true
