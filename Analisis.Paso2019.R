@@ -1,188 +1,264 @@
+library("paso2019")
 library("tidyverse")
 
-# Todas las mesas
+# Meta_Agrupaciones
+descripcion_postulaciones %>%
+  distinct(NOMBRE_AGRUPACION) %>%
+  mutate(id = row_number()) %>%
+  select(id_meta_agrupacion = id,
+         nombre_meta_agrupacion = NOMBRE_AGRUPACION) -> meta_agrupaciones
+
+# Agrupaciones
+descripcion_postulaciones %>%
+  distinct(CODIGO_AGRUPACION, NOMBRE_AGRUPACION) %>%
+  left_join(meta_agrupaciones, by = c("NOMBRE_AGRUPACION" = "nombre_meta_agrupacion")) %>%
+  mutate(id = row_number()) %>%
+  select(id_agrupacion = id,
+         id_meta_agrupacion,
+         codigo_agrupacion = CODIGO_AGRUPACION) -> agrupaciones
+
+# Categorias
+descripcion_postulaciones %>%
+  distinct(CODIGO_CATEGORIA, NOMBRE_CATEGORIA) %>%
+  mutate(id = row_number()) %>%
+  select(id_categoria = id,
+         codigo_categoria = CODIGO_CATEGORIA,
+         nombre_categoria = NOMBRE_CATEGORIA) -> categorias
+
+# Listas
+descripcion_postulaciones %>%
+  distinct(CODIGO_LISTA, NOMBRE_LISTA, CODIGO_AGRUPACION) %>%
+  left_join(agrupaciones, by = c("CODIGO_AGRUPACION" = "codigo_agrupacion")) %>%
+  mutate(id = row_number()) %>%
+  select(id_lista = id,
+         id_agrupacion,
+         codigo_lista = CODIGO_LISTA,
+         nombre_lista = NOMBRE_LISTA) -> listas
+
+# Distritos
 mesas_totales %>%
-  distinct(CODIGO_MESA) %>%
-  left_join(mesas_totales_agrp_politica %>%
-              group_by(CODIGO_MESA) %>%
-              summarise(ESCRUTADA = ifelse(sum(VOTOS_AGRUPACION)==0, FALSE, TRUE)),
-            by = "CODIGO_MESA") -> mesas
+  distinct(CODIGO_DISTRITO) %>%
+  left_join(descripcion_regiones, by = c('CODIGO_DISTRITO' = "CODIGO_REGION")) %>%
+  mutate(id = row_number()) %>%
+  select(id_distrito = id,
+         codigo_distrito = CODIGO_DISTRITO,
+         nombre_distrito = NOMBRE_REGION) -> distritos
 
-# agrupaciones
-descripcion_postulaciones %>%
-  select(CODIGO_AGRUPACION, NOMBRE_AGRUPACION) %>%
-  distinct() %>%
-  arrange(NOMBRE_AGRUPACION) -> agrupaciones
+# Secciones
+mesas_totales %>%
+  distinct(CODIGO_SECCION) %>%
+  left_join(descripcion_regiones, by = c('CODIGO_SECCION' = "CODIGO_REGION")) %>%
+  mutate(id = row_number()) %>%
+  select(id_seccion = id,
+         codigo_seccion = CODIGO_SECCION ,
+         nombre_seccion = NOMBRE_REGION) -> secciones
 
-# categorias
-descripcion_postulaciones %>%
-  select(CODIGO_CATEGORIA, NOMBRE_CATEGORIA ) %>%
-  distinct() %>%
-  arrange(NOMBRE_CATEGORIA) -> categorias
+# Circuitos
+mesas_totales %>%
+  distinct(CODIGO_CIRCUITO) %>%
+  left_join(descripcion_regiones, by = c('CODIGO_CIRCUITO' = "CODIGO_REGION")) %>%
+  mutate(id = row_number()) %>%
+  select(id_circuito = id,
+         codigo_circuito = CODIGO_CIRCUITO,
+         nombre_circuito = NOMBRE_REGION) -> circuitos
 
-# listas
-descripcion_postulaciones %>%
-  select(CODIGO_AGRUPACION, CODIGO_LISTA, NOMBRE_LISTA) %>%
-  distinct() %>%
-  arrange(NOMBRE_LISTA) -> listas
+# Mesas
+mesas_totales %>%
+  distinct(CODIGO_MESA, CODIGO_DISTRITO, CODIGO_SECCION, CODIGO_CIRCUITO) %>%
+  left_join(distritos, by = c('CODIGO_DISTRITO' = "codigo_distrito")) %>%
+  left_join(secciones, by = c('CODIGO_SECCION' = "codigo_seccion")) %>%
+  left_join(circuitos, by = c('CODIGO_CIRCUITO' = "codigo_circuito")) %>%
+  mutate(id = row_number(),
+         escrutada = NA) %>%
+  select(id_mesa = id,
+         id_distrito,
+         id_seccion,
+         id_circuito,
+         codigo_mesa = CODIGO_MESA,
+         escrutada)  -> mesa
 
-# Mesas totales x agrupacion
-mesas_totales_agrp_politica %>%
-  select(CODIGO_AGRUPACION, CODIGO_CATEGORIA, CODIGO_MESA, VOTOS_AGRUPACION) -> agrupacion_categoria_mesas
-
-# listas + categorias + mesas
+# votos
 mesas_totales_lista %>%
-  select(CODIGO_LISTA, CODIGO_CATEGORIA, CODIGO_MESA, VOTOS_AGRUPACION) -> agrupacion_listas_mesas
+  distinct(CODIGO_MESA, CODIGO_CATEGORIA, CODIGO_LISTA, VOTOS_LISTA) %>%
+  left_join(categorias, by=c("CODIGO_CATEGORIA" = "codigo_categoria")) %>%
+  left_join(listas, by=c("CODIGO_LISTA" = "codigo_lista")) %>%
+  left_join(mesas, by=c("CODIGO_MESA" = "codigo_mesa")) %>%
+  mutate(id = row_number()) %>%
+  select(id_voto = id,
+         id_mesa,
+         id_categoria,
+         id_lista,
+         votos = VOTOS_LISTA) -> votos
+
+# Totales de votos por categoria
+votos %>%
+  group_by(id_categoria) %>%
+  summarise(votos = sum(votos)) %>%
+  left_join(categorias, by = "id_categoria") %>%
+  select(id_categoria,
+         codigo_categoria,
+         nombre_categoria,
+         votos_totales = votos)  %>%
+  as.data.frame() -> categorias
 
 
-mesas_totales_agrp_politica %>%
-  group_by(CODIGO_MESA) %>%
-  summarise(ESCRUTADA = ifelse(sum(VOTOS_AGRUPACION)==0, FALSE, TRUE))
+glimpse(meta_agrupaciones)
+glimpse(agrupaciones)
+glimpse(categorias)
+glimpse(listas)
+glimpse(mesas)
+glimpse(votos)
+glimpse(distritos)
+glimpse(secciones)
+glimpse(circuitos)
 
-mesas_totales_lista %>%
-  group_by(CODIGO_MESA) %>%
-  summarise(VOTOS = sum(VOTOS_LISTA)) %>%
-  filter(VOTOS == 0)
+usethis::use_data(meta_agrupaciones, overwrite = TRUE)
+usethis::use_data(agrupaciones, overwrite = TRUE)
+usethis::use_data(categorias, overwrite = TRUE)
+usethis::use_data(listas, overwrite = TRUE)
+usethis::use_data(mesas, overwrite = TRUE)
+usethis::use_data(votos, overwrite = TRUE)
+usethis::use_data(distritos, overwrite = TRUE)
+usethis::use_data(secciones, overwrite = TRUE)
+usethis::use_data(circuitos, overwrite = TRUE)
 
 
-# Total de mesas Escrutadas Si/No
+
+
+
+######################
+
+library(paso2019)
+
 mesas %>%
-  group_by(ESCRUTADA) %>%
-  summarise(Cantidad = n()) %>%
-  mutate(Escrutadas = ifelse(ESCRUTADA, "Si", "No"),
-         TotalMesas = nrow(mesas),
-         Porcentaje = Cantidad/TotalMesas) %>%
-  select(Escrutadas, Cantidad, Porcentaje) %>%
-  as.data.frame()
+  group_by(escrutada) %>%
+  summarize(cantidad=n()) %>%
+  mutate(escrutada = reorder(ifelse(escrutada, "Si", "No"), -cantidad),
+         prop = round(cantidad / nrow(mesas),2),
+         lab.ypos = cumsum(cantidad) - 0.5 * cantidad) %>%
+  ggplot(aes(x = "", y = cantidad, fill = escrutada)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  geom_text(aes(y = lab.ypos, label = paste(prop,"%")), color = "white") +
+  #coord_polar("y", start = 0) +
+  scale_fill_manual(values = c("#0073C2FF", "#868686FF")) +
+  theme_void()
 
+ggplot(aes(x=escrutada, y=cantidad, fill=escrutada)) +
+  geom_col() +
+  coord_polar()
 
-mesas_totales_agrp_politica %>%
-  filter(CODIGO_MESA == "0100100001X") %>%
-  mutate(URL=get_telegrama_url(CODIGO_MESA)) %>%
-  group_by(CODIGO_CATEGORIA, URL) %>%
-  summarise(VOTOS=sum(VOTOS_AGRUPACION))
+# Mesas escrutadas con ningun voto en todeas las categorias
+mesas %>%
+  filter(escrutada == TRUE) %>%
+  left_join(votos, by = "id_mesa") %>%
+  left_join(listas, by = "id_lista") %>%
+  left_join(agrupaciones, by = "id_agrupacion") %>%
+  group_by(id_mesa, id_meta_agrupacion, id_categoria) %>%
+  summarize(votos = sum(votos)) %>%
+  filter(votos == 0) %>%
+  ungroup() -> mesas_sin_votos
 
+mesas_sin_votos %>%
+  filter(id_meta_agrupacion %in% c(5, 9)) %>%
+  group_by(id_mesa, id_meta_agrupacion) %>%
+  summarize(mesas_con_0_votos = n())
 
+mesas_sin_votos %>%
+  left_join(meta_agrupaciones, by = "id_meta_agrupacion") %>%
+  group_by(id_meta_agrupacion, nombre_meta_agrupacion) %>%
+  summarize(mesas_con_0_votos = n()) %>%
+  filter(id_meta_agrupacion %in% c(5, 9))
 
-# Mesas totales x lista
-mesas_totales_agrp_politica %>%
-  select(CODIGO_CATEGORIA,  CODIGO_AGRUPACION, CODIGO_MESA, VOTOS_AGRUPACION) -> mesas_totales_x_agrupacion
-
-# Mesas con votos para Presidente y Vicepresidente de la República
-mesas_totales_x_agrupacion %>%
-  inner_join(agrupaciones, by = "CODIGO_AGRUPACION") %>%
-  inner_join(categorias, by = "CODIGO_CATEGORIA") %>%
-  inner_join(mesas, by = "CODIGO_MESA") %>%
-  filter(CODIGO_CATEGORIA == '000100000000000',
-         ESCRUTADA == TRUE,
-         VOTOS_AGRUPACION == 0) %>%
-  group_by(NOMBRE_AGRUPACION) %>%
-  summarize(Cantidad = n()) %>%
-  arrange(Cantidad)
-
-# Mesas con votos 0 para Gobernador y Vice Gobernador Buenos Aires
-mesas_totales_x_agrupacion %>%
-  inner_join(agrupaciones, by = "CODIGO_AGRUPACION") %>%
-  inner_join(categorias, by = "CODIGO_CATEGORIA") %>%
-  inner_join(mesas, by = "CODIGO_MESA") %>%
-  filter(CODIGO_CATEGORIA == '000402000000000',
-         ESCRUTADA == TRUE,
-         VOTOS_AGRUPACION == 0) %>%
-  group_by(NOMBRE_AGRUPACION) %>%
-  summarize(Cantidad = n()) %>%
-  arrange(Cantidad)
-
-# Votos por agrupación y categoría
-mesas_totales_x_agrupacion %>%
-  group_by(CODIGO_AGRUPACION, CODIGO_CATEGORIA) %>%
-  summarize(VOTOS_AGRUPACION = sum(VOTOS_AGRUPACION)) %>%
-  inner_join(agrupaciones, by = "CODIGO_AGRUPACION") %>%
-  inner_join(categorias, by = "CODIGO_CATEGORIA") %>%
-  arrange(CODIGO_CATEGORIA, -VOTOS_AGRUPACION)
-
-head(mesas_totales_agrp_politica)
-
-# Mesas con votos para el JUNTOS POR EL CAMBIO en 0
-mesas_totales_x_agrupacion %>%
-  inner_join(agrupaciones) %>%
-  inner_join(categorias) %>%
-  inner_join(mesas) %>%
-  filter(CODIGO_CATEGORIA == '000100000000000',
-         ESCRUTADA == TRUE,
-         NOMBRE_AGRUPACION == "JUNTOS POR EL CAMBIO",
-         VOTOS_AGRUPACION == 0) %>%
-  mutate(url=get_telegrama_url(CODIGO_MESA )) %>%
+mesas %>%
+  filter(escrutada == TRUE) %>%
+  left_join(votos, by = "id_mesa") %>%
+  left_join(listas, by = "id_lista") %>%
+  left_join(agrupaciones, by = "id_agrupacion") %>%
+  left_join(meta_agrupaciones, by = "id_meta_agrupacion") %>%
+  group_by(id_mesa, codigo_mesa, id_meta_agrupacion, nombre_meta_agrupacion) %>%
+  summarize(votos = sum(votos)) %>%
+  filter(votos == 0, id_meta_agrupacion %in% c(5, 9)) %>%
+  mutate(url = get_telegrama_url(codigo_mesa)) %>%
   View()
 
 
+mesas %>%
+  left_join(votos, by = "id_mesa") %>%
+  left_join(categorias, by = "id_categoria") %>%
+  left_join(listas, by = "id_lista") %>%
+  left_join(agrupaciones, by = "id_agrupacion") %>%
+  filter(nombre_categoria == "Presidente y Vicepresidente de la República",
+         id_meta_agrupacion %in% c(5, 9)) %>%
+  group_by(id_mesa, id_meta_agrupacion) %>%
+  summarize(votos = sum(votos)) %>%
+  filter(votos == 0) %>%
+  group_by(id_meta_agrupacion) %>%
+  summarize(votos = n())
 
 
-
-
-
-mesas_totales_agrp_politica %>%
-  left_join(descripcion_postulaciones, by = c("CODIGO_CATEGORIA", "CODIGO_AGRUPACION")) %>%
-  inner_join(mesas, by = "CODIGO_MESA") %>%
-  filter(ESCRUTADA,
-         NOMBRE_AGRUPACION == 'FRENTE DE TODOS',
-         VOTOS_AGRUPACION == 0) %>%
-  select(CODIGO_MESA) %>%
-  distinct() %>%
-  mutate(url=get_telegrama_url(CODIGO_MESA )) %>%
-  head()
-  left_join(descripcion_postulaciones, by = c("CODIGO_CATEGORIA", "CODIGO_AGRUPACION")) %>%
+mesas_totales_agrp_politica %>% glimpse()
 
 mesas_totales_lista %>%
-  filter(CODIGO_MESA == "0600100659X") %>%
-  select(CODIGO_LISTA,  NOMBRE_LISTA, VOTOS_LISTA) %>%
-  arrange(NOMBRE_AGRUPACION)
+  filter(CODIGO_MESA == "0100100011X") %>%
 
-  filter(CODIGO_MESA == "0600100659X") %>%
+mesas_totales_agrp_politica %>%
+  filter(CODIGO_AGRUPACION %in% c("135", "136") & CODIGO_CATEGORIA == "000100000000000") %>%
+  group_by(CODIGO_MESA, CODIGO_AGRUPACION, VOTOS_AGRUPACION) %>%
+  summarize(FT=sum(ifelse(CODIGO_AGRUPACION == 135, VOTOS_AGRUPACION,0)),
+            JxC=sum(ifelse(CODIGO_AGRUPACION == 136, VOTOS_AGRUPACION,0))) %>%
+  filter(FT == 0 | JxC ==0) %>%
+  ungroup() %>%
+  summarize(FT = sum(FT==0), JxC = sum(JxC==0))
 
 
 
-  filter(CODIGO_MESA == "0600100659X") %>%
+summarize(c=n()) %>%
+  filter(c > 1)
+
+filter(CODIGO_MESA == "0200100009X")
 
 
 
 
-  inner_join(mesas_totales_agrp_politica) %>%
-  filter(CODIGO_MESA == "0600100659X")
 
-str(mesas_totales)
-str(mesas_totales_agrp_politica)
-str(mesas_totales_lista)
-str(descripcion_postulaciones)
-str(mesas_totales_lista)
-# descripcion_postulaciones <- read.table('data/descripcion_postulaciones.dsv', header = TRUE, sep = '|', colClasses = "character", encoding = "UTF-8", stringsAsFactors = FALSE, quote = "")
-# descripcion_regiones <- read.table('data/descripcion_regiones.dsv', header = TRUE, sep = '|', colClasses = "character", encoding = "UTF-8", stringsAsFactors = FALSE, quote = "")
+  mesas_totales_lista %>%
+  filter(CODIGO_MESA == "0100100011X") %>%
 
-mesas_totales_agrp_politica <- read.table('ext-data/mesas_totales_agrp_politica.dsv',
-                                          header = TRUE,
-                                          sep = '|',
-                                          colClasses = c(rep("character",6), "numeric"),
-                                          encoding = "UTF-8",
-                                          stringsAsFactors = FALSE,
-                                          quote = "")
-usethis::use_data(mesas_totales_agrp_politica, overwrite = TRUE)
 
-mesas_totales_lista <- read.table('ext-data/mesas_totales_lista.dsv',
-                                  header = TRUE,
-                                  sep = '|',
-                                  colClasses = c(rep("character",7), "numeric"),
-                                  encoding = "UTF-8",
-                                  stringsAsFactors = FALSE,
-                                  quote = "")
-str(mesas_totales_lista)
-usethis::use_data(mesas_totales_lista, overwrite = TRUE)
+  agrupaciones %>%
+  View()
 
-mesas_totales <- read.table('ext-data/mesas_totales.dsv',
-                            header = TRUE,
-                            sep = '|',
-                            colClasses = c(rep("character",6), "numeric"),
-                            encoding = "UTF-8",
-                            stringsAsFactors = FALSE,
-                            quote = "")
+descripcion_postulaciones %>%
+  glimpse()
 
-str(mesas_totales)
-usethis::use_data(mesas_totales, overwrite = TRUE)
+mesas_totales_agrp_politica %>%
+  filter(CODIGO_AGRUPACION %in% c("01-502", "136")) %>%
+  group_by(CODIGO_MESA, CODIGO_AGRUPACION, CODIGO_CATEGORIA) %>%
+  summarise(VOTOS_AGRUPACION = sum(VOTOS_AGRUPACION)) %>%
+  filter(VOTOS_AGRUPACION == 0, CODIGO_AGRUPACION %in% c("135", "136")) %>%
+  View()
+
+agrupaciones %>%
+  left_join(meta_agrupaciones) %>%
+  filter(codigo_agrupacion == "135")
+
+mesas_totales_agrp_politica %>%
+  filter(CODIGO_AGRUPACION %in% c("136", "02-503")) %>%
+  filter(CODIGO_MESA == '0200100001X') %>%
+  arrange(CODIGO_MESA) %>%
+  select(CODIGO_MESA, CODIGO_AGRUPACION, VOTOS_AGRUPACION)
+
+summarize(cant=n())
+
+
+agrupaciones %>%
+  left_join(meta_agrupaciones) %>%
+  filter(nombre_meta_agrupacion == "FRENTE DE TODOS")
+
+
+categorias %>%
+  filter(id_categoria == 137)
+
+
+
+2^rep(1:10)
