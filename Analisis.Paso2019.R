@@ -203,7 +203,7 @@ mesas_totales_lista %>%
 
 mesas_totales_agrp_politica %>%
   filter(CODIGO_AGRUPACION %in% c("135", "136") & CODIGO_CATEGORIA == "000100000000000") %>%
-  group_by(CODIGO_MESA, CODIGO_AGRUPACION, VOTOS_AGRUPACION) %>%
+  group_by(CODIGO_MESA) %>%
   summarize(FT=sum(ifelse(CODIGO_AGRUPACION == 135, VOTOS_AGRUPACION,0)),
             JxC=sum(ifelse(CODIGO_AGRUPACION == 136, VOTOS_AGRUPACION,0))) %>%
   filter(FT == 0 | JxC ==0) %>%
@@ -211,6 +211,9 @@ mesas_totales_agrp_politica %>%
   summarize(FT = sum(FT==0), JxC = sum(JxC==0))
 
 
+mesas_totales_agrp_politica %>%
+  summarize(max = max(VOTOS_AGRUPACION))
+  filter(CODIGO_AGRUPACION %in% c("135", "136") & CODIGO_CATEGORIA == "000100000000000")
 
 summarize(c=n()) %>%
   filter(c > 1)
