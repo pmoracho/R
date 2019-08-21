@@ -1,0 +1,148 @@
+---
+title: "Algunos datos de las paso 2019"
+author: "Patricio Moracho"
+date: "19 de agosto de 2019"
+post_date: 2019-08-20
+layout: post
+categories: cat
+excerpt_separator: <!--more-->
+published: true
+show_meta: true
+comments: true
+mathjax: false
+gistembed: false
+noindex: false
+hide_printmsg: false
+sitemap: true
+summaryfeed: false
+description: Algunos datos talvez interesantes de las Paso 2019
+tags:
+  - desarrollo
+  - R
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  github_page:    
+    jekyllthat::jekylldown
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_knit$set(base.url='/images/2019/')
+
+library("paso2019")
+library("tidyverse")
+library("ggplot2")
+library("scales") 
+```
+
+La justicia electoral publicó una serie de tablas que representa los datos de los telegramas con el escrutinio de cada mesa. Una buena oportunidad para practicar un poco con **`R`** y de paso intentar responder algunas preguntas.
+
+## Antes de empezar
+
+La fuente oficial dónde descargar los datos es esta: http://descargaresultados.s3-sa-east-1.amazonaws.com/resultados.zip, son varios archivos delimitados por el piepe (`|`), sin embargo, elaboré un paquete que ya trae precargados estos datos y además una incorpora una reformulación de los mismos bajo un modelo relacional clásico, que para el que este acostunbrado a trabajar con bases de datos, como yo, seguramente es una foma más cómoda. El paquete se llama [paso2019](https://github.com/pmoracho/paso2019), se puede descar e instalar en **`R`** o bien, si ya disponemos de `devtools`, simplemente podremos hacer:
+
+```{r eval=FALSE}
+devtools::install("pmoracho/paso2019")
+```
+
+Luego simplemente cargamos el paquete junto con los otros que vamos a necesitar
+
+```{r eval=FALSE}
+library("paso2019")
+library("tidyverse")
+library("ggplot2")
+library("scales") 
+```
+
+## Aclaraciones iniciales
+
+Hay algunas inconsistencias en los datos que en algún momento puede llamar la atención. Por empezar hay una inconsistencia entre las tres tablas de mesas, descargadas del sitio oficial de los resultados. Podemos verificarlo así:
+
+```{r cache=TRUE}
+
+data.frame(tabla = c("mesas_totales", 
+                     "mesas_totales_lista", 
+                     "mesas_totales_agrp_politica"
+                     ),
+           registros = c( mesas_totales %>% distinct(CODIGO_MESA) %>% nrow(),
+                          mesas_totales_lista %>% distinct(CODIGO_MESA) %>% nrow(),
+                          mesas_totales_agrp_politica %>% distinct(CODIGO_MESA) %>% nrow()
+                          )
+           )
+```
+
+Podemos ver que `mesas_totales`tiene dos mesas menos que el resto de las tablas. Particularmente son las siguientes:
+
+```{r cache=TRUE}
+
+mesas_totales_lista %>% 
+  anti_join(mesas_totales, by = "CODIGO_MESA") %>% 
+  distinct(CODIGO_MESA)
+
+```
+
+La otra inconsistencia notable, es entre esta información y la que se publica en la página web: https://resultados.gob.ar/, la mesas escrutadas según esta página son 100,156 mesas, los datos descargados, indican en el mejor de los casos 100,148 mesas, es decir 8 mesas menos.
+
+## Preguntas 
+
+### ¿Cuantas mesas fueron escrutadas y cuantas no?
+
+```{r cache=TRUE}
+mesas %>% 
+  summarise(total = n()) %>% 
+  as.numeric() -> mesas_totales
+
+mesas %>% 
+  group_by(escrutada=ifelse(escrutada, "Si", "No")) %>% 
+  summarise(cantidad = n()) %>% 
+  mutate(porcentaje=cantidad/mesas_totales*100) %>% 
+  union(mesas %>% 
+    summarise(escrutada = "Totales", cantidad = n(), porcentaje=100)
+  ) %>% 
+  arrange(-cantidad) 
+```
+
+En este análisis hemos considerado las mesas no escrutadas, aquellas dónde la cantidad de votos de todas las listas asociadas es cero. Aquí también hay una discrepancia con la página, la cual informa un 98.6% de mesas escrutadas y en el caso de los datos publicados, el porcentaje es algo menor 97.54%.
+
+### ¿Quién ganó en la categoría de Presidente y Vice?
+
+```{r cache=TRUE}
+votos %>% 
+  left_join(listas, by = "id_lista") %>% 
+  left_join(agrupaciones, by = "id_agrupacion") %>% 
+  left_join(categorias, by = "id_categoria") %>% 
+  left_join(meta_agrupaciones, by = "id_meta_agrupacion") %>% 
+  filter(nombre_categoria == "Presidente y Vicepresidente de la República") %>% 
+  group_by(nombre_meta_agrupacion, votos_totales) %>% 
+  summarise(votos = sum(votos)) %>% 
+  mutate(porcentaje = votos / votos_totales) %>% 
+  select(nombre_meta_agrupacion, votos, porcentaje ) %>% 
+  arrange(-votos)
+```
+
+Acá es dónde tenemos que plantear todas las relaciones para llegar a la información que necesitamos, alquien que venga del mundo de las bases de datos se sentirá cómodo, los que vienen de la estadística, lo verán demasiado complejo tal vez. De cualquier manera, con las tablas originales podemos hacer algo similar:
+
+```{r cache=TRUE}
+mesas_totales_lista %>% 
+  filter(CODIGO_CATEGORIA=="000100000000000") %>% 
+  summarise(sum(VOTOS_LISTA)) %>% 
+  as.numeric() -> votos_totales 
+
+mesas_totales_lista %>% 
+  filter(CODIGO_CATEGORIA=="000100000000000") %>% 
+  left_join(descripcion_postulaciones, by = c("CODIGO_CATEGORIA", "CODIGO_AGRUPACION", "CODIGO_LISTA")) %>% 
+  group_by(NOMBRE_AGRUPACION) %>% 
+  summarise(votos=sum(VOTOS_LISTA)) %>% 
+  mutate(porcentaje = votos / votos_totales) %>% 
+  select(NOMBRE_AGRUPACION, votos, porcentaje) %>% 
+  arrange(-votos)
+  
+  
+```
+
+
+
+
