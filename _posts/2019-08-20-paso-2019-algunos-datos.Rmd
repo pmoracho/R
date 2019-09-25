@@ -15,7 +15,7 @@ noindex: false
 hide_printmsg: false
 sitemap: true
 summaryfeed: false
-description: Algunos datos talvez interesantes de las Paso 2019
+description: Algunos datos tal vez interesantes de las Paso 2019
 tags:
   - desarrollo
   - R
@@ -32,9 +32,11 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = TRUE)
 knitr::opts_knit$set(base.url='/images/2019/')
 
+library("knitr")
 library("paso2019")
 library("tidyverse")
 library("ggplot2")
+library("extrafont")
 library("ggelegant")
 
 ```
@@ -72,7 +74,8 @@ data.frame(tabla = c("mesas_totales",
                           mesas_totales_lista %>% distinct(CODIGO_MESA) %>% nrow(),
                           mesas_totales_agrp_politica %>% distinct(CODIGO_MESA) %>% nrow()
                           )
-           )
+           ) %>% 
+    kable()
 ```
 
 Podemos ver que `mesas_totales`tiene dos mesas menos que el resto de las tablas. Particularmente son las siguientes:
@@ -81,7 +84,8 @@ Podemos ver que `mesas_totales`tiene dos mesas menos que el resto de las tablas.
 
 mesas_totales_lista %>% 
   anti_join(mesas_totales, by = "CODIGO_MESA") %>% 
-  distinct(CODIGO_MESA)
+  distinct(CODIGO_MESA) %>% 
+  kable()
 
 ```
 
@@ -103,7 +107,9 @@ mesas %>%
   union(mesas %>% 
     summarise(escrutada = "Totales", cantidad = n(), porcentaje=100)
   ) %>% 
-  arrange(-cantidad) 
+  arrange(-cantidad) %>% 
+  kable()
+
 ```
 
 En este análisis hemos considerado las mesas no escrutadas, aquellas dónde la cantidad de votos de todas las listas asociadas es cero. Aquí también hay una discrepancia con la página, la cual informa un 98.6% de mesas escrutadas y en el caso de los datos publicados, el porcentaje es algo menor 97.54%.
@@ -123,7 +129,9 @@ votos %>%
   arrange(-votos) %>% 
   mutate(porcentaje = votos / votos_totales,
          acumulado = cumsum(porcentaje)) %>%
-  select(nombre_meta_agrupacion, votos, porcentaje, acumulado)
+  select(nombre_meta_agrupacion, votos, porcentaje, acumulado) %>% 
+  kable()
+
 ```
 
 Acá es dónde tenemos que plantear todas las relaciones para llegar a la información que necesitamos, alquien que venga del mundo de las bases de datos se sentirá cómodo, los que vienen de la estadística, lo verán demasiado complejo tal vez. De cualquier manera, con las tablas originales podemos hacer algo similar:
@@ -142,7 +150,8 @@ mesas_totales_lista %>%
   arrange(-votos) %>% 
   mutate(porcentaje = votos / votos_totales,
          acumulado = cumsum(porcentaje)) %>% 
-  select(NOMBRE_AGRUPACION, votos, porcentaje)
+  select(NOMBRE_AGRUPACION, votos, porcentaje) %>% 
+  kable()
 
 ```
 
@@ -150,9 +159,10 @@ En los datos originales, los **VOTOS en BLANCO** no se consideran al nivel de un
 
 ## ¿Cómo fue la distribución de votos?
 
+Miremos la categoría de Predidente y Vice:
+
 ```{r boxplot_setup, warning=FALSE, cache=TRUE, nessage=FALSE}
 votos %>% 
-    left_join(categorias, by = "id_categoria") %>% 
     filter(id_categoria == 137) %>% 
     left_join(listas, by = "id_lista") %>% 
     left_join(agrupaciones, by = "id_agrupacion") %>% 
@@ -173,7 +183,7 @@ votos_porcentaje %>%
 colores <- c("#26a7ed", "#fbfb00", "#b8867b", "#950000", "#996600", "#4d4d4d", "#57BFEB")    
 ```
 
-```{r boxplot, warning=FALSE, cache=TRUE, nessage=FALSE}
+```{r boxplot, fig.height = 8, fig.width = 10, fig.align = "center", warning=FALSE, cache=TRUE, nessage=FALSE}
 votos_porcentaje %>%
     inner_join(top, by = "nombre_meta_agrupacion") %>% 
     ggplot(aes(x=fct_reorder(nombre_meta_agrupacion, porcentaje), 
@@ -193,25 +203,120 @@ votos_porcentaje %>%
 
 ```
 
-Es interesante ver el **boxplot** y ver los "outliers" en particular los que caen el limite máximo, son las mesas dónde solo hay votos para una determinada agrupación. Interesante que en estos casos se vulnera fácilmente el secreto del voto.
+Es interesante ver el **boxplot** y ver los "outliers" en particular los que caen el limite máximo, son las mesas dónde solo hay votos para una determinada agrupación. Interesante que revisar estos casos vulnera fácilmente el secreto del voto.
 
 ```{r mesas_100, message=FALSE, warning=FALSE, cache=TRUE}
 # Mesas con el 100% de votos a una agrupación
 votos_porcentaje %>% 
-    filter(porcentaje == 1) %>% 
-    left_join(mesas, by = "id_mesa") %>%
-    left_join(circuitos, by = "id_circuito") %>%
-    left_join(secciones, by = "id_seccion") %>%
-    left_join(distritos, by = "id_distrito") %>%
-    left_join(establecimientos, by = "id_establecimiento") %>% 
-    group_by(nombre_meta_agrupacion) %>% 
-    summarise(mesas=n(), votos=sum(votos)) %>% 
-    arrange(-votos)
+  filter(porcentaje == 1) %>% 
+  left_join(mesas, by = "id_mesa") %>%
+  left_join(circuitos, by = "id_circuito") %>%
+  left_join(secciones, by = "id_seccion") %>%
+  left_join(distritos, by = "id_distrito") %>%
+  left_join(establecimientos, by = "id_establecimiento") %>% 
+  select(nombre_meta_agrupacion,
+         nombre_distrito,
+         nombre_seccion,
+         nombre_circuito,
+         nombre_establecimiento,
+         codigo_mesa,
+         votos) -> mesas_100
+
+mesas_100 %>% 
+  group_by(nombre_meta_agrupacion) %>% 
+  summarise(mesas = n(), votos = sum(votos)) %>% 
+  arrange(-votos) %>% 
+  union(mesas_100 %>% 
+    summarise(nombre_meta_agrupacion = "Total", mesas = n(), votos = sum(votos))
+  ) %>% 
+  kable()
+
 ```
 
 No lo voy a hacer, pero claramente es muy fácil llegar a estas mesas, para luego ir al padrón y relacionar votos con personas, claro aún faltaría saber exactamente quienes votaron y quienes no concurrieron, pero en estos casos es claro que es muy sencillo vulnerar el secreto.
 
+Es raro no, que todos los votos vayan a una única agrupación ¿no? sin embargo, estamos hablando de 63 mesas sobre 100,148, y no llegan a ser más de 2600 votos, por lo que no seamos suspicaces en esto. Podemos claro estudiar más en detalle el tema:
 
+```{r mesas_100_a, message=FALSE, warning=FALSE, cache=TRUE}
+mesas_100 %>% 
+  select(nombre_meta_agrupacion,
+         nombre_distrito,
+         nombre_seccion,
+         nombre_circuito,
+         nombre_establecimiento,
+         codigo_mesa,
+         votos) %>% 
+  arrange(-votos) %>% 
+  kable()
+```
 
+¿Que observamos? muchas mesas con pocos votos, por lo que es mucho más probable que vayan todos a una única agrupación, ni hablar de las mesas que tienen 1 solo voto (eso será motivo para otro análisis). Sin embargo también hay varias mesas con una cantidad importante de votos, por ejemplo, com ás de 100 votos hay 10 mesas, la mayoría del **FRENTE de TODOS**, una de **VOTO en BLANCO** y otra para **JUNTOS por el CAMBIO**. Si queremos estudiar estos casos y verificar si existió algún error de carga, podríamos obtener las `urls` de las imagenes de los telegramas:
 
+```{r mesas_100_b, message=FALSE, warning=FALSE, cache=TRUE}
+mesas_100 %>% 
+  filter(votos >= 100) %>% 
+  mutate(url = get_telegrama_url(codigo_mesa),
+         cmd = paste0("view_telegrama('", codigo_mesa, "')")) %>% 
+  select(codigo_mesa, nombre_meta_agrupacion, votos, url) %>% 
+  kable()
+```
+
+O incluso, ver directamente la imagen, mediante:
+
+```{r mesas_100_c, eval=FALSE}
+
+view_telegrama('0900801352X')
+view_telegrama('2200100229X')
+view_telegrama('2200500851X')
+view_telegrama('2200601184X')
+view_telegrama('2200901327X')
+view_telegrama('2201801812X')
+view_telegrama('2202202007X')
+view_telegrama('2202202012X')
+view_telegrama('2202402154X')
+view_telegrama('0200700142X')
+
+```
+
+La otra curiosidad que me surgió es:
+
+### ¿Cual es la distribución de votos por mesa?
+
+Siempre dentro de la categoría Presidente y Vice
+
+```{r hist, fig.height = 8, fig.width = 12, fig.align = "center"}
+# Calculamos los votos totales por mesa
+votos_porcentaje %>%
+  group_by(id_mesa) %>% 
+  summarize(total_votos = sum(votos)) -> mesas_votos
+
+# Calculamos la media de votos por mesa
+media_total_votos <- round(mean(mesas_votos$total_votos),0)
+
+# Para evitar un geom_histogram que es muy lento es que
+# generamos esta función que hace lo mismo dibujando las
+# barras mediante geom_rect
+# + info: https://es.stackoverflow.com/questions/295767/c%c3%b3mo-mejorar-performance-de-un-geom-histogram
+
+res = hist(mesas_votos$total_votos, plot=FALSE, breaks=1000)
+dat = data.frame(xmin=head(res$breaks, -1L),
+                 xmax=tail(res$breaks, -1L),
+                 ymin=0.0,
+                 ymax=res$counts)
+  
+ggplot(dat, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)) +
+  geom_rect(size=0.5, colour="#718FD7", fill="#718FD7") +
+  geom_vline(aes(xintercept = media_total_votos),
+             col = '#BC3204', size=1) +
+  geom_text(aes(label = paste("media:", media_total_votos), y = 1400, x = media_total_votos+1), 
+            vjust = -1, col='#BC3204',size = 4, angle = 90) +
+  labs(title="Cantidad de votos por mesa", 
+       subtitle="Distribución de cantidades de votos por mesa en la categoria Presidente", 
+       caption="fuente: DINE", 
+       x="Cantidad de mesas",
+       y="Cantidad de votos",
+       color=NULL) +
+  theme_elegante_std(base_family = "Raleway") 
+
+```
 
