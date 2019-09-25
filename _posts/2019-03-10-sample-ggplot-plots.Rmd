@@ -33,6 +33,7 @@ knitr::opts_knit$set(base.url='/images/2019/')
 library(tidyverse)
 library(ggplot2)
 library(scales) 
+
 ```
 
 Hace un tiempo que estoy robando ideas de todos lados como para armar un tema de **ggplot2** que sea elegante, simple y visualmente atractivo. Lo llame `theme_elegante()`, muy original lo mio. El código es el siguiente:

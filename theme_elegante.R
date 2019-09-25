@@ -37,7 +37,6 @@ theme_elegante <- function(base_size = 10,
         
         theme(strip.text.x = element_text(size=base_size,color=color.background, family = base_family)) +
         theme(strip.text.y = element_text(size=base_size,color=color.background, family = base_family)) +
-        #theme(strip.background = element_rect(fill=strip.background.color, linetype="blank")) +
         theme(strip.background = element_rect(fill = "grey70", colour = NA)) +
         # theme(panel.border= element_rect(fill = NA, colour = "grey70", size = rel(1)))+
         # Set title and axis labels, and format these and tick marks
@@ -45,7 +44,8 @@ theme_elegante <- function(base_size = 10,
                                       size=20, 
                                       vjust=1.25, 
                                       family=base_family, 
-                                      hjust = 0.5
+                                      hjust = 0.5,
+                                      face = "bold"
                                       )) +
         
         theme(plot.subtitle=element_text(color=color.subtitle, size=base_size+2, family = base_family,  hjust = 0.5))  +
@@ -76,4 +76,3 @@ theme_elegante <- function(base_size = 10,
     
     ret
 }
-

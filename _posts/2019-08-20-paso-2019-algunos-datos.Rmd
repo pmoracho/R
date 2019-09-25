@@ -20,11 +20,11 @@ tags:
   - desarrollo
   - R
 output:
-  html_document:
-    df_print: paged
-  pdf_document: default
   github_page:    
     jekyllthat::jekylldown
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE, cache=FALSE}
@@ -35,33 +35,34 @@ knitr::opts_knit$set(base.url='/images/2019/')
 library("paso2019")
 library("tidyverse")
 library("ggplot2")
-library("scales") 
+library("ggelegant")
+
 ```
 
 La justicia electoral publicó una serie de tablas que representa los datos de los telegramas con el escrutinio de cada mesa. Una buena oportunidad para practicar un poco con **`R`** y de paso intentar responder algunas preguntas.
 
 ## Antes de empezar
 
-La fuente oficial dónde descargar los datos es esta: http://descargaresultados.s3-sa-east-1.amazonaws.com/resultados.zip, son varios archivos delimitados por el piepe (`|`), sin embargo, elaboré un paquete que ya trae precargados estos datos y además una incorpora una reformulación de los mismos bajo un modelo relacional clásico, que para el que este acostunbrado a trabajar con bases de datos, como yo, seguramente es una foma más cómoda. El paquete se llama [paso2019](https://github.com/pmoracho/paso2019), se puede descar e instalar en **`R`** o bien, si ya disponemos de `devtools`, simplemente podremos hacer:
+La fuente oficial dónde descargar los datos es esta: http://descargaresultados.s3-sa-east-1.amazonaws.com/resultados.zip, son varios archivos delimitados por el piepe (`|`), sin embargo, elaboré un paquete que ya trae precargados estos datos y además incorpora una reformulación de los mismos bajo un modelo relacional clásico, que para el que este acostunbrado a trabajar con bases de datos, como yo, seguramente es una foma más cómoda. El paquete se llama [paso2019](https://github.com/pmoracho/paso2019), se puede descar e instalar en **`R`** o bien, si ya disponemos de `devtools`, simplemente podremos hacer:
 
-```{r eval=FALSE}
+```{r devtools, eval=FALSE}
 devtools::install("pmoracho/paso2019")
 ```
 
 Luego simplemente cargamos el paquete junto con los otros que vamos a necesitar
 
-```{r eval=FALSE}
+```{r libs, eval=FALSE}
 library("paso2019")
 library("tidyverse")
 library("ggplot2")
-library("scales") 
+library("ggelegant")
 ```
 
 ## Aclaraciones iniciales
 
 Hay algunas inconsistencias en los datos que en algún momento puede llamar la atención. Por empezar hay una inconsistencia entre las tres tablas de mesas, descargadas del sitio oficial de los resultados. Podemos verificarlo así:
 
-```{r cache=TRUE}
+```{r mesas_totales, cache=TRUE}
 
 data.frame(tabla = c("mesas_totales", 
                      "mesas_totales_lista", 
@@ -76,7 +77,7 @@ data.frame(tabla = c("mesas_totales",
 
 Podemos ver que `mesas_totales`tiene dos mesas menos que el resto de las tablas. Particularmente son las siguientes:
 
-```{r cache=TRUE}
+```{r mesas_faltantes, cache=TRUE}
 
 mesas_totales_lista %>% 
   anti_join(mesas_totales, by = "CODIGO_MESA") %>% 
@@ -90,7 +91,7 @@ La otra inconsistencia notable, es entre esta información y la que se publica e
 
 ### ¿Cuantas mesas fueron escrutadas y cuantas no?
 
-```{r cache=TRUE}
+```{r mesas_escrutadas, message=FALSE, warning=FALSE, cache=TRUE}
 mesas %>% 
   summarise(total = n()) %>% 
   as.numeric() -> mesas_totales
@@ -109,7 +110,7 @@ En este análisis hemos considerado las mesas no escrutadas, aquellas dónde la 
 
 ### ¿Quién ganó en la categoría de Presidente y Vice?
 
-```{r cache=TRUE}
+```{r total_votos_1, message=FALSE, warning=FALSE, cache=TRUE}
 votos %>% 
   left_join(listas, by = "id_lista") %>% 
   left_join(agrupaciones, by = "id_agrupacion") %>% 
@@ -117,15 +118,17 @@ votos %>%
   left_join(meta_agrupaciones, by = "id_meta_agrupacion") %>% 
   filter(nombre_categoria == "Presidente y Vicepresidente de la República") %>% 
   group_by(nombre_meta_agrupacion, votos_totales) %>% 
-  summarise(votos = sum(votos)) %>% 
-  mutate(porcentaje = votos / votos_totales) %>% 
-  select(nombre_meta_agrupacion, votos, porcentaje ) %>% 
-  arrange(-votos)
+  summarise(votos = sum(votos)) %>%  
+  ungroup() %>% 
+  arrange(-votos) %>% 
+  mutate(porcentaje = votos / votos_totales,
+         acumulado = cumsum(porcentaje)) %>%
+  select(nombre_meta_agrupacion, votos, porcentaje, acumulado)
 ```
 
 Acá es dónde tenemos que plantear todas las relaciones para llegar a la información que necesitamos, alquien que venga del mundo de las bases de datos se sentirá cómodo, los que vienen de la estadística, lo verán demasiado complejo tal vez. De cualquier manera, con las tablas originales podemos hacer algo similar:
 
-```{r cache=TRUE}
+```{r total_votos_2, message=FALSE, warning=FALSE, cache=TRUE}
 mesas_totales_lista %>% 
   filter(CODIGO_CATEGORIA=="000100000000000") %>% 
   summarise(sum(VOTOS_LISTA)) %>% 
@@ -136,12 +139,78 @@ mesas_totales_lista %>%
   left_join(descripcion_postulaciones, by = c("CODIGO_CATEGORIA", "CODIGO_AGRUPACION", "CODIGO_LISTA")) %>% 
   group_by(NOMBRE_AGRUPACION) %>% 
   summarise(votos=sum(VOTOS_LISTA)) %>% 
-  mutate(porcentaje = votos / votos_totales) %>% 
-  select(NOMBRE_AGRUPACION, votos, porcentaje) %>% 
-  arrange(-votos)
-  
-  
+  arrange(-votos) %>% 
+  mutate(porcentaje = votos / votos_totales,
+         acumulado = cumsum(porcentaje)) %>% 
+  select(NOMBRE_AGRUPACION, votos, porcentaje)
+
 ```
+
+En los datos originales, los **VOTOS en BLANCO** no se consideran al nivel de una agrupación, por lo que no se ven en el agrupado por estas, hay que ir a buscarlos a `mesas_totales`, en el modelo nuevo estos se consideran como si fueran una agrupación más, lo que es más consistente con ley que regula las Paso.
+
+## ¿Cómo fue la distribución de votos?
+
+```{r boxplot_setup, warning=FALSE, cache=TRUE, nessage=FALSE}
+votos %>% 
+    left_join(categorias, by = "id_categoria") %>% 
+    filter(id_categoria == 137) %>% 
+    left_join(listas, by = "id_lista") %>% 
+    left_join(agrupaciones, by = "id_agrupacion") %>% 
+    left_join(meta_agrupaciones, by = "id_meta_agrupacion") %>% 
+    inner_join(votos %>% 
+                  group_by(id_mesa, id_categoria) %>% 
+                  summarize(total_mesa = sum(votos)) %>% 
+                  filter(total_mesa != 0), by = c("id_mesa", "id_categoria")) %>% 
+    mutate(porcentaje = votos/total_mesa) %>% 
+    select(nombre_meta_agrupacion, id_mesa, porcentaje, votos) -> votos_porcentaje
+
+votos_porcentaje %>% 
+    group_by(nombre_meta_agrupacion) %>% 
+    summarise(total_votos = sum(votos)) %>% 
+    arrange(-total_votos) %>% 
+    filter(total_votos > quantile(total_votos, .3)) -> top
+
+colores <- c("#26a7ed", "#fbfb00", "#b8867b", "#950000", "#996600", "#4d4d4d", "#57BFEB")    
+```
+
+```{r boxplot, warning=FALSE, cache=TRUE, nessage=FALSE}
+votos_porcentaje %>%
+    inner_join(top, by = "nombre_meta_agrupacion") %>% 
+    ggplot(aes(x=fct_reorder(nombre_meta_agrupacion, porcentaje), 
+               y=porcentaje, 
+               color=nombre_meta_agrupacion)) +
+    scale_x_discrete(labels = function(x) str_wrap(x, 10)) +
+    geom_boxplot(color=rev(colores)) +
+    coord_flip() +
+    labs(title="Porcentajes de Votos", 
+         subtitle="Distribución de los % por mesa en la categoria Presidente", 
+         caption="fuente: DINE", 
+         x="",
+         color=NULL) +
+    theme_elegante_std(base_family = "Raleway") +
+    theme(legend.position="none") +
+    theme(axis.text.x = element_text(size=8))
+
+```
+
+Es interesante ver el **boxplot** y ver los "outliers" en particular los que caen el limite máximo, son las mesas dónde solo hay votos para una determinada agrupación. Interesante que en estos casos se vulnera fácilmente el secreto del voto.
+
+```{r mesas_100, message=FALSE, warning=FALSE, cache=TRUE}
+# Mesas con el 100% de votos a una agrupación
+votos_porcentaje %>% 
+    filter(porcentaje == 1) %>% 
+    left_join(mesas, by = "id_mesa") %>%
+    left_join(circuitos, by = "id_circuito") %>%
+    left_join(secciones, by = "id_seccion") %>%
+    left_join(distritos, by = "id_distrito") %>%
+    left_join(establecimientos, by = "id_establecimiento") %>% 
+    group_by(nombre_meta_agrupacion) %>% 
+    summarise(mesas=n(), votos=sum(votos)) %>% 
+    arrange(-votos)
+```
+
+No lo voy a hacer, pero claramente es muy fácil llegar a estas mesas, para luego ir al padrón y relacionar votos con personas, claro aún faltaría saber exactamente quienes votaron y quienes no concurrieron, pero en estos casos es claro que es muy sencillo vulnerar el secreto.
+
 
 
 
