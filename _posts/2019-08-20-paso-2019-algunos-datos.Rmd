@@ -15,7 +15,7 @@ noindex: false
 hide_printmsg: false
 sitemap: true
 summaryfeed: false
-description: Algunos datos tal vez interesantes de las Paso 2019
+description: Algunos datos (tal vez) interesantes de las Paso 2019
 tags:
   - desarrollo
   - R
@@ -233,7 +233,7 @@ mesas_100 %>%
 
 ```
 
-No lo voy a hacer, pero claramente es muy fácil llegar a estas mesas, para luego ir al padrón y relacionar votos con personas, claro aún faltaría saber exactamente quienes votaron y quienes no concurrieron, pero en estos casos es claro que es muy sencillo vulnerar el secreto.
+No lo voy a hacer, pero claramente es muy fácil llegar a estas mesas, para luego ir al padrón y relacionar votos con personas, claro aún faltaría saber exactamente quienes votaron y quienes no concurrieron, pero en estos casos es claro que es muy sencillo vulnerar el secreto del voto.
 
 Es raro no, que todos los votos vayan a una única agrupación ¿no? sin embargo, estamos hablando de 63 mesas sobre 100,148, y no llegan a ser más de 2600 votos, por lo que no seamos suspicaces en esto. Podemos claro estudiar más en detalle el tema:
 
@@ -250,7 +250,7 @@ mesas_100 %>%
   kable()
 ```
 
-¿Que observamos? muchas mesas con pocos votos, por lo que es mucho más probable que vayan todos a una única agrupación, ni hablar de las mesas que tienen 1 solo voto (eso será motivo para otro análisis). Sin embargo también hay varias mesas con una cantidad importante de votos, por ejemplo, com ás de 100 votos hay 10 mesas, la mayoría del **FRENTE de TODOS**, una de **VOTO en BLANCO** y otra para **JUNTOS por el CAMBIO**. Si queremos estudiar estos casos y verificar si existió algún error de carga, podríamos obtener las `urls` de las imagenes de los telegramas:
+¿Que observamos? muchas mesas con pocos votos, por lo que es mucho más probable que vayan todos a una única agrupación, ni hablar de las mesas que tienen 1 solo voto (eso será motivo para otro análisis). Sin embargo también hay varias mesas con una cantidad importante de votos, por ejemplo, con más de 100 votos hay 10 mesas, la mayoría de los votos se los lleva el **FRENTE de TODOS**, una de **VOTO en BLANCO** y otra para **JUNTOS por el CAMBIO**. Si queremos estudiar estos casos y verificar si existió algún error de carga, podríamos obtener las `urls` de las imagenes de los telegramas:
 
 ```{r mesas_100_b, message=FALSE, warning=FALSE, cache=TRUE}
 mesas_100 %>% 
@@ -282,9 +282,9 @@ La otra curiosidad que me surgió es:
 
 ### ¿Cual es la distribución de votos por mesa?
 
-Siempre dentro de la categoría Presidente y Vice
+Siempre dentro de la categoría Presidente y Vice, la media es de 253 votos por mesa, con una curva centrada alrededor de los 300 votos por mesas y con cierto sesgo hacía la derecha.
 
-```{r hist, fig.height = 8, fig.width = 12, fig.align = "center"}
+```{r hist, fig.height = 6, fig.width = 12, fig.align = "center"}
 # Calculamos los votos totales por mesa
 votos_porcentaje %>%
   group_by(id_mesa) %>% 
@@ -320,3 +320,72 @@ ggplot(dat, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)) +
 
 ```
 
+### ¿Y.. cuales fueron los distritos que más votos aportaron a las principales agrupaciones?
+
+En esta elección hubo dos grandes fuerzas, el **FRENTE de TODOS** y **JUNTOS por el CAMBIO**, veamos dónde unos sacaron mayor diferencia sobre los otros. Primero preparamos los datos de los 10 distritos más importantes para cada agrupación:
+
+```{r distritos_data, message=FALSE, warning=FALSE, cache=TRUE}
+votos_porcentaje %>% 
+  filter(nombre_meta_agrupacion %in% c('FRENTE DE TODOS','JUNTOS POR EL CAMBIO')) %>% 
+  left_join(mesas, by = "id_mesa") %>%
+  left_join(secciones, by = "id_seccion") %>%
+  left_join(distritos, by = "id_distrito") %>%
+  mutate(fdt = ifelse(nombre_meta_agrupacion == 'FRENTE DE TODOS',votos, 0),
+         jpc = ifelse(nombre_meta_agrupacion == 'JUNTOS POR EL CAMBIO',votos, 0)
+         ) %>% 
+  group_by(nombre_distrito, nombre_seccion) %>% 
+  summarise(dif = sum(fdt-jpc)) %>% 
+  ungroup() %>% 
+  arrange(dif) -> diferencias_distritos
+
+colores <- c("#26a7ed", "#fbfb00")    
+
+diferencias_distritos %>% 
+  head(10) %>% 
+  union(diferencias_distritos %>% 
+          tail(10)) %>% 
+  mutate(nombre_distrito = case_when( nombre_distrito == 'CIUDAD AUTÓNOMA DE BUENOS AIRES' ~ 'CABA',  
+                                      nombre_distrito == 'BUENOS AIRES' ~ 'BS.AS.',  
+                                      TRUE ~ nombre_distrito)
+            ) %>% 
+  mutate(area = paste(nombre_distrito, nombre_seccion, sep = ' / '),
+         agrupacion = ifelse(dif > 0, 'FRENTE DE TODOS', 'JUNTOS POR EL CAMBIO')) %>% 
+  select(area,agrupacion,diferencia = dif) -> top_10_distritos
+```  
+
+Y ahora sí, veamos los datos:
+
+```{r distritos_plot, fig.height = 8, fig.width = 10, fig.align = "center"}
+top_10_distritos %>% 
+  ggplot(aes(x=fct_reorder(area,diferencia),y=diferencia)) +
+  geom_bar(stat='identity', aes(fill=agrupacion), width=.7) +
+  geom_text(aes(label=format(abs(diferencia), nsmall=0, big.mark=",")),  vjust=0.38, col="#666666") +
+  scale_fill_manual(labels = function(x) str_wrap(x, 20), values = colores) + 
+  scale_y_continuous(labels = scales::comma) +
+  coord_flip() +
+  labs(title='Top 10 de Distritos por agrupación', 
+         subtitle="Diferencias en Votos entre las dos principales fuerzas", 
+         caption="fuente: DINE", 
+         x="",
+         color=NULL) +
+    theme(axis.text.y = element_text(size=8)) +
+    theme_elegante_std(base_family = "Raleway")
+
+
+```
+
+## ¿En cuantas mesas ganó cada agrupación?
+
+```{r ganadores_mesas, message=FALSE, warning=FALSE, cache=TRUE}
+votos_porcentaje %>% 
+  select(nombre_meta_agrupacion, id_mesa, votos) %>% 
+  arrange(id_mesa, -votos) %>% 
+  group_by(id_mesa) %>% 
+  mutate(nr = row_number()) %>% 
+  filter(nr == 1) %>% 
+  group_by(nombre_meta_agrupacion) %>% 
+  summarize(mesas = n()) %>% 
+  arrange(-mesas) %>% 
+  kable()
+
+```
