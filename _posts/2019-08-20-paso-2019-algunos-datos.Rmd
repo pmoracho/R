@@ -45,13 +45,18 @@ La justicia electoral publicó una serie de tablas que representa los datos de l
 
 ## Antes de empezar
 
-La fuente oficial dónde descargar los datos es esta: http://descargaresultados.s3-sa-east-1.amazonaws.com/resultados.zip, son varios archivos delimitados por el piepe (`|`), sin embargo, elaboré un paquete que ya trae precargados estos datos y además incorpora una reformulación de los mismos bajo un modelo relacional clásico, que para el que este acostunbrado a trabajar con bases de datos, como yo, seguramente es una foma más cómoda. El paquete se llama [paso2019](https://github.com/pmoracho/paso2019), se puede descar e instalar en **`R`** o bien, si ya disponemos de `devtools`, simplemente podremos hacer:
+La fuente oficial dónde descargar los datos es esta: http://descargaresultados.s3-sa-east-1.amazonaws.com/resultados.zip, son varios archivos delimitados por el pipe (`|`), sin embargo, elaboré un paquete que ya trae precargados estos datos y además incorpora una reformulación de los mismos bajo un modelo relacional clásico, que para el que este acostunbrado a trabajar con bases de datos, como yo, seguramente es una foma más cómoda. El paquete se llama [paso2019](https://github.com/pmoracho/paso2019), se puede descar e instalar en **`R`** o bien, si ya disponemos de `devtools`, simplemente podremos hacer:
 
-```{r devtools, eval=FALSE}
-devtools::install("pmoracho/paso2019")
+```{r devtools1, eval=FALSE}
+devtools::install_gitgub("pmoracho/paso2019")
 ```
 
-Luego simplemente cargamos el paquete junto con los otros que vamos a necesitar
+Luego simplemente cargamos el paquete junto con los otros que vamos a necesitar. `ggelegant` es otro paquete que armé, que contiene un tema para **ggplot2**  en el que estoy trabajando, igual que el anterior:
+
+```{r devtools2, eval=FALSE}
+devtools::install_gitgub("pmoracho/ggelegant")
+```
+
 
 ```{r libs, eval=FALSE}
 library("paso2019")
@@ -64,7 +69,7 @@ library("ggelegant")
 
 Hay algunas inconsistencias en los datos que en algún momento puede llamar la atención. Por empezar hay una inconsistencia entre las tres tablas de mesas, descargadas del sitio oficial de los resultados. Podemos verificarlo así:
 
-```{r mesas_totales, cache=TRUE}
+```{r mesas_totales, message=FALSE, warning=FALSE, cache=TRUE}
 
 data.frame(tabla = c("mesas_totales", 
                      "mesas_totales_lista", 
@@ -78,7 +83,7 @@ data.frame(tabla = c("mesas_totales",
     kable()
 ```
 
-Podemos ver que `mesas_totales`tiene dos mesas menos que el resto de las tablas. Particularmente son las siguientes:
+Podemos ver que `mesas_totales`tiene seis mesas menos que el resto de las tablas. Particularmente son las siguientes:
 
 ```{r mesas_faltantes, cache=TRUE}
 
@@ -89,7 +94,7 @@ mesas_totales_lista %>%
 
 ```
 
-La otra inconsistencia notable, es entre esta información y la que se publica en la página web: https://resultados.gob.ar/, la mesas escrutadas según esta página son 100,156 mesas, los datos descargados, indican en el mejor de los casos 100,148 mesas, es decir 8 mesas menos.
+La otra inconsistencia notable, es entre esta información y la que se publica en la página web: https://resultados.gob.ar, la mesas escrutadas según esta página son 100,156 mesas, los datos descargados, indican en el mejor de los casos 100,148 mesas, es decir 8 mesas menos.
 
 ## Preguntas 
 
@@ -161,6 +166,8 @@ En los datos originales, los **VOTOS en BLANCO** no se consideran al nivel de un
 
 Miremos la categoría de Predidente y Vice:
 
+primero los datos:
+
 ```{r boxplot_setup, warning=FALSE, cache=TRUE, nessage=FALSE}
 votos %>% 
     filter(id_categoria == 137) %>% 
@@ -183,6 +190,8 @@ votos_porcentaje %>%
 colores <- c("#26a7ed", "#fbfb00", "#b8867b", "#950000", "#996600", "#4d4d4d", "#57BFEB")    
 ```
 
+Y ahora la gráfica:
+
 ```{r boxplot, fig.height = 8, fig.width = 10, fig.align = "center", warning=FALSE, cache=TRUE, nessage=FALSE}
 votos_porcentaje %>%
     inner_join(top, by = "nombre_meta_agrupacion") %>% 
@@ -203,7 +212,7 @@ votos_porcentaje %>%
 
 ```
 
-Es interesante ver el **boxplot** y ver los "outliers" en particular los que caen el limite máximo, son las mesas dónde solo hay votos para una determinada agrupación. Interesante que revisar estos casos vulnera fácilmente el secreto del voto.
+Es interesante ver el **boxplot** y ver los "outliers" en particular los que caen el limite máximo, son las mesas dónde solo hay votos para una determinada agrupación. Interesante que al revisar estos casos vulneramos fácilmente el secreto del voto.
 
 ```{r mesas_100, message=FALSE, warning=FALSE, cache=TRUE}
 # Mesas con el 100% de votos a una agrupación
@@ -238,6 +247,7 @@ No lo voy a hacer, pero claramente es muy fácil llegar a estas mesas, para lueg
 Es raro no, que todos los votos vayan a una única agrupación ¿no? sin embargo, estamos hablando de 63 mesas sobre 100,148, y no llegan a ser más de 2600 votos, por lo que no seamos suspicaces en esto. Podemos claro estudiar más en detalle el tema:
 
 ```{r mesas_100_a, message=FALSE, warning=FALSE, cache=TRUE}
+# Revisemos 10 casos
 mesas_100 %>% 
   select(nombre_meta_agrupacion,
          nombre_distrito,
@@ -247,6 +257,7 @@ mesas_100 %>%
          codigo_mesa,
          votos) %>% 
   arrange(-votos) %>% 
+  head(10) %>% 
   kable()
 ```
 
