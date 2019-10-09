@@ -57,6 +57,8 @@ Luego simplemente cargamos el paquete junto con los otros que vamos a necesitar.
 devtools::install_gitgub("pmoracho/ggelegant")
 ```
 
+**Importante**: A la fecha, los datos, telegramas y la página, están "off-line" a la espera de la elección definitiva del 27 de octubre. Del paquete `paso2019` se podrán usar todos los datos, pero las rutinas que consultan y visualizan los telegramas, lamentablemente ya no funcionan.
+
 
 ```{r libs, eval=FALSE}
 library("paso2019")
@@ -374,7 +376,8 @@ Y ahora sí, veamos los datos:
 top_10_distritos %>% 
   ggplot(aes(x=fct_reorder(area,diferencia),y=diferencia)) +
   geom_bar(stat='identity', aes(fill=agrupacion), width=.7) +
-  geom_text(aes(label=format(abs(diferencia), nsmall=0, big.mark=",")),  vjust=0.38, col="#666666") +
+  geom_text(aes(label=format(abs(diferencia), nsmall=0, big.mark=",")),  vjust=0.38) +
+  
   scale_fill_manual(labels = function(x) str_wrap(x, 20), values = colores) + 
   scale_y_continuous(labels = scales::comma) +
   coord_flip() +
