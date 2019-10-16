@@ -1,5 +1,5 @@
 ---
-title: "Algunos datos de las paso 2019"
+title: "Algunos datos (tal vez interesantes) de las paso 2019"
 author: "Patricio Moracho"
 date: "19 de agosto de 2019"
 post_date: 2019-08-20
@@ -15,7 +15,7 @@ noindex: false
 hide_printmsg: false
 sitemap: true
 summaryfeed: false
-description: Algunos datos tal vez interesantes de las Paso 2019
+description: Algunos datos (tal vez interesantes) de las Paso 2019
 tags:
   - desarrollo
   - R
@@ -45,13 +45,20 @@ La justicia electoral publicó una serie de tablas que representa los datos de l
 
 ## Antes de empezar
 
-La fuente oficial dónde descargar los datos es esta: http://descargaresultados.s3-sa-east-1.amazonaws.com/resultados.zip, son varios archivos delimitados por el piepe (`|`), sin embargo, elaboré un paquete que ya trae precargados estos datos y además incorpora una reformulación de los mismos bajo un modelo relacional clásico, que para el que este acostunbrado a trabajar con bases de datos, como yo, seguramente es una foma más cómoda. El paquete se llama [paso2019](https://github.com/pmoracho/paso2019), se puede descar e instalar en **`R`** o bien, si ya disponemos de `devtools`, simplemente podremos hacer:
+La fuente oficial dónde descargar los datos es esta: http://descargaresultados.s3-sa-east-1.amazonaws.com/resultados.zip, son varios archivos delimitados por el pipe (`|`), sin embargo, elaboré un paquete que ya trae precargados estos datos y además incorpora una reformulación de los mismos bajo un modelo relacional clásico, que para el que este acostunbrado a trabajar con bases de datos, como yo, seguramente es una foma más cómoda. El paquete se llama [paso2019](https://github.com/pmoracho/paso2019), se puede descar e instalar en **`R`** o bien, si ya disponemos de `devtools`, simplemente podremos hacer:
 
-```{r devtools, eval=FALSE}
-devtools::install("pmoracho/paso2019")
+```{r devtools1, eval=FALSE}
+devtools::install_gitgub("pmoracho/paso2019")
 ```
 
-Luego simplemente cargamos el paquete junto con los otros que vamos a necesitar
+Luego simplemente cargamos el paquete junto con los otros que vamos a necesitar. `ggelegant` es otro paquete que armé, que contiene un tema para **ggplot2**  en el que estoy trabajando, igual que el anterior:
+
+```{r devtools2, eval=FALSE}
+devtools::install_gitgub("pmoracho/ggelegant")
+```
+
+**Importante**: A la fecha, los datos, telegramas y la página, están "off-line" a la espera de la elección definitiva del 27 de octubre. Del paquete `paso2019` se podrán usar todos los datos, pero las rutinas que consultan y visualizan los telegramas, lamentablemente ya no funcionan.
+
 
 ```{r libs, eval=FALSE}
 library("paso2019")
@@ -64,7 +71,7 @@ library("ggelegant")
 
 Hay algunas inconsistencias en los datos que en algún momento puede llamar la atención. Por empezar hay una inconsistencia entre las tres tablas de mesas, descargadas del sitio oficial de los resultados. Podemos verificarlo así:
 
-```{r mesas_totales, cache=TRUE}
+```{r mesas_totales, message=FALSE, warning=FALSE, cache=TRUE}
 
 data.frame(tabla = c("mesas_totales", 
                      "mesas_totales_lista", 
@@ -78,7 +85,7 @@ data.frame(tabla = c("mesas_totales",
     kable()
 ```
 
-Podemos ver que `mesas_totales`tiene dos mesas menos que el resto de las tablas. Particularmente son las siguientes:
+Podemos ver que `mesas_totales`tiene seis mesas menos que el resto de las tablas. Particularmente son las siguientes:
 
 ```{r mesas_faltantes, cache=TRUE}
 
@@ -89,7 +96,7 @@ mesas_totales_lista %>%
 
 ```
 
-La otra inconsistencia notable, es entre esta información y la que se publica en la página web: https://resultados.gob.ar/, la mesas escrutadas según esta página son 100,156 mesas, los datos descargados, indican en el mejor de los casos 100,148 mesas, es decir 8 mesas menos.
+La otra inconsistencia notable, es entre esta información y la que se publica en la página web: https://resultados.gob.ar, la mesas escrutadas según esta página son 100,156 mesas, los datos descargados, indican en el mejor de los casos 100,148 mesas, es decir 8 mesas menos.
 
 ## Preguntas 
 
@@ -116,6 +123,8 @@ En este análisis hemos considerado las mesas no escrutadas, aquellas dónde la 
 
 ### ¿Quién ganó en la categoría de Presidente y Vice?
 
+Acá es dónde tenemos que plantear todas las relaciones para llegar a la información que necesitamos, alquien que venga del mundo de las bases de datos se sentirá cómodo, los que vienen de la estadística, lo verán demasiado complejo tal vez.
+
 ```{r total_votos_1, message=FALSE, warning=FALSE, cache=TRUE}
 votos %>% 
   left_join(listas, by = "id_lista") %>% 
@@ -134,7 +143,7 @@ votos %>%
 
 ```
 
-Acá es dónde tenemos que plantear todas las relaciones para llegar a la información que necesitamos, alquien que venga del mundo de las bases de datos se sentirá cómodo, los que vienen de la estadística, lo verán demasiado complejo tal vez. De cualquier manera, con las tablas originales podemos hacer algo similar:
+ De cualquier manera, con las tablas originales podemos hacer algo parecido:
 
 ```{r total_votos_2, message=FALSE, warning=FALSE, cache=TRUE}
 mesas_totales_lista %>% 
@@ -157,9 +166,9 @@ mesas_totales_lista %>%
 
 En los datos originales, los **VOTOS en BLANCO** no se consideran al nivel de una agrupación, por lo que no se ven en el agrupado por estas, hay que ir a buscarlos a `mesas_totales`, en el modelo nuevo estos se consideran como si fueran una agrupación más, lo que es más consistente con ley que regula las Paso.
 
-## ¿Cómo fue la distribución de votos?
+## ¿Cómo fue la distribución de votos de las agrupaciones más importantes?
 
-Miremos la categoría de Predidente y Vice:
+Miremos la categoría de Predidente y Vice, primero armamos los datos:
 
 ```{r boxplot_setup, warning=FALSE, cache=TRUE, nessage=FALSE}
 votos %>% 
@@ -183,6 +192,8 @@ votos_porcentaje %>%
 colores <- c("#26a7ed", "#fbfb00", "#b8867b", "#950000", "#996600", "#4d4d4d", "#57BFEB")    
 ```
 
+Y ahora la gráfica:
+
 ```{r boxplot, fig.height = 8, fig.width = 10, fig.align = "center", warning=FALSE, cache=TRUE, nessage=FALSE}
 votos_porcentaje %>%
     inner_join(top, by = "nombre_meta_agrupacion") %>% 
@@ -203,7 +214,7 @@ votos_porcentaje %>%
 
 ```
 
-Es interesante ver el **boxplot** y ver los "outliers" en particular los que caen el limite máximo, son las mesas dónde solo hay votos para una determinada agrupación. Interesante que revisar estos casos vulnera fácilmente el secreto del voto.
+Es interesante ver el **boxplot** y prestar atención a  los "outliers", en particular los que caen el limite máximo, son las mesas dónde solo hay votos para una determinada agrupación. Interesante que al revisar estos casos vulneramos fácilmente el secreto del voto.
 
 ```{r mesas_100, message=FALSE, warning=FALSE, cache=TRUE}
 # Mesas con el 100% de votos a una agrupación
@@ -233,11 +244,12 @@ mesas_100 %>%
 
 ```
 
-No lo voy a hacer, pero claramente es muy fácil llegar a estas mesas, para luego ir al padrón y relacionar votos con personas, claro aún faltaría saber exactamente quienes votaron y quienes no concurrieron, pero en estos casos es claro que es muy sencillo vulnerar el secreto.
+No lo voy a hacer, pero claramente es muy fácil llegar a estas mesas, para luego ir al padrón y relacionar votos con personas, claro aún faltaría saber exactamente quienes votaron y quienes no concurrieron, pero en estos casos es claro que es muy sencillo vulnerar el secreto del voto.
 
 Es raro no, que todos los votos vayan a una única agrupación ¿no? sin embargo, estamos hablando de 63 mesas sobre 100,148, y no llegan a ser más de 2600 votos, por lo que no seamos suspicaces en esto. Podemos claro estudiar más en detalle el tema:
 
 ```{r mesas_100_a, message=FALSE, warning=FALSE, cache=TRUE}
+# Revisemos 10 casos
 mesas_100 %>% 
   select(nombre_meta_agrupacion,
          nombre_distrito,
@@ -247,10 +259,11 @@ mesas_100 %>%
          codigo_mesa,
          votos) %>% 
   arrange(-votos) %>% 
+  head(10) %>% 
   kable()
 ```
 
-¿Que observamos? muchas mesas con pocos votos, por lo que es mucho más probable que vayan todos a una única agrupación, ni hablar de las mesas que tienen 1 solo voto (eso será motivo para otro análisis). Sin embargo también hay varias mesas con una cantidad importante de votos, por ejemplo, com ás de 100 votos hay 10 mesas, la mayoría del **FRENTE de TODOS**, una de **VOTO en BLANCO** y otra para **JUNTOS por el CAMBIO**. Si queremos estudiar estos casos y verificar si existió algún error de carga, podríamos obtener las `urls` de las imagenes de los telegramas:
+¿Que observamos? muchas mesas con pocos votos, por lo que es mucho más probable que vayan todos a una única agrupación, ni hablar de las mesas que tienen 1 solo voto (eso podría ser motivo para otro análisis). Sin embargo también hay varias mesas con una cantidad importante de votos, por ejemplo, con más de 100 votos hay 10 mesas, la mayoría de los votos se los lleva el **FRENTE de TODOS**, una de **VOTO en BLANCO** y otra para **JUNTOS por el CAMBIO**. Si queremos estudiar estos casos y verificar si existió algún error de carga, podríamos obtener las `urls` de las imagenes de los telegramas:
 
 ```{r mesas_100_b, message=FALSE, warning=FALSE, cache=TRUE}
 mesas_100 %>% 
@@ -282,14 +295,18 @@ La otra curiosidad que me surgió es:
 
 ### ¿Cual es la distribución de votos por mesa?
 
-Siempre dentro de la categoría Presidente y Vice
-
-```{r hist, fig.height = 8, fig.width = 12, fig.align = "center"}
+```{r hist_data, fig.height = 6, fig.width = 12, fig.align = "center"}
 # Calculamos los votos totales por mesa
 votos_porcentaje %>%
   group_by(id_mesa) %>% 
   summarize(total_votos = sum(votos)) -> mesas_votos
 
+summary(mesas_votos$total_votos)
+```
+
+Siempre dentro de la categoría Presidente y Vice, la media de votos por mesa es de 253, con una curva centrada alrededor de los 300 votos por mesas y con un claro sesgo hacía la derecha. La mesa con mayor cantidad de votos tuvo 351.
+
+```{r hist, fig.height = 6, fig.width = 12, fig.align = "center"}
 # Calculamos la media de votos por mesa
 media_total_votos <- round(mean(mesas_votos$total_votos),0)
 
@@ -320,3 +337,73 @@ ggplot(dat, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)) +
 
 ```
 
+### ¿Y.. cuales fueron los distritos que más votos aportaron a las principales agrupaciones?
+
+En esta elección hubo dos grandes fuerzas, el **FRENTE de TODOS** y **JUNTOS por el CAMBIO**, veamos dónde unos sacaron mayor diferencia sobre los otros. Primero preparamos los datos de los 10 distritos más importantes para cada una de estas agrupaciones:
+
+```{r distritos_data, message=FALSE, warning=FALSE, cache=TRUE}
+votos_porcentaje %>% 
+  filter(nombre_meta_agrupacion %in% c('FRENTE DE TODOS','JUNTOS POR EL CAMBIO')) %>% 
+  left_join(mesas, by = "id_mesa") %>%
+  left_join(secciones, by = "id_seccion") %>%
+  left_join(distritos, by = "id_distrito") %>%
+  mutate(fdt = ifelse(nombre_meta_agrupacion == 'FRENTE DE TODOS',votos, 0),
+         jpc = ifelse(nombre_meta_agrupacion == 'JUNTOS POR EL CAMBIO',votos, 0)
+         ) %>% 
+  group_by(nombre_distrito, nombre_seccion) %>% 
+  summarise(dif = sum(fdt-jpc)) %>% 
+  ungroup() %>% 
+  arrange(dif) -> diferencias_distritos
+
+colores <- c("#26a7ed", "#fbfb00")    
+
+diferencias_distritos %>% 
+  head(10) %>% 
+  union(diferencias_distritos %>% 
+          tail(10)) %>% 
+  mutate(nombre_distrito = case_when( nombre_distrito == 'CIUDAD AUTÓNOMA DE BUENOS AIRES' ~ 'CABA',  
+                                      nombre_distrito == 'BUENOS AIRES' ~ 'BS.AS.',  
+                                      TRUE ~ nombre_distrito)
+            ) %>% 
+  mutate(area = paste(nombre_distrito, nombre_seccion, sep = ' / '),
+         agrupacion = ifelse(dif > 0, 'FRENTE DE TODOS', 'JUNTOS POR EL CAMBIO')) %>% 
+  select(area,agrupacion,diferencia = dif) -> top_10_distritos
+```  
+
+Y ahora sí, veamos los datos:
+
+```{r distritos_plot, fig.height = 8, fig.width = 10, fig.align = "center"}
+top_10_distritos %>% 
+  ggplot(aes(x=fct_reorder(area,diferencia),y=diferencia)) +
+  geom_bar(stat='identity', aes(fill=agrupacion), width=.7) +
+  geom_text(aes(label=format(abs(diferencia), nsmall=0, big.mark=",")),  vjust=0.38) +
+  
+  scale_fill_manual(labels = function(x) str_wrap(x, 20), values = colores) + 
+  scale_y_continuous(labels = scales::comma) +
+  coord_flip() +
+  labs(title='Top 10 de Distritos por agrupación', 
+         subtitle="Diferencias en Votos entre las dos principales fuerzas", 
+         caption="fuente: DINE", 
+         x="",
+         color=NULL) +
+    theme(axis.text.y = element_text(size=8)) +
+    theme_elegante_std(base_family = "Raleway")
+
+
+```
+
+## ¿Y en cuantas mesas ganó cada agrupación?
+
+```{r ganadores_mesas, message=FALSE, warning=FALSE, cache=TRUE}
+votos_porcentaje %>% 
+  select(nombre_meta_agrupacion, id_mesa, votos) %>% 
+  arrange(id_mesa, -votos) %>% 
+  group_by(id_mesa) %>% 
+  mutate(nr = row_number()) %>% 
+  filter(nr == 1) %>% 
+  group_by(nombre_meta_agrupacion) %>% 
+  summarize(mesas = n()) %>% 
+  arrange(-mesas) %>% 
+  kable()
+
+```
