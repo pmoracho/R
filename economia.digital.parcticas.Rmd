@@ -1,0 +1,68 @@
+---
+title: "Economia Digital - Practicas"
+author: "Patricio Moracho"
+date: "13/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+library("tabulizer")
+library("ggelegant")
+```
+
+## Cuidado con las variables latentes
+
+```{r variables_latentes}
+PATH = '~/Dropbox/Books/Economía Digital.pdf'
+
+m <- extract_tables(PATH, encoding="UTF-8", pages=30, method = "stream")[[1]]
+datos <- m[-3:-1,]
+cbind(datos[,1],
+      do.call(rbind, strsplit(datos[,2], " ")),
+      do.call(rbind, strsplit(datos[,3], " "))
+) -> df
+
+df %>% 
+  as.data.frame() %>% 
+  setNames(c("aeropuerto", "alaska.ok", "alaska.late", "america.ok", "america.late"))  %>% 
+  mutate_at(vars(matches("ok|late")), 
+            list(~ str_remove(., pattern="[.]") %>%  as.integer)
+            ) -> df
+df %>% 
+  select(everything(), -aeropuerto) %>% 
+  summarise_all(sum) %>% 
+  mutate(Alaska = alaska.late/alaska.ok,
+         America = america.late / america.ok) %>%
+  select(Alaska, America) %>% 
+  gather("Aerolinea", "Porcentaje") %>% 
+  ggplot(mapping=aes(x=Aerolinea, y=Porcentaje, fill=Aerolinea)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  ggelegant::theme_elegante_std(base_family = "Raleway") +
+  labs(title="Porcentaje de vuelos retrasados Totales")
+
+df %>% 
+  mutate(Alaska = alaska.late/alaska.ok,
+         America = america.late / america.ok) %>%
+  select(Aeropuerto=aeropuerto, Alaska, America) -> df
+
+df %>% 
+  gather("Aerolinea", "Porcentaje", -Aeropuerto) %>% 
+  ggplot(mapping=aes(x=Aeropuerto, y=Porcentaje, fill=Aerolinea)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  ggelegant::theme_elegante_std(base_family = "Raleway") +
+  labs(title="Porcentaje de vuelos retrasados")
+  
+```
+
+## Including Plots
+
+library(tabulizer)
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
