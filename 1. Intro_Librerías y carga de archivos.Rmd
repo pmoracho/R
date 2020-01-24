@@ -1,0 +1,376 @@
+---
+title: "1. Intro - Librerías y carga de archivos"
+subtitle: 'Notas varias, opiniones y observaciones - Curso de Luis Alejandro Carrera'
+author: "Patricio Moracho"
+date: "16/1/2020"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Por empezar, imagino que apunta a curso de **R** + **Rstudio**, por lo que comenzaría hablando un poco acerca de los mecanismos de evaluación o ejecución de código. Las posibilidades, dependiendo de lo que se seleccione:
+
+* Ejecutar un script completo
+* Ejecutar una o más lineas
+* Ejecutar o evaluar un bloque (cuando evalúas solo una parte de una línea)
+* Evaluar variables aisladas
+
+Si te sirve como modelo, el libro **R for Data Science** que imagino ya lo conoces, tiene una buena estructura como material de un curso. Te comento que que hace poco se terminó un proyecto colaborativo de traducción del libro, que quedó realmente bueno: [R para Ciencia de Datos](https://github.com/cienciadedatos/r4ds). 
+
+Yo soy básicamente programador por lo que todas mis opiniones tienen ese sesgo, por lo que deberías tomar todos mis comentarios "con pinzas". Personalmente, si tuviera que dar un curso de este tipo, al ser R un lenguage de programación, daría algunas nociones muy básicas:
+
+* Que es programar, que es un lenguaje
+* Estructuras básicas: `if`, `loops`, etc.
+* Que son las variables, cuales son algunos de sus tipos de dato
+* Que son las funciones
+
+
+```
+#####################################
+### Librerías y carga de archivos ###
+#####################################
+
+## En R, una línea o segmento de código no se ejecuta si tiene un signo "#"
+```
+
+**Observación**:  Es así, pero para ser estricto, aclarar que el `#` siempre "comenta" lo que le sigue en la línea.
+
+Te sugiero antes de lo que sigue, algún comentario sobre el concepto de paquetes o librerías. La funcionalidad base y toda la funcionalidad adicional que se puede incorporar con los paquetes. Los paquetes son código y colaboraciones de distintos autores que suelen ser compartidos y disponibilizados para la comunidad por medio de alguno de los  servidores centrales, el habitual es **CRAN**, pero también pueden ser compartidos de manera publica o privada por otros medios. 
+
+La idea de paquete es un contenedor dónde compartir:
+
+* Funcionalidad (código/scripts)
+* Datos
+* Documentación
+* Templates para Markdown
+
+
+```
+## 0. Actualizar versión de R
+install.packages("installr")	# Siempre con comillas
+library(installr)             # Sin comillas
+updateR()                     # FALSE si se cuenta con la versión más reciente
+```
+
+**Observación:** `library(installr) # Sin comillas` en realidad, lo mas natural es `library("installr")` con comillas, que pueda ser sin comillas es una particularidad de esta función que involucra el concepto de evaluación no estándar, que tal vez es algo complejo para arrancar de entrada. Digo por que puede llamar la atención esta aparente inconsistencia o doble forma de invocar una librería.
+
+```
+## 1. Buscar ayuda
+## Existen dos formas de buscar ayuda y documentación en R
+?criterio_de_busqueda
+??criterio_de_busqueda
+
+## La primera busca por coincidencia exacta en las librerías instaladas
+## La segunda busca por coincidencias aproximadas y también nos permite buscar
+## documentación sobre funciones de librerías que no tenemos instaladas
+?mean		# Muestra la documentación de la función base mean()
+??mean	# Muestra resultados de funciones similares a mean()
+```
+
+Si estamos usando **Rstudio**, no olvidaría hablar del clásico `<F1>` cuando hemos seleccionado cualquier función
+
+```
+## 2. Entorno de trabajo
+## Para conocer cuál es nuestro directorio de trabajo actual, empleamos:
+getwd()
+
+## El directorio de trabajo es el lugar en el cual se guardan por default los scripts
+## y archivos que utilizamos y generamos en R. Si queremos cambiar la ubicación de
+## dicho directorio, empleamos:
+setwd("path")	# "path" es una ruta definida por el usuario
+
+## La ventaja de usar el directorio de trabajo es que nos permite obviar
+## las rutas de los archivos o scripts que serán utilizados. Por ejemplo, si un archivo
+## llamado "archivo.csv" está en el directorio, bastaría con indicar su nombre dentro
+## de una función como read.csv(). De otra forma, tendría que indicarse la ruta más el nombre:
+en_dt <- read.csv("archivo.csv")
+no_dt <- read.csv("ruta_del_archivo/archivo.csv")
+```
+
+La idea del directorio de trabajo, es la de establecer un punto inicial, de esta forma podemos trabajar con **paths relativos** a esta carpeta, por ejemplo si nuestro directorio de trabajo es `c:/mi_proyecto`, y en este, tengo una carpeta `data` dónde está el archivo `archivo.csv`, la carga del mismo una vez establecido el path de trabajo, se haría así: `en_dt <- read.csv("data/archivo.csv")`, este es un path relativo (relativo a nuestro path de trabajo) a diferencia de un path absoluto que sería en este caso `c:/mi_proyecto/data`. Lo interesante es que, si nuestro script trabaja con paths relativos, el día de mañana, podemos mover `c:\mi_proyecto` a cualquier otra ubicación sin "romper" la lógica del script, usando paths absolutos tendríamos un problema.
+
+**Nota**: También sugeriría el uso de la barra de unix `/` aún en un entorno Windows, ya que esto hace consistente nuestro script en cualquier sistema operativo.
+
+```
+## 3. El uso de source()
+## source() es una función que ejecuta el contenido de un script sin necesidad de abrirlo.
+## Esto es útil cuando requerimos cargar librerías y funciones de forma recurrente.
+## El principal argumento de source() es la ruta del archivo, la cual debe incluir la
+## extensión .R:
+source("path/script_a_ejecutar.R")	#path es una ruta definida por el usuario
+
+## Nota: Si el script se guarda en el directorio de trabajo, solo se indica:
+source("script_a_ejecutar.R")
+```
+
+**Nota**: `source` no requiere que sea un archivo con extensión `.R` simplemente evalúa lo que hubiera en cualquier archivo pasado por parámetro, también se puede usar para cargar el contenido a ciertas variables. Otro punto importante que es bueno aclarar es el tema de la codificación, ya que suele traer dolores de cabeza. Los archivos de texto, suelen tener codificaciones, que son formas en que cada caracter se escribe, lo habitual es la codificación **`ANSI`** o más bien llamada **`Latin1`** y por supuesto el **`UTF-8`**. De hecho esto es algo que deberíamos configurar inicialmente en el entorno, para asegurarnos de no tener problemas a la hora de compartir los scripts o de moverlos de instalación en instalación. Lo Ideal es tener todo en  **`UTF-8`**, en **Rstudio** se configura en la opciones globales. Con `source` si tuviéramos que cargar un Script que no sea nuestro, conociendo esta codificación podremos hacer
+
+```
+ source("script_a_ejecutar.R", encoding="Latin1")
+ 
+```
+
+Recordar que `Latin1` es la antigua codificación dónde cada caracter es un único byte, esto hoy en día no es lo ideal, compartir un script o un archivo de texto de este tipo puede traernos problemas, ciertos caracteres cambian según ciertas configuraciones regionales, es preferible adoptar el estándar `utf-8`.
+
+```
+## 4. ls()
+## Es una función que nos devuelve la lista de objetos en un entorno especificado.
+## Si no se indican argumentos, ls() despliega las bases de datos, objetos y las funciones definidas
+## por el usuario en el entorno de trabajo actual. ls() suele emplearse dentro de la función rm
+## para limpiar el entorno actual de trabajo y sustituirlo por uno en blanco de la siguiente forma:
+rm(list=ls())
+```
+
+Para empezar a hablar de objetos, yo aclararía que se trata básicamente de variables o de funciones, hay otros pocos objetos más pero es para un curso más avanzado. Por otro lado, el uso de `rm(list=ls())` esta en general desaconsejado ver: https://www.tidyverse.org/blog/2017/12/workflow-vs-script/, es un atajo que se usa para arrancar con un entorno limpio, sin embargo es preferible en este sentido, empezar a hablar del concepto de **Proyectos**, que es hacia dónde habría que tender. Un Proyecto, es básicamente un directorio de trabajo y un entorno limpio o eventualmente pre configurado para un determinado trabajoo, justamente, proyecto. 
+En **Rstudio**, puedes crear un proyecto desde **`File -> New Proyect...`**.
+
+```
+## Si deseamos saber si alguna función u objeto se encuentran en el espacio de trabajo:
+exists("x")		# FALSE
+x <- 5
+exists("x")		# TRUE
+```
+
+No sé si tu curso está orientado a **R**, únicamente, o si te apoyas en **Rstudio**, si fuera lo segundo, te sugiero hablar de los paneles y en particular del panel de "entornos", que va mostrando los objetos activos en el entorno actual. **Nota**: El concepto de entorno es algo interesante de comentar, pero es un tópico avanzado.
+
+```
+## 5. Instalación y carga de librerías
+install.packages("paquete")						# Individual
+install.packages(c("paquete1", "paquete2", "paquete n"))	# Múltiple
+library(paquete)								# Sin comillas
+```
+
+Acá te sugiero aclarar el concepto de enmascaramiento de nombres, cuando una librería "pisa" u oculta una función ya existente. Esto es bastante importante y una fuente de dolores de cabeza. Hacer hincapié en prestar atención a los mensajes y warnings que aparecen al importar un paquete.
+
+```
+## 5.1 Revisar librerías instaladas
+## La función installed.packages() nos regresa una lista detallada de las librerías instaladas.
+View(installed.packages())		# View() nos da una visualización de las librerías en data.frame
+```
+
+`View()` es una función muy útil y puede aplicarse a multitud de objetos, no solo a un `data.frame`
+
+```
+## Para verificar si una librería está ha sido descargada, usamos installed.packages() mientras
+## que para checar si se encuentra cargada en el entorno de trabajo, empleamos loadedNamespaces()
+is.element(c("tidyverse","zoo"), installed.packages())	#TRUE si están instaladas
+is.element(c("tidyverse","zoo"), loadedNamespaces())		#FALSE si no están cargadas
+```
+
+También es útil mencionar que la funcionalidad y los datos que vayamos a utilizar de un paquete, si el mismo ya se encuentra instalado, puede ser invocado indicando el espacio de nombres del paquete + nombre del objeto, y esto es útil cuando un paquete nos "enmascaró" una determinada función, por ejemplo:
+
+```
+# Para acceder a la función select del paquete dplyr, podemos hacer:
+dplyr::select()
+```
+
+```
+## Ejercicio:
+## Crear un script con el siguiente contenido:
+
+rm(list=ls())
+library(tidyverse, warn.conflicts=F)
+library(zoo, warn.conflicts=F)
+
+## Lo guardamos como "source_demo.R" en el directorio de trabajo
+## y cerramos nuestra sesión de R. Abrimos nuevamente R y verificamos que el
+## espacio de trabajo esté en blanco y que las librerías "tidyverse" y "zoo" estén cargadas:
+
+ls()									# character(0)
+is.element(c("tidyverse","zoo"), loadedNamespaces())	# TRUE TRUE
+```
+
+Estas introduciendo el tema del `warn.conflicts=F`, te sugiero, por un lado nunca usar `F` o `T` sino `FALSE`y  `TRUE`, por que en el primer caso, es mucho más fácil que por error redefinamos esas letras para usarlas como variables. Por otro lado, evitar que library emita los wanings conlleva un cierto peligro, habría que explicar un poco esto y que se puede usar cuando estamos muy seguros de lo que estamos haciendo.
+
+```
+## 4.2 Actualizar librerías
+## Las librerías deben actualizarse cuando transitamos de una versión de R a otra
+## En ocasiones, no todas las librerías se actualizan de forma automática tras instalar
+## la nueva versión de R
+
+old.packages() 		#Muestra los paquetes que tienen actualizaciones disponibles
+update.packages()		#Actualización manual
+update.packages(ask=F)	#Con ask=F, evitamos el cuadro de diálogo que solicita permisos
+```
+
+Algunos datos que quiero señalarte al respecto de la actualización de librerías
+
+* Nunca es automática, siempre es el usuario que de alguna forma las actualiza
+* No siempre es necesario actualizarlas si cambiamos de versión de R
+* La actualización debiera hacerse cuando efectivamente tengamos la necesidad de hacerlo, por ejemplo:
+  1. Un paquete que depende de una versión más nueva
+  2. Una funcionalidad nueva que nos interesa
+  3. Una recomendación del autor del paquete
+* Como todo software, actualizarlo, tiene su riesgo, puede haber funcionalidad nueva o arreglos a la funcionalidad actual, pero también hay la posibilidad de nuevos bugs, o incluso cambios de funciones o eliminación de algunas que pueden "romper" nuestro script actual. 
+  
+
+```
+## 5.3 Cargar librerías de forma individual
+library(paquete)
+
+## 5.4 Cargar múltiples librerías con pacman
+install.packages("pacman")		#Si no está instalado
+library(pacman)				#Ejecutar librería
+p_load(lib_uno, lib_dos, lib_n)	#Sin comillas
+```
+
+Sin comentarios.
+
+```
+## 6. Guardar y cargar objetos
+## Existen dos formas principales de guardar objetos en nuestra sesión de R
+## Con save.image() que guarda todos los objetos de la sesión actual
+save.image(file="archivo.RData")
+
+## Con save() que guarda objetos seleccionados:
+save(a, b, file="archivo.RData")
+
+## Para cargar los objetos, empleamos la función load()
+load("archivo.RData")
+
+## Para borrar los objetos, utilizamos unlink()
+unlink("archivo.RData")
+```
+
+Hay una vieja discusión sobre que funciones son la apropiadas, ver: https://yihui.org/en/2017/12/save-vs-saverds/, `save` y `load` tienen ciertas características que no las hacen del todo óptimas `save` salva los datos y el nombre del objeto, lo cual a veces puede ser un problema si quieres referenciar los datos con otro nombre. `load()` tiene un problema más grave, no avisa nada si se está sobrescribiendo un objeto, esto puede ser fuente de problemas.
+
+Hay un consenso general en apuntar más hacia el uso de ` saveRDS()` y de `readRDS()`, 
+
+
+```
+## 7. Lectura de archivos externos
+
+## 7.1 Importar bases de datos de Internet (sitios web)
+df <- load(url("http://..."))
+```
+
+Atención con esto, `load()` solo lee objetos salvados con `save()` no confundir con otras formas de leer por ejemplo archivos `csv`, lo digo por que no es muy común que se compartan objetos nativos de **R** en la web. También me parece que hay que señalar que la "magia" ocurre gracias a la función `url()` que transforma una dirección web en una entrada para la lectura física de archivos. Lo que si es importante, este no es un comportamiento generalizado, algunas funciones son capaces de recibir una `connection` que es justamente lo que entrega `url`
+
+
+```
+## 7.2 Importar utilizando download.file
+## download.file es particularmente útil para descargar archivos zip y se complementa
+## con la función unzip. Un flujo estándar de descarga y extracción de archivos zip
+## tendría la siguiente estructura:
+
+download.file("url.zip", "archivo.zip")
+archivo_zip <- unzip("archivo.zip")
+```
+
+el ejemplo que quieres dar en realidad debería ser algo así `download.file("http://url/archiuvo.zip", "archivo.zip")` para que quede más claro que la entrada es una dirección web.
+
+
+``` 
+## En el siguiente ejemplo, descargamos los microdatos de la Ciudad de México correspondientes
+## a la Encuesta Intercensal 2015. La url del archivo se obtiene directamente desde el sitio web
+cdmx <- download.file(
+	"https://www.inegi.org.mx/contenidos/programas/intercensal/2015/microdatos/eic2015_09_csv.zip",
+	"cdmx.zip")	## Al no especificar una ruta, el archivo quedará guardado en nuestro directorio
+	## de trabajo
+
+cdmx_zip <- unzip("cdmx.zip")
+str(cdmx_zip)
+
+## Si el zip tiene múltiples archivos, str() nos permite observar cuáles son a fin de
+## seleccionar el deseado. En este caso, se puede observar que el zip contiene los
+## archivos "TR_PERSONA09.CSV" y "TR_VIVIENDA09.CSV"
+```
+
+La introducción de `str()` debiera ser, siempre a mi criterio, una de los primeros conceptos. `str` es por `structure` y es una función genérica que adapta la salida o a cada tipo de dato.
+
+```
+## 5.3 Lectura de txt y csv
+## Para leer archivos de texto y en formato csv (valores separados por comas), empleamos tres funciones
+## read.table, read.csv y read.csv2. read.csv2 se emplea en archivos separados por semicolon (;)
+## Los argumentos más importantes son header y stringsAsFactors.
+## header=T es opción por default así que no requiere indicarse cuando se llama a la función
+## Por tanto, si no se quiere conservar los encabezados de las variables, se indica header=F
+## stringsAsFactors=T es la opción por default, lo que convierte toda cadena de texto en factores
+## Esta opción es útil si se conoce la estructura de la base de datos y los niveles de cada factor
+## Si no es el caso, debe indicarse explícitamente stringsAsFactors= F. Con ello, los valores no numéricos
+## se coercionan a cadenas de caracteres.
+
+mydf <- read.table("path/archivo.txt",stringsAsFactors=F)
+mydf <- read.csv("path/archivo.csv",stringsAsFactors=F)
+mydf <- read.csv2("path/archivo.csv",stringsAsFactors=F)
+
+```
+
+Aquí entiendo que deberías haber hablado antes, acerca de que son las variables, cuales son los distintos tipos de dato y particularmente que son los `factor` en **R**. Otro parámetro fundamental que deberías mencionar es el de `sep`  que indica que caracter se usa como separador de columnas. No sé si te conviene mencionar `read.csv2` inmediatamente surgirá la pregunta acerca de cual es la diferencia con `read.csv`
+
+```
+## Empleando el zip de la sección 5.2, seleccionamos el archivo "TR_PERSONA09.csv" y lo cargamos:
+cdmx_df <-read.csv("TR_PERSONA09.csv",stringsAsFactors=F)
+View(cdmx_df)	# Para observar la base de datos
+```
+
+Sin comentarios.
+
+```
+## 5.4 Archivos .xls y .xlsx
+## Para este tipo de archivos, empleamos la librería "readxl" y su función clave "read_excel"
+## Debe notarse que read_excel "adivina" la extensión del archivo, por lo que se puede optimizar
+## la lectura empleando read_xls o read_xlsx si se conoce dicha extensión
+
+## Los argumentos más importantes de la función son: sheet, col_names y na.
+## sheet= "string" nos sirve para seleccionar una hoja del libro por su nombre
+## sheet= numero nos sirve para seleccionar una hoja por su número
+## col_names= T fija el primer renglón como nombre para cada una de las columnas
+## na= "" permite establecer una cadena de caracteres para sustituir a los valores NA
+## (Por default, la función trata los espacios en blanco como valores perdidos
+
+mydf <- read_excel("path/archivo.xls", sheet=1, col_names=T, na=".")
+```
+
+Sin comentarios.
+
+```
+## 5.5 Archivos de SPSS
+## La librería foreign cuenta con funciones para leer archivos de distintos tipos
+## Entre ellos se encuentran los de extensión .sav, del programa SPSS
+## Para leer esos archivos, se emplea la función read.spss
+## Los argumentos más importantes de la función son use.value.labels y to.data.frame
+## Ambos son lógicos (TRUE o FALSE).
+## use.value.labels= T convierte variables con etiquetas de valor en factores R con esos niveles
+## to.data.frame= T transforma el archivo a un data.frame de R
+
+df <- read.spss("path/archivo.sav", use.value.labels= T, to.data.frame= TRUE)
+```
+Sin comentarios.
+
+```
+## 6. Escritura de archivos
+## En ocasiones, después de realizar manipulaciones en una BD, deseamos guardar los
+## archivos en formatos útiles para otras personas.
+## Base R nos permite guardar archivos en dos formatos importantes: txt y csv
+## Aunque con write.table podemos guardar en ambos formatos, se recomienda usar
+## write.csv cuando se trta de bases de datos grandes.
+## Los argumentos más importantes en ambas funciones son: el nombre del archivo en el
+## espacio de trabajo y el nombre del archivo
+
+write.csv(archivo, "archivo.csv")
+write.table(archivo, "archivo.txt")
+
+
+write.csv2(archivo, "archivo.csv")
+```
+
+Las segundas versiones de rutinas como `write.csv2` creo que no vale la pena ni mencionarlas.
+
+
+```
+## Para guardar archivos en extensiones .xls y .xlsx, una opción es la librería "openxlsx"
+## y su función write.xlsx. Los argumentos básicos de esta función son el nombre del
+## objeto y el nombre del archivo a guardar. También es posible especificar un nombre
+## para la hoja en la que se guardará el archivo.
+
+write.xlsx(nombre_objeto, "nombre_archivo.xlsx", sheetName="nombre_hoja")
+```
+
+Sin comentarios.
+
