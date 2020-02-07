@@ -1,22 +1,22 @@
 ---
-title: "Economia Digital - Practicas"
+  title: "Economia Digital - Practicas"
 author: "Patricio Moracho"
 date: "13/12/2019"
 output: html_document
 ---
-
-```{r setup, include=FALSE}
+  
+  ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library("tidyverse")
 library("tabulizer")
 library("ggelegant")
+
+PATH = '~/Dropbox/Books/Economía Digital.pdf'
 ```
 
 ## Cuidado con las variables latentes
 
 ```{r variables_latentes}
-PATH = '~/Dropbox/Books/Economía Digital.pdf'
-
 m <- extract_tables(PATH, encoding="UTF-8", pages=30, method = "stream")[[1]]
 datos <- m[-3:-1,]
 cbind(datos[,1],
@@ -29,7 +29,7 @@ df %>%
   setNames(c("aeropuerto", "alaska.ok", "alaska.late", "america.ok", "america.late"))  %>% 
   mutate_at(vars(matches("ok|late")), 
             list(~ str_remove(., pattern="[.]") %>%  as.integer)
-            ) -> df
+  ) -> df
 df %>% 
   select(everything(), -aeropuerto) %>% 
   summarise_all(sum) %>% 
@@ -53,18 +53,40 @@ df %>%
   geom_bar(position = "dodge", stat = "identity") +
   ggelegant::theme_elegante_std(base_family = "Raleway") +
   labs(title="Porcentaje de vuelos retrasados")
-  
+
 ```
 
-## Including Plots
+## ANÁLISIS DE DISTRIBUCIONES
 
-library(tabulizer)
-You can also embed plots, for example:
+```{r analisis}
+df <- data.frame(tipo = c('Parejas sin hijos','Parejas con hijos','Hombres solos con hijos','Mujeres solas con hijos'),
+                 recuento = c(1168, 830, 27, 158),
+                 porcentaje = c(53.5, 38.02, 1.24, 7.24)
+)
+
+df %>% 
+  ggplot(mapping=aes(x=tipo, y=recuento)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  ggelegant::theme_elegante_std(base_family = "Raleway") +
+  labs(title="Número de familias por tipos en Suecia")
 
 
+df %>% 
+  ggplot(mapping=aes(x="", y=recuento, fill=tipo)) +
+  geom_bar(stat = "identity") +
+  coord_polar("y", start=0) +
+  ggelegant::theme_elegante_std(base_family = "Raleway") +
+  labs(title="Número de familias por tipos en Suecia")
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+df <- data_frame(disciplina = c('Informática', 'Pedagogía', 'Ingeniería', 'Biología', 'Física', 'Psicología'),
+                 porcentaje = c(15.4, 60.8, 11.1, 40.7, 21.7, 62.7)
+)
+
+df %>% 
+  ggplot(mapping=aes(x=disciplina, y=porcentaje, fill=disciplina)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  ggelegant::theme_elegante_std(base_family = "Raleway") +
+  labs(title=str_wrap("Porcentaje de mujeres que se doctoraron en distintas disciplinas en EE UU durante 1994",50),
+       caption="Statistical Abstract of the United States")
+
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
