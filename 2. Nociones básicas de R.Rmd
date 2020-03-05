@@ -28,14 +28,14 @@ knitr::opts_chunk$set(error = TRUE)
 			tidyr::pivot_wider()	#Ejecuta la función pivot_wider() de tidyr
 ```
 
-Atención con los triples dobles puntos `:::`, ya que acceden a funciones y variables que el autor del paquete no exportó específicamente, vale decir, que decidió ocultar por alguna razón. Para un usuario común hay pocas chances que necesite usar este operador
+Atención con los triples dobles puntos `:::`, ya que acceden a funciones y variables que el autor del paquete no exportó específicamente, vale decir, que decidió ocultar por alguna razón. Para un usuario común hay pocas chances que necesite usar este operador.
 
 ```
 ## $ 			Extracción y creación de componentes 
 ## [] [[]] 		Indexación
 ```
 
-No está mal comentar aquí, que también podemos pedir ayuda sobre cada operador mediante ` ``?$`` o ``?[[`` `. Te comento que los operadores `$` y `[]` (o `[[]]`) son conceptualente equivalentes, por lo que te diría que no separes el sentido en extración o indexación como dos cosas distintas, ya que la idea es la misma, son operadores de "extración" o de "reemplazo" de elementos puntuales en una colección de datos.
+No está mal comentar aquí, que también podemos pedir ayuda sobre cada operador mediante ` ``?$`` o ``?[[`` `. Te comento que los operadores `$` y `[]` (o `[[]]`) son conceptualente equivalentes, por lo que te diría que no separes el sentido en extracción o indexación como dos cosas distintas, ya que la idea es la misma, son operadores de "extracción" o de "reemplazo" de elementos puntuales en una colección de datos.
 
 
 ```
@@ -59,7 +59,7 @@ Sin comentarios
 ## && || 		"y" "o" utilizado en condicionales if
 ```
 
-Acá hay un tema interesante que es importante dejar bien claro, y es la diferencia entre los operadores dobles y simples. El doble `&&` o `||`, no es que unos son para usar en un `if` y los otros no, o sí, pero con una aclaración importante, Veamos este caso:
+Acá hay un tema interesante que es importante dejar bien claro, y es la diferencia entre los operadores dobles y simples. El doble `&&` o `||`, no es que son para usar en un `if` y los otros no, o sí, pero con una aclaración importante, Veamos este caso:
 
 ```{r}
 c(TRUE, TRUE) & c(FALSE, TRUE)
@@ -71,7 +71,7 @@ En este caso el `and` lógico simple, se hace sobre cada elemento del vector y c
 c(TRUE, TRUE) && c(FALSE, TRUE) 
 ```
 
-El doble `and` solo compara el primer elemento de cada vector, vale decir que hace algo así: `c(TRUE, TRUE)[1] && c(FALSE, TRUE)[1]`, con lo cual siempre el retorno será un único elemento lógico, una salida que es consistentente con la forma en que trabaja un bloque `if`. Es fácil olvidar que en R no existen los datos escalares, todo datos es una colección de al menos un elemento, por lo cual es simple pensar que si tengo un `if` uso el operador doble, pero que pasa si comparamos dos vectores con múltiples elementos, ¿es la comparación del primer elemento la que efectivamente tiene que controlar el bloque `if`? posiblemente no y en estos casos corresponda más bien algo así:
+El doble `and` solo compara el primer elemento de cada vector, vale decir, que hace algo así: `c(TRUE, TRUE)[1] & c(FALSE, TRUE)[1]`, con lo cual siempre el retorno será un único elemento lógico, una salida que es consistentente con la forma en que trabaja un bloque `if`. Es fácil olvidar que en R no existen los datos escalares, todo datos es una colección de al menos un elemento, por lo cual es simple pensar que si tengo un `if` uso el operador doble, pero que pasa si comparamos dos vectores con múltiples elementos, ¿es la comparación del primer elemento la que efectivamente tiene que controlar el bloque `if`? posiblemente no y en estos casos corresponda más bien algo así:
 
 ```
 if (any(c(TRUE, TRUE) && c(FALSE, TRUE))) {}
@@ -145,7 +145,7 @@ test				# [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
 ## La variable test está definida en el entorno de trabajo
 ```
 
-Este ejemplo que estás dando, es una patrón no habitual y creo que potencialmente confuso, en mi opiniñón habría que evitarlo, aunque efectivamente el ejemplo es correcto y grafica muy bien lo que estás diciendo. Tal vez lo presentaría de esta forma:
+Este ejemplo que estás dando, es una patrón no habitual y creo que potencialmente confuso, en mi opinión habría que evitarlo, aunque efectivamente el ejemplo es correcto y gráfica muy bien lo que estás diciendo. Tal vez lo presentaría de esta forma:
 
 ```{r echo=TRUE, message=TRUE, warning=TRUE}
 
@@ -162,11 +162,18 @@ median(test=1:15)
 
 Acá empieza algo medular, me gustaría brindarte algunos conceptos más generales sobre R y los datos, por las dudas, que alguno te sea útil.
 
-* R a diferencia del resto de los lenguajes no tiene datos escalares, es decir, no existe un número o una cadena aislada, cualquier dato es una colección de `n` elementos, pudiendo ser `n=0` un vector vacio, `n=1` un vector de un solo elemento o que `n` tome cualquier valor de elementos mientras exista memoria disponible.
-* Los tipos de dato básicos son: numericos, enteros, caracteres, logicos, complejos. (hay otro más, el `Raw`, pero no vale la pena mencionarlo)
-* Las colecciones u objetos más básicos y habituales son `vector` y `matrix` (es un vector con más de una dimension), luego nos aparecen las  `listas`, los dos primeros objetos solo pueden albergar un solo tipo de dato, las `listas` es el único objeto que es capaz de almacenar más de un tipo de dato, por supesto tenemos el `data.frame` o el `tibble` pero hay que señalar que son especializaciones del objeto `lista`.
-* La coerción que mencionas más abajo, es un efecto que se produce automáticamente cuando combinas distintos tipos de datos en un objeto que no lo permite, la converión que se produce siempre tiende al valor que pueda englobar toda la colección de datos, si tiene un entero y un numérico la coerción irá hacia el numerico, un numerico y una cadena, la coerción llevara todo a una cadena.
+* R a diferencia del resto de los lenguajes no tiene datos escalares, es decir, no existe un número o una cadena aislada, cualquier dato es una colección de `n` elementos, pudiendo ser `n=0` un vector vacío, `n=1` un vector de un solo elemento o que `n` tome cualquier valor de elementos mientras exista memoria disponible.
+* Los tipos de dato básicos son: numéricos, enteros, caracteres, lógicos, complejos. (hay otro más, el `Raw`, pero no vale la pena mencionarlo)
+* Las colecciones u objetos más básicos y habituales son `vector` y `matrix` (es un vector con más de una dimensión), luego nos aparecen las  `listas`, los dos primeros objetos solo pueden albergar un solo tipo de dato, las `listas` es el único objeto que es capaz de almacenar más de un tipo de dato, por supuesto tenemos el `data.frame` o el `tibble` pero hay que señalar que son especializaciones del objeto `lista`.
+* La coerción que mencionas más abajo, es un efecto que se produce automáticamente cuando combinas distintos tipos de datos en un objeto que no lo permite (cualquiera que no sea una lista), la conversión que se produce siempre tiende al valor que pueda englobar toda la colección de datos, si se tiene un entero y un numérico la coerción irá hacia el numérico, un numérico y una cadena, la coerción llevara todo a una cadena.
 
+Al definir una lista no hay coerción de datos por lo que mencionaba antes:
+
+```{undefined echo=TRUE}
+l <- list(1, "cadena")
+class(l[[1]])
+class(l[[2]])
+```
 
 ```
 ## 3. La función c() y la creación de vectores
@@ -201,7 +208,7 @@ is.character(logi_vec)		# FALSE
 is.logical(logi_vec)			# FALSE
 ```
 
-`class()` también sirve para definir una nueva clase de un objeto por ejemplo: 
+`class()` también sirve para definir un objeto de una nueva clase, por ejemplo: 
 
 ```{r} 
 x<-1:5
@@ -217,11 +224,11 @@ x <- 1:10
 y <- x/5 + rnorm(10)
 
 class(y)    # numeric
-typeof(y)   # double, es una especialización de un nuemric
+typeof(y)   # double, es una especialización de un numeric
 
 g <- lm(y ~ x)
 class(g)    # g es un objeto de la clase lm
-typeof(g)   # Sin embargo no deja de ser tambien una list
+typeof(g)   # Sin embargo no deja de ser tambien una lista
 ```
 
 Y como se puede ver, `typeof()` te da el dato de más bajo nivel, mientras `class()` te puede dar realmente el nombre de la clase de cualquier objeto. Cuidado con todo esto, por que involucra el tema de la programación orientada a objetos, en la que imagino, no vas a entrar. A la audiencia a la que apuntas, con que menciones que una funciona apunta más alto que la otra, creo que alcanza,
@@ -234,7 +241,8 @@ Y como se puede ver, `typeof()` te da el dato de más bajo nivel, mientras `clas
 char_vec_num <- as.numeric(char_vec)	# Notificación de NA introducidos por coercion
 char_vec_num					#  [1]  1  2  3  4  5  6  7  8  9 10 NA NA
 ```
-Este problemas ocurre cuando convertimos valores más genericos a más especificos y algún dato no puede conertirse, salvo el caso de un numerico real a un entero en dónde se truncan decimales.
+
+Este problemas ocurre cuando convertimos valores más genéricos a más específicos y algún dato no puede convertirse, salvo el caso de un numérico real a un entero en dónde se truncan decimales.
 
 ```{r}
 as.integer(1.5)
@@ -255,7 +263,7 @@ as.integer(1.5)
 ## as.numeric() transforma un vector lógico en un vector de 0 (para F) y 1 (para T)
 ```
 
-`as.numeric()` tranforma en numérico cualquier cadena que puede converirse en un número, el resto las considera `NA`
+`as.numeric()` tranforma en numérico cualquier cadena que puede convertirse en un número, el resto las considera `NA`
 
 
 ```{r message=TRUE, warning=TRUE}
@@ -278,7 +286,8 @@ vec_ej <- c(c(1,4,3), 2, "perro", list=(1:4))
 str(vec_ej)			# Named chr [1:9] "1" "4" "3" "2" "perro" "1" "2" "3" "4"
 typeof(vec_ej)		# "character"
 ```
-Esto, porque la lista es el primero de los tipos de contenedores que soporta multiples tipos de datos.
+
+Esto, porque la lista es el primero de los tipos de contenedores que soporta múltiples tipos de datos.
 
 ```
 ## Las listas suelen emplearse en la construcción de funciones y su uso puede observarse
@@ -300,7 +309,7 @@ typeof(df_ej_uno)		# "list"
 class(df_ej_uno)		# "data.frame"
 ```
 
-Una aclaración, estrictamente hablando, el `data,frame` no es un cojunto de listas, es más bien una lista de vectores, cada columna es un elemento de la lista, y es a su vez un vector de un determinado tipo. Nunca una columna puede tener distintos tipos de dato.
+Una aclaración, estrictamente hablando, el `data,frame` no es un conjunto de listas, es más bien una lista de vectores, cada columna es un elemento de la lista, y es a su vez un vector de un determinado tipo. Nunca una columna puede tener distintos tipos de dato.
 
 ```
 ## Si los números de renglones no coinciden entre variables, se mostrará un error
@@ -329,7 +338,7 @@ names(df_ej_uno) <- c("uno", "dos")
 attributes(df_ej_uno)$names	[1] "uno" "dos"
 ```
 
-Èn este caso, creo que es preferible explicar `colnames()` por sobre `names()`, esta última solo aplica a un `data.frame` si se la quieres usar en una matriz ya no te sirve, sin embargo `colnames()` además de tener un nombre más explicativo funciona en los dos objetos antes mencionados.
+En este caso, creo que es preferible explicar `colnames()` por sobre `names()`, esta última solo aplica a un `data.frame` si se la quieres usar en una matriz ya no te sirve, sin embargo `colnames()` además de tener un nombre más explicativo funciona en los dos objetos antes mencionados.
 
 
 ```
@@ -369,7 +378,7 @@ x.factor_ordered <- factor(x, ordered = TRUE)
 x.factor_ordered # factor ordenado
 ```
 
-Notar como se muestran los `Levels` en cada caso. Los factores ordenados son muy utiles cuando efectivamente la variable tiene un orden que conviene sea respetado en estadísticos y/o gráficas. Por ejemplo:
+Notar como se muestran los `Levels` en cada caso. Los factores ordenados son muy útiles cuando efectivamente la variable tiene un orden que conviene sea respetado en estadísticos y/o gráficas. Por ejemplo:
 
 ```{r}
 set.seed(2019)
@@ -382,7 +391,7 @@ x.factor_ordered <- factor(x, levels=niveles, ordered = TRUE)
 x.factor_ordered # factor ordenado
 ```
 
-Al definir un factor ordenado, debemos si o sí indicar el orden a respetar con el parámetro `levels' . Si tuvieramos que graficar los dos vectores en un gráfico de barras de R base, vemos que los niveles se ajustan en el caso del vector ordenado.
+Al definir un factor ordenado, debemos si o sí indicar el orden a respetar con el parámetro `levels' . Si tuviéramos que graficar los dos vectores en un gráfico de barras de R base, vemos que los niveles se ajustan en el caso del vector ordenado.
 
 ```{r}
 barplot(table(x.factor))
