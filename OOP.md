@@ -337,3 +337,124 @@ a_microwave_oven$cook(1)
 * Se define mediante la lista  `active`
 * Son setter y getters, pero funcionan como variables
 
+
+Ejemplo:
+
+```r
+# Add a binding for power rating
+microwave_oven_factory <- R6Class(
+  "MicrowaveOven",
+  private = list(
+    ..power_rating_watts = 800,
+    ..power_level_watts = 800
+  ),
+  # Add active list containing an active binding
+  active = list(
+    power_level_watts = function(value) {
+      if(missing(value)) {
+        # Return the private value
+        private$..power_level_watts
+      } else {
+        # Assert that value is a number
+        assert_is_a_number(value)
+
+        # Assert that value is in a closed range from 0 to power rating
+        assert_all_are_in_closed_range(value, 0, private$..power_rating_watts)
+        # Set the private power level to value
+        private$..power_level_watts <- value
+      }
+    }
+
+  )
+)
+
+# Make a microwave 
+a_microwave_oven <- microwave_oven_factory$new()
+
+# Get the power level
+a_microwave_oven$power_level_watts
+
+# Try to set the power level to "400"
+a_microwave_oven$power_level_watts <- "400"
+
+# Try to set the power level to 1600 watts
+a_microwave_oven$power_level_watts <- 1600
+
+# Set the power level to 400 watts
+a_microwave_oven$power_level_watts <- 400
+```
+
+## Herencia
+
+* Propagar funcionalidad se hace mediante Herencia
+* Se  define mediante el parametro `inherit`
+* Los hijos obtienen la funcionalidad de los padres pero no al reves
+
+```r
+# Explore the microwave oven class
+microwave_oven_factory
+
+# Define a fancy microwave class inheriting from microwave oven
+fancy_microwave_oven_factory <- R6Class(
+    "FancyMicrowaveOven",
+    inherit = microwave_oven_factory)
+```
+
+## Embrace, Extend, Override
+
+* Override: Nueva funcionalidad que modificac una función existente
+* Extend: Nueva funcionalidad en una nueva función de la clase hija
+* `$self`: Para acceder a las funciones de la propia clase
+* `$super`: Para acceder a las funciones de clase Padre
+
+# Multiples niveles de herencia
+
+* Una clas solo puede acceder a su clase padre
+* A menos que el padre explicítamente exponga su `super`
+
+## Environments, Reference Behaviour, and Static Fields
+
+*  `shared` para crear areas de variables compartidas entre objetos
+*  Se usan `environments` copia por referencia a diferencia de las listas que son copias por valor
+
+```r
+# Complete the class definition
+microwave_oven_factory <- R6Class(
+  "MicrowaveOven",
+  private = list(
+    shared = {
+      # Create a new environment named e
+      e <- new.env()
+      # Assign safety_warning into e
+      e$safety_warning <- "Warning. Do not try to cook metal objects."
+      # Return e
+      e
+    }
+  ),
+  active = list(
+    # Add the safety_warning binding
+    safety_warning = function(value) {
+      if(missing(value)) {
+        private$shared$safety_warning 
+      } else {
+        private$shared$safety_warning <- value
+      }
+    }
+  )
+)
+
+# Create two microwave ovens
+a_microwave_oven <- microwave_oven_factory$new()
+another_microwave_oven <- microwave_oven_factory$new()
+  
+# Change the safety warning for a_microwave_oven
+a_microwave_oven$safety_warning <- "Warning. If the food is too hot you may scald yourself."
+  
+# Verify that the warning has change for another_microwave
+another_microwave_oven$safety_warning
+```
+
+## Cloning
+
+La copia de objetos es por referencia a menos que usemos `clone()` y usar  `clone(deep = TRUE)` cuando un objeto R6 tiene en una propiedad otro objeto R6 y se quiere una copia profunda. Sino el bjeto interno es compartido por referencia. 
+
