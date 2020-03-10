@@ -21,8 +21,10 @@ tags:
 
 ## Objetivos de la OOP y la programación funcional
 
-* En paradigma funcional se piensa primero en la función y luego en la estructura de los datos
-* En oop lo primero es la estructura de los datos y luego la funcionalidad (metodos)
+* En paradigma funcional se piensa primero en la función y luego en la
+  estructura de los datos
+* En oop lo primero es la estructura de los datos y luego la funcionalidad
+  (metodos)
 * No es práctico para el análisis de datos, preferible un aproach funcional
 * OOP, recomendado para GUI y APIS
 
@@ -82,7 +84,8 @@ lapply(some_vars, type_info)
 ```
 
 * `array`: generalización de una matriz con un númer arbitrario de dimensiones
-* `formula`: Para definir relaciones entre variables en el modelado y graficación de funciones
+* `formula`: Para definir relaciones entre variables en el modelado y
+  graficación de funciones
 
 * Funciones:
     * `closures`
@@ -130,7 +133,8 @@ List of 2
 
 ## Sobrecarga de funciones
 
-Funcionaldidad dependiente del objeto al cual se aplican, Ej `summary()`. Se construye mediante:
+Funcionaldidad dependiente del objeto al cual se aplican, Ej `summary()`. Se
+construye mediante:
 
 * función
     * generic
@@ -146,7 +150,8 @@ Por ejemplo
         *  `print.formula`
         *  etc.
 
-La convención en S3 para definir las funciones es `<nombre de función>.<clase de objeto>`. Para chequear funciones: `is_s3_generic()` o `is_s3_method()`
+La convención en S3 para definir las funciones es `<nombre de función>.<clase
+de objeto>`. Para chequear funciones: `is_s3_generic()` o `is_s3_method()`
 
 ```r
 library(pryr)
@@ -208,20 +213,24 @@ Si solo queremos metodos de S3, tenemos `.S3methods()`
 Las _primitivas_ son funciones normalmente escritas en `C` por razones de
 performance, por ejemplo `sin()`, o  ``+`()` o `if()` o `for()`. Estas
 funciones también pueden ser genericas, en este caso trabajan un poco distinto
-a las funciones genericas no primitivas. Para saber cual son, diponemos de `.S3PrimitiveGenerics`. 
+a las funciones genericas no primitivas. Para saber cual son, diponemos de
+`.S3PrimitiveGenerics`. 
 
 ¿En que difieren genericas regulares y genericas primitivas?
 
-Una generica primitiva no generará error cuando no exista un metodo específico para porcesar cierto objeto. Ejemplo `length()`.
+Una generica primitiva no generará error cuando no exista un metodo específico
+para porcesar cierto objeto. Ejemplo `length()`.
 
 ## Múltiples clases
 
-Un objeto puede heradar varias clases, que no es más que conjunto de cadenas. Para saber fehacientemente si un objeto hereda cierta clase, podríamos:
+Un objeto puede heradar varias clases, que no es más que conjunto de cadenas.
+Para saber fehacientemente si un objeto hereda cierta clase, podríamos:
 
 1. Si existe el método: `is.nuevaclase()`
 2. Usar `inherits()`
 
-La herencia se puede aplicar ejecutando multiples metodos mediante `NextMethod("clase padre")`
+La herencia se puede aplicar ejecutando multiples metodos mediante
+`NextMethod("clase padre")`
 
 Ejemplo:
 
@@ -456,5 +465,48 @@ another_microwave_oven$safety_warning
 
 ## Cloning
 
-La copia de objetos es por referencia a menos que usemos `clone()` y usar  `clone(deep = TRUE)` cuando un objeto R6 tiene en una propiedad otro objeto R6 y se quiere una copia profunda. Sino el bjeto interno es compartido por referencia. 
+La copia de objetos es por referencia a menos que usemos `clone()` y usar
+`clone(deep = TRUE)` cuando un objeto R6 tiene en una propiedad otro objeto R6
+y se quiere una copia profunda. Sino el objeto interno es compartido por
+referencia. 
 
+
+## Shut it Down
+
+Así como existe `initializae()` que se ejecuta al inicializar un objeto, existe
+`finalize()` que se ejecuta cuando realmente el objeto es destruido por el
+grabbage collector. Por ejemplo `rm("objeto"); gc()`
+
+
+```r
+# From previous step
+smart_microwave_oven_factory <- R6Class(
+  "SmartMicrowaveOven",
+  inherit = microwave_oven_factory, 
+  private = list(
+    conn = NULL
+  ),
+  public = list(
+    initialize = function() {
+      private$conn <- dbConnect(SQLite(), "cooking-times.sqlite")
+    },
+    get_cooking_time = function(food) {
+      dbGetQuery(
+        private$conn,
+        sprintf("SELECT time_seconds FROM cooking_times WHERE food = '%s'", food)
+      )
+    },
+    finalize = function() {
+      message("Disconnecting from the cooking times database.")
+      dbDisconnect(private$conn)
+    }
+  )
+)
+a_smart_microwave <- smart_microwave_oven_factory$new()
+
+# Remove the smart microwave
+rm("a_smart_microwave") 
+
+# Force garbage collection
+gc()
+```
