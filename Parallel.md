@@ -134,21 +134,24 @@ foreach(x = sample(1:1000, 10), .combine = c) %:%
 ### foreach and parallel backends
 
 Popular backends
+
 * doParallel (parallel)
 * doFuture (future)
 * doSEQ (for consisent sequential interface)
 
 
 Package doParallel (Rich Calaway et al.)
-Interface between foreach and parallel
-Must register via registerDoParallel() with cluster info
+
+* Interface between foreach and parallel
+* Must register via registerDoParallel() with cluster info
+
 Quick registration:
 
 library(doParallel)
 registerDoParallel(cores = 3)
+
 using multicore functionality for Unix-like systems (fork)
 using snow functionality for Windows systems
-
 
 
 Register by passing a cluster object:
@@ -194,12 +197,13 @@ Parallel:
 library(doFuture)
 registerDoFuture()
 
-Cluster plan:
+* Cluster plan:
+
 plan(cluster, workers = 3)
 foreach(n = rep(5, 3)) %dopar% rnorm(n)
 
 
-Multicore plan:
+* Multicore plan:
 plan(multicore)
 foreach(n = rep(5, 3)) %dopar% rnorm(n)
 
@@ -222,4 +226,109 @@ result <- foreach(let = letters, n = c(rep(2, 13), rep(6, 13)), .combine = c) %d
             
 # Plot results
 barplot(result, las=2)
+
+# Register doParallel with 3 cores
+registerDoParallel(cores=3)
+
+# foreach()%dopar% loop
+res <- foreach(r = rep(1000, 100), .combine = rbind, 
+            .packages = "extraDistr") %dopar% myrdnorm(r)
+            
+# Dimensions of res
+dim_res <- dim(res)
+
+# Function for doParallel foreach
+freq_doPar <- function(cores, min_length = 5) {
+    # Register a cluster of size cores
+    registerDoParallel(cores = cores)
+    
+    # foreach loop
+    foreach(let = chars, .combine = c, 
+            .export = c("max_frequency", "select_words", "words"),
+            .packages = c("janeaustenr", "stringr")) %dopar%
+        max_frequency(let, words = words, min_length = min_length)
+}
+
+# Run on 2 cores
+freq_doPar(2)
+
+# Function for doFuture foreach
+freq_doFut <- function(cores, min_length = 5) {
+    # Register and set plan
+    registerDoFuture()
+    plan(cluster, workers = cores)
+    
+    # foreach loop
+    foreach(let = chars, .combine = c) %dopar% 
+        max_frequency(let, words = words, min_length = min_length)
+}
 ```
+
+
+### future and future.apply
+
+
+Package future
+Developed by Henrik Bengtsson (now also funded by R Consortium)
+Uniform way to evaluate R expressions asynchronously
+Provides a unified API for sequential and parallel processing of R expressions
+Processing via a construct called future
+An abstraction for a value that may be available at some point in the future    
+
+What is a future?
+
+Example in plain R:
+
+x <- mean(rnorm(n, 0, 1))
+y <- mean(rnorm(n, 10, 5))
+print(c(x, y))
+
+Via implicit futures:
+
+x %<-% mean(rnorm(n, 0, 1))
+y %<-% mean(rnorm(n, 10, 5))
+print(c(x, y))
+
+
+Via explicit futures:
+
+x <- future(mean(rnorm(n, 0, 1)))
+y <- future(mean(rnorm(n, 10, 5)))
+
+
+Sequential and parallel futures
+
+Sequential:
+
+plan(sequential)
+x %<-% mean(rnorm(n, 0, 1))
+y %<-% mean(rnorm(n, 10, 5))
+print(c(x, y))
+
+Parallel:
+
+plan(multicore)
+
+x %<-% mean(rnorm(n, 0, 1))
+y %<-% mean(rnorm(n, 10, 5))
+print(c(x, y))
+
+Package future.apply
+Developed by Henrik Bengtsson
+Provide parallel API for all the apply functions in base R using futures
+Sibling to foreach
+Functions: future_lapply(), future_sapply(), future_apply(), ...
+
+
+Using lapply():
+
+lapply(1:10, rnorm)
+Using future_lapply() sequentially:
+
+plan(sequential)
+future_lapply(1:10, rnorm)
+
+Using future_lapply() on a cluster:
+
+plan(cluster, workers = 4)
+future_lapply(1:10, rnorm)
