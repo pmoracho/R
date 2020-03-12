@@ -332,3 +332,19 @@ Using future_lapply() on a cluster:
 
 plan(cluster, workers = 4)
 future_lapply(1:10, rnorm)
+
+
+## ¿Son los resultados reproducibles?
+
+
+### Números aleatorios
+* hay mucha estdística alrededor de los numeros aleatorios. Ej: MCMCs in Bayesian methods, bootstrap, simulations
+* Para reproducibilidad
+    * Se establece de entrada la semilla con `set.seed()`
+    * De la manera natural, esto no funciona con tareas paralelas
+    * El problema es que se setea la semilla en el proceso master, pero no en los workers
+    * Pero si exportamos la semilla a cada nodo, todos van a generar los mismo números
+
+
+### Generadores de números aleatorios en paralelo
+
