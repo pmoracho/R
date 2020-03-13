@@ -1,0 +1,53 @@
+                                                               Razonamiento estadístico / XXIX
+
+
+                                           Vuelos puntuales   Vuelos con retraso
+                       Alaska Airlines          3.274                501
+                       America West             6.438                787
+
+
+
+
+   Puedes comprobar que el porcentaje de vuelos que llegaron con retraso es
+
+                                                    501
+                            Alaska Airlines              = 13,3%
+                                                   3.775
+                                                    787
+                               America West              = 10,9%
+                                                   7.225
+
+    Aparentemente la mejor compañía es America West.
+    Sin embargo, hay que tener en cuenta más información. Casi todas la relacio-
+nes entre dos variables dependen de otras latentes de entorno. Tenemos datos de
+dos variables: la compañía aérea y si los vuelos llegan o no a la hora. Tengamos
+en cuenta una tercera variable: la ciudad de procedencia del vuelo.3
+
+
+                                     Alaska Airlines                America West
+                                  Vuelos          Vuelos       Vuelos          Vuelos
+                                 puntuales      con retraso   puntuales      con retraso
+               Los Angeles           497            62             694             117
+               Phoenix               221            12           4.840             415
+               San Diego             212            20             383              65
+               San Francisco         503           102             320             129
+               Seattle             1.841           305             201              61
+               Total               3.274           501           6.438             787
+
+
+
+
+    La fila “Total” muestra que los datos de la nueva tabla son los mismos que
+los datos de la tabla anterior. Fijémonos otra vez en los porcentajes de vuelos con
+retraso; los que proceden de los Angeles son
+
+                                                     62
+                               Alaska Airlines          = 11,1%
+                                                    559
+                                                    117
+                                America West            = 14,4%
+                                                    811
+
+
+   3 A.   Barnett, “How numbers can trick you”, Technology Review, octubre 1994, págs. 38-45.
+

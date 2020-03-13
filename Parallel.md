@@ -338,6 +338,7 @@ future_lapply(1:10, rnorm)
 
 
 ### Números aleatorios
+
 * hay mucha estdística alrededor de los numeros aleatorios. Ej: MCMCs in Bayesian methods, bootstrap, simulations
 * Para reproducibilidad
     * Se establece de entrada la semilla con `set.seed()`
@@ -347,4 +348,32 @@ future_lapply(1:10, rnorm)
 
 
 ### Generadores de números aleatorios en paralelo
+
+Random Number Generators (RNGs)
+Important parameters of an RNG:
+long period (preferably > 2^{100}>2
+​good structural (distributional) properties in high dimensions
+These parameters should hold when used in distributed environment
+
+
+L'Ecuyer Multiple Streams RNG
+A good quality RNG with multiple independent streams proposed by Pierre L'Ecuyer et al. (2002), RngStreams
+Period 2^{191}
+Streams have seeds 2^{127}2 steps apart
+Parallel parts of user computation can use independent and reproducible streams
+Direct interface in R: rlecuyer, rstream
+In R core: RNGkind("L'Ecuyer-CMRG")
+
+Using L'Ecuyer RNG in parallel
+Setting an RNG seed for cluster cl:
+
+clusterSetRNGStream(cl, iseed = 1234)​​
+
+Initializes a reproducible independent stream on each worker
+
+Results only reproducible if:
+
+process runs on clusters of the same size
+process does not use load balancing, e.g. clusterApplyLB()
+
 
