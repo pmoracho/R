@@ -18,3 +18,4 @@
 /doc/Book.R.xref
 /*.Rcheck
 /.venv
+/.Rprofile
