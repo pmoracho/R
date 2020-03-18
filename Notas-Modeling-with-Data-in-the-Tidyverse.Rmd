@@ -7,6 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library("ggplot2")
+library("dplyr")
+library("moderndive")
+
 ```
 
 # Modelado
@@ -38,12 +43,10 @@ Pasos
 3. Computing summary statistics
 
 ```{r}
-library(dplyr)
-library(moderndive)
 
 glimpse(evals)
 
-library(ggplot2)
+
 ggplot(evals, aes(x = score)) +
   geom_histogram(binwidth = 0.25) + 
   labs(x = "teaching score", y = "count")
@@ -118,3 +121,39 @@ ggplot(evals, aes(x = age, y = score)) +
   relaciones
 * Coeficiente de corelación (número entre -1 y 1) mide la fuerza de relación
   lineal entre dos variables
+  
+  
+## Explaining teaching score with age
+
+
+```{r}
+# Code to create scatterplot
+ggplot(evals, aes(x = age, y = score)) +
+  geom_point() + 
+  labs(x = "age", y = "score", title = "Teaching score over age") +
+  geom_smooth(method = "lm", se = FALSE)
+
+model_score_1 <- lm(score ~ age, data = evals)
+model_score_1
+
+# Fit regression model using formula of form: y ~ x
+model_score_1 <- lm(score ~ age, data = evals)
+
+# Output regression table using wrapper function:
+get_regression_table(model_score_1)
+
+
+# Plot 
+ggplot(evals, aes(x = bty_avg, y = score)) +
+  geom_point() +
+  labs(x = "beauty score", y = "score") +
+  geom_smooth(method = "lm", se = FALSE)
+```
+  ## Predicting teaching score using age
+
+```{r}
+# Fit regression model using formula of form: y ~ x
+model_score_1 <- lm(score ~ age, data = evals)
+# Get information on each point
+get_regression_points(model_score_1)
+```
