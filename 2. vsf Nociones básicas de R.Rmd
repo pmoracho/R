@@ -3,10 +3,10 @@ title: "II. Nociones básicas de R como lenguaje de programación"
 author: ""
 date: "Abril 2020"
 output:
-  html_document:
-    df_print: paged
   pdf_document:
     latex_engine: xelatex
+  html_document:
+    df_print: paged
 mainfont: Times New Roman
 header-includes:
 - \usepackage{titling}
@@ -51,18 +51,35 @@ De forma general, podemos decir que un operador es un símbolo que tiene una fun
 | `<-`, `<<-`  | Asignación y superasignación a la izquierda  |
 | =  |  Asignación a la izquierda|
 
-> **_NOTA PM:_**  Hay un concepto que me parece importante que manejes y trasmitas, es algo particular de **R** y para nada común e otros lnguajes. Lo habitual es que los operadores sean simplemente estructuras léxicas del lenguaje, en **R** en realidad son funciones, se denominan funciones binarias u operadores infix. Son funciones muy especiales que solo aceptan dos parámetros y pueden interpretarse escritas en la notación: `parametro <operador> parametro`. Por ejemplo, la igualdad `==` puede usarse de la menra clásica `1 == 2` o como función tradicional `` `==`(1,2) ``, nota los "backticks" para poder usarlos como función, esto con casi todos lo operaadores que has mencionado 
+> **_NOTA PM:_**  Hay un concepto que me parece importante que manejes y trasmitas, es algo particular de **R** y para nada común e otros lnguajes. Lo habitual es que los operadores sean simplemente estructuras léxicas del lenguaje, en **R** en realidad son funciones, se denominan funciones binarias u operadores infix. Son funciones muy especiales que solo aceptan dos parámetros y pueden interpretarse escritas en la notación: `parametro1 <operador> parametro2` o bien de forma funcional  `<operador>(parametro1, parametro2)`. Por ejemplo, la igualdad `==` puede usarse de la menra clásica `1 == 2` o como función tradicional `` `==`(1,2) ``, nota los "backticks" para poder usarlos como función, esto con casi todos lo operaadores que has mencionado. Este concepto es importante ya que es muy útil para usarlo con cualquier de las funciones `*apply`. Por ejemplo:
 
-```{r eval=FALSE}
-`:`(1,10)
-
+```{r eval=TRUE}
+# Ver que valores son mayores a 5
+unlist(lapply(sample(10), `>`, 5))
 ```
+> **_FIN NOTA PM:_** 
 
 **_Nota: Para obtener ayuda sobre operadores, podemos emplear ? seguida del símbolo entre comillas sencillas. Por ejemplo: ?`+`, ?`:`, ?`=`, nos remitirá a la información de operadores aritméticos, al operador de secuencias y los operadores de asignación_**
 
 **El operador `::`**, como vimos en el primer módulo, se utiliza para llamar a funciones de librerías que no se han cargado en el espacio de trabajo y/o para invocar funciones "enmascaradas". 
 
 **`$`, `[ ]`, `[[ ]]` se conocen genéricamente como "operadores de subconjuntos".** El primero se utiliza regularmente en listas y data.frames; el segundo en vectores, matrices y data.frames y el tercero fundamentalmente en listas. Más adelante se verá su uso en vectores y listas y en el módulo relativo a tratamiento de datos, en data.frames. 
+
+> **_NOTA PM:_**  el operador `$` es cierto se usa en listas y cualquier objeto que herede la clase lista, pero solo en aquellos casos dónde los elementos tienen nombres. `[]` tambien se usa en listas, es importante hacer notar la diferencia entre este y `[[]]`, no sé si más adelante lo haces, pero por las dudas este es un ejemplo
+
+```{r eval=TRUE}
+l <- list(1,2,3)
+l
+
+# Para obtener una lista con un solo elemento
+l[2]
+class(l[2])
+
+# Para obtener un elemento
+l[[2]]
+class(l[[2]])
+```
+> **_FIN NOTA PM:_** 
 
 **Los operadores `^`,  `-`, `+`, `%%`, `%/%`, `*` y `/` son aritméticos** y su uso es directo. Para observar cómo funcionan, copiemos, peguemos y ejecutemos el siguiente código:
 
@@ -95,6 +112,8 @@ De forma general, podemos decir que un operador es un símbolo que tiene una fun
 "Perro" != "perro"
 ```
 
+> **_NOTA PM:_** estos no son los operadores lógicos, si bien es cierto que retornan lógicos, son de condición `==` y `!=`, y de orden `<`, `>`, `<=`, `>=`. Los verdaeros operadores lógicos son el **OR** `|` o `||`, el **AND** `&` o `&&` y la negación `!`.
+
 La última comparación quizás pueda llamar la atención porque parece tratarse de cadenas de caracteres con el mismo valor ("perro"), por lo cual el resultado de la comparación debería ser `FALSE` (es decir, que no son diferentes). Sin embargo, **R**, al igual que la mayoría de los lenguajes de programación **distingue entre mayúsculas y minúsculas** (_"case sensitive"_), por lo cual una **P** es tratada de forma diferente que una **p**. Esto es de importancia porque muchos de los errores asociados al uso de este lenguaje tiene que ver con el uso equivocado de mayúsculas y minúsculas, en particular cuando creamos variables, bases de datos o empleamos alguna función.  
 
 El operador **`!`** permite "negar" aquello que se encuentra a su derecha. Por tanto, si una comparación nos arroja **`TRUE`** el resultado será **`FALSE`** y viceversa. Este operador es de mucha utilidad en el manejo de data.frames, como veremos en módulos posteriores. 
@@ -112,6 +131,8 @@ Finalmente, el operador **`~`** se verá en el módulo correspondiente a manipul
 ## 2. Asignación
 
 En R, contrario a otros lenguajes de programación, se prefiere el operador **`<-`** en lugar del signo igual **`=`** para realizar asignaciones, es decir, para crear objetos con valores específicos. Aunque en general el comportamiento de ambos operadores es el mismo en el entorno de trabajo, **`<-`** puede emplearse también como **`<-`** de forma tal que sin importar la dirección de la flecha, se creará una variable con un valor específico. 
+
+> **_NOTA PM:_** Me parece que es un error tipográfico la última asignación es en el sentido inverso **`->`**
 
 Ejecutemos el siguiente código seleccionando dos líneas a la vez ¿Qué resultado se muestra en consola? ¿Se registra algún error?
 ```{r eval=FALSE}
@@ -147,6 +168,8 @@ f(); x
 # El valor de x en el entorno de trabajo es 5
 ```
  
+ > **_NOTA PM:_** Es importante comentar en este punto, que el acceso a una variable externa a la función es transparente, es decir, la función puede "ver" cualquier variable definida fuera de esta, es la modificacion de esta variable, la que se debe indicar especialmente mediante `<<-` 
+ 
 Después de realizar asignaciones, tenemos objetos en nuestro entorno de trabajo los cuales podemos manipular utilizando algunos de los operadores que vimos anteriormente. Puesto que la mayor parte de las operaciones se hacen elemento a elemento, los objetos no necesitan tener una extensión similar y sus componentes son "reciclados" para llevar a cabo las tareas asignadas.  
 
 ```{r eval=FALSE}
@@ -168,6 +191,8 @@ xx/yy
 ## 3. La función `c()` y la creación de vectores
 
 En R se emplea de forma regular la función **`c()`** que significa "combine". Esta función permite crear vectores (o "colecciones") de números, caracteres, variables y  observaciones dependiendo del contexto en el que sea utilizada. **Los vectores son la estructura de datos básica en R siendo los más comunes los de tipo lógico (TRUE, FALSE), numérico (con decimales), enteros (positivos y negativos) y caracter (cadena de texto).** Cuando generamos un vector, sus componentes se separan con comas.
+
+> **_NOTA PM:_** Por si te toca algún programador en cualquier otro lenguaje, algo distintivo de R es la inexistencia de datos escalares, es decir las variable de un único valor. En la mayoría de lo lenguajes de programación hay una clara distinción entre variables escalares y colecciones tipo lista y otras. En R esto no existe y cualquier dato en realidad es una colección de 0, 1 o n elementos. 
 
 Ejercicios:
 
@@ -195,6 +220,8 @@ is.numeric(logi_vec)
 is.character(logi_vec)		
 is.logical(logi_vec)	
 ```
+ > **_NOTA PM:_** Revisar `num_vec` no existe
+
 
 La coerción de vectores puede hacerse manualmente empleando **`as.`** seguido del atributo de interés. Ejecutemos una a una las siguientes líneas de código. ¿Cuál es el resultado?
 
@@ -207,6 +234,8 @@ La coerción de vectores puede hacerse manualmente empleando **`as.`** seguido d
 En el primero y tercer casos, la coerción nos arrojó valores **`NA`**. Esto ocurre cuando ciertos valores genéricos no pueden convertirse a otros más específicos. En el vector **char_vec**, las cadenas "perro" y "niño" no tendrían un valor numérico concreto, mientras que "15" y "22" pueden fácilmente ser forzadas a números. En el caso de **logi_vec**, el dígito 5 no tiene sentido dentro de una escala que sólo adopta valores 0 (para `FALSO`) y 1 (para `VERDADERO`). 
 
 En consecuencia, podemos decir que **`as.numeric()`** transforma en número cualquier cadena susceptible de adquirir esa cualidad y en caso contrario arroja `NA`. Esta misma función convierte cualquier vector lógico en un vector de ceros y unos (0 para `FALSE` y 1 para `TRUE`)
+
+ > **_NOTA PM:_** Además de generar un `warning` bastante claro
 
 Un caso particular de coerción automática sucede cuando tenemos vectores con números enteros y decimales pues los segundos tienen precedencia sobre los primeros. Por otra parte, cuando coercionamos a entero utilizando **`as.integer()`**, R lo hace sobre el número más bajo: 
 
@@ -228,6 +257,9 @@ class(x)
 typeof(x)
 ```
 
+ > **_NOTA PM:_** es cierto, esto, pero es un concepto que solo va a tener sentido si vas a hablar de programación orientada a objetos.
+
+
 ## 4. Factores 
 
 Un factor es un vector que puede contener sólo valores predefinidos y es utilizado cuando guardamos datos categóricos. Aunque pueden verse como una extensión de cadenas de caracteres, lo cierto es que los factores son de hecho, enteros, por lo que su tratamiento requiere cierto cuidado. Pensemos, por ejemplo, en el siguiente vector de factores:
@@ -244,6 +276,8 @@ x <- factor(x)
 x
 str(x)
 ```
+
+ > **_NOTA PM:_** Son efectivamente enteros que como todo objeto en R se indiza a partir de 1.
 
 Como puede observarse, **R** ordena por default alfabéticamente por lo que la escala resulta Bueno - Malo - Regular y los valores enteros asignados son ascendentes (1 para "Bueno", 2 para "Malo" y 3 para "Regular"). De esta manera, al graficar las categorías se muestran en un orden que regularmente no es el esperado:
 
@@ -293,6 +327,7 @@ identical(num_char, num_fac_vec)
 ```
 Debido a este tipo de comportamiento, al llamar a funciones como **`read.table()`**, **`read.csv()`**, entre otras que se abordarán en el módulo III, se indica el argumento **`stringsAsFactors=FALSE`**. Sin embargo, cuando estudiemos expresiones regulares veremos que hay funciones que coercionan sus resultados a factores, por lo que si necesitamos números, será necesario recurrir al procedimiento descrito. 
 
+
 ## 5. Listas y data.frames
 
 En términos de complejidad, `vector` es la colección de objetos más básica, seguida por `matrix` (vectores de más de una dimensión), `list` y `data.frame`. Los dos primeros pueden albergar sólo un tipo de dato mientras que las listas son los únicos objetos capaces de almacenar diversidad de datos (incluyendo otras listas y `data.frames`). Por su parte, las `data.frame` y otros objetos como el [`tibble`](https://r4ds.had.co.nz/tibbles.html) son especializaciones del objeto `list`. 
@@ -321,6 +356,8 @@ g <- lm(y ~ x)
 class(g)    
 typeof(g) 
 ```
+
+ > **_NOTA PM:_** No entiendo a que te refieres a que "Las listas suelen emplearse en la construcción de funciones", puede que si como puede que no, lo que es cierto, y tal vez estas apuntando a eso, es habitual que cuando una función necesite retornar algún resultado complejo, lo haga por medio de una lista u objeto que se herede de las mismas.
 
 Una `data.frame` podría definirse como una lista de vectores donde cada columna (variable) es un elemento de la lista. A su vez, cada columna es un vector de determinado tipo. Cuando utilizamos la función **`data.frame`** para crear un objeto manualmente, el número de columnas puede diferir pero no el número de elementos (renglones). Comprobemos que la estructura básica de una **`data.frame`** es una lista con un sencillo ejemplo:
 
@@ -380,6 +417,24 @@ x[x>20 & x!=25]
 # x mayor o menor a 1
 x[x>30 | x<1]
 ```
+> **_NOTA PM:_** En relación con los `data.frame` no recuerdo si te hice este comentario, es acertado mencionar un comportamiento, para algunos cuestionable, y que suele ser generador de problemas y errores no tan visibles. El comportamiento se da cuando selecionamos una única columna, en este caso por defecto, se retorna el vector atómico y no un `data.frame` de una sola columna. Ejemplo:
+
+```{r}
+# Seleccionamos dos columnas
+mtcars[, 5:6]
+# Es claramente un data.frame
+class(mtcars[, 5:6])
+
+# Y si ahora selecionamos una sola de las columnas
+# Obtenemos en realidad el vector que forma la columna
+mtcars[, 5]
+class(mtcars[, 5])
+
+# Para que las operaciones sean consistentes
+# Hay que usar siempre  drop = FALSE]
+mtcars[, 5, drop = FALSE]
+class(mtcars[, 5, drop = FALSE])
+```
 
 Para acceder a los elementos de una lista, podemos emplear los operadores **`[ ]`,`[[ ]]` y  `$`**.Los primeros dos nos permiten establecer posiciones y nombres (entre comillas) y el último indicar nombres. Debe señalarse que al igual que sucede con vectores, los operadores se sitúan a la derecha de los objetos. 
 
@@ -406,12 +461,16 @@ str(arb3)
 
 Podemos deducir entonces que, en este caso, **`[ ]`** nos regresa una sub-lista; **`[[ ]]`** una `data.frame` y **`$`** otra `data.frame`. En general, **`[ ]`** tendrá como valor de retorno una sub-lista y los operadores restantes el objeto como tal (un vector o una `data.frame`, por ejemplo). Es fundamental tomar en cuenta que si no asignamos un nombre a los elementos de nuestras listas, no podremos acceder a ellos utilizando **`$`** por lo que tendríamos que recurrir a índices. 
 
+
+ > **_NOTA PM:_** Ya lo comenté más arriba, de forma genérica, `[x]` nos retorna una lista con el elemento x y `[[x]]` nos retorna el elemento x 
+ 
 ```{r}
-lista_dos <- list(data.frame(iris), 
+lista_dos <- list(iris=data.frame(iris), 
 	cars=data.frame(mtcars), arboles=data.frame(trees))
 lista_dos$iris
 ```
-
+ > **_NOTA PM:_** te modifiqué el código anterior, es necesario darle nombre al elemento del `data.frame` `iris`.
+ 
 Las listas permiten trabajar con un mayor nivel de complejidad. Analicemos la estructura de la siguiente lista:
 
 ```{r}
@@ -450,6 +509,8 @@ En primer lugar, se aprecia que tenemos una cadena de caracteres, por lo que ten
 
 Cuando queremos extraer un subconjunto, el objeto que guardará esa información es al que apunta la flecha de asignación. Cuando modificamos valores, queremos que nuestra asignación opere sobre el subconjunto de datos de interés sin modificar el resto de los datos. Con esto en mente, para cambiar "NA" por "0" hacemos lo siguiente:
 
+ > **_NOTA PM:_** Una pavada, pero dejaría claro que `"NA"`  no es lo ismo que `NA`
+
 ```{r}
 x[x=="NA"] <- "0"
 ```
@@ -485,4 +546,3 @@ colnames(df_uno) <- c("UNO", "DOS")
 colnames(df_uno)
 ```
 
- 

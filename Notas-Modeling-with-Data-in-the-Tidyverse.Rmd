@@ -117,4 +117,41 @@ ggplot(evals, aes(x = age, y = score)) +
 * Usar `geom_jitter()` para agregar algo (no demasiado) de ruido ayuda a ver las
   relaciones
 * Coeficiente de corelación (número entre -1 y 1) mide la fuerza de relación
-  lineal entre dos variables
+  lineal entre dos variables o el grado en qu los puntos se acercan a una recta
+
+```{r}
+evals %>% 
+  summarize(correlation = cor(score, age))
+
+# Jitter plot
+ggplot(evals, aes(x = bty_avg, y = score)) +
+  geom_jitter() +
+  labs(x = "beauty score", y = "teaching score")
+
+# Compute correlation
+evals %>%
+  summarize(correlation = cor(score, bty_avg))
+```
+
+## The modeling problem for prediction
+
+
+```{r}
+house_prices %>% 
+select(log10_price, condition) %>% 
+glimpse()
+
+# Apply log10-transformation to outcome variable
+house_prices <- house_prices %>%
+  mutate(log10_price = log10(price))
+
+# Boxplot
+ggplot(house_prices, aes(x = condition, y = log10_price)) +
+  geom_boxplot() +
+  labs(x = "house condition", y = "log10 price", 
+       title = "log10 house price over condition")
+
+house_prices %>% 
+  group_by(condition) %>% 
+  summarize(mean = mean(log10_price), sd = sd(log10_price), n = n())
+```
