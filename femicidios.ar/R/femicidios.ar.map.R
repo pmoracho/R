@@ -1,9 +1,14 @@
+library(rgdal)
+library(leaflet)
+library(dplyr)
+library(magrittr)
+
 # ====================================================================================================
 # Descarga del registro de femicidios de Argentina
 # Buscar en lace al archivo en esta url: http://datos.jus.gob.ar/dataset/registro-sistematizacion-y-seguimiento-de-femicidios-y-homicidios-agravados-por-el-genero
 # ====================================================================================================
 url <- "http://datos.jus.gob.ar/dataset/27bb9b2c-521b-406c-bdf9-98110ef73f34/resource/583cec9a-3022-4234-8b32-17692a267aac/download/registro-de-femicidios-20200109.csv"
-file <- file.path("..", "data",basename(url))
+file <- file.path(".", "data",basename(url))
 download.file(url, file)
 
 # ====================================================================================================
@@ -14,34 +19,31 @@ femicidios <- read.table(file = file, header = TRUE, sep = ',', stringsAsFactors
 # ====================================================================================================
 # Estandarización de los nombres de provincias
 # ====================================================================================================
-femicidios$hecho_provincia <- gsub('CABA', 'Ciudad de Buenos Aires', femicidios$hecho_provincia)
+femicidios$hecho_provincia <- gsub('Ciudad Autónoma de Bs.As.', 'Ciudad de Buenos Aires', femicidios$hecho_provincia)
 femicidios$hecho_provincia <- gsub('Entre Rios', 'Entre Ríos', femicidios$hecho_provincia)
 femicidios$hecho_provincia <- gsub('Santa Fé', 'Santa Fe', femicidios$hecho_provincia)
 femicidios$hecho_provincia <- gsub('Tucuman', 'Tucumán', femicidios$hecho_provincia)
-femicidios_x_provincia <- as.data.frame(table(femicidios$hecho_provincia))
+femicidios$hecho_provincia <- gsub('Neuquen', 'Neuquén', femicidios$hecho_provincia)
+femicidios_x_provincia <- as.data.frame(table(femicidios$hecho_provincia), stringsAsFactors = FALSE)
 
 # ====================================================================================================
 # Descarga del Shapefile de Argentina
 # ====================================================================================================
-library(rgdal)
-library(leaflet)
-library(dplyr)
-library(magrittr)
-
 tmp <- tempdir()
 url <- "http://biogeo.ucdavis.edu/data/diva/adm/ARG_adm.zip"
-file <- file.path("..", "data",basename(url))
+file <- file.path(".", "data",basename(url))
 download.file(url, file)
 unzip(file, exdir = tmp)
-argentina <- readOGR(dsn = tmp, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8')
+argentina <- readOGR(dsn = tmp, layer = "ARG_adm1", use_iconv=TRUE, encoding='UTF-8', stringsAsFactors=FALSE)
   
 # Renombrar las columnas para hacer merge
 colnames(femicidios_x_provincia) <- c("NAME_1", "Femicidios")
-femicidios_x_provincia$NAME_1 <- as.character(femicidios_x_provincia$NAME_1)
 # Merge de los datos
-argentina@data <- left_join(argentina@data,femicidios_x_provincia, by = c("NAME_1", "Femicidios"))
+argentina@data <- left_join(argentina@data,femicidios_x_provincia, by = c("NAME_1"))
 
-
+# ====================================================================================================
+# Primer versión del gráfico
+# ====================================================================================================
 pal <- colorQuantile("YlGn", NULL, n = 5)
 state_popup <- paste0("<strong>Estado: </strong>", 
                       argentina$NAME_1, 
@@ -57,23 +59,36 @@ leaflet(data = argentina) %>%
               popup = state_popup)
 
 # ====================================================================================================
-# Descarga de la proyección de población por sexo y provincia
+# Cuantas mujeres hay en cada provincia según proyecciones del indec
+# Los datos están en excel por los que los preprocesé
 # ====================================================================================================
-library(readxl)
-url <- "https://www.indec.gob.ar/ftp/cuadros/poblacion/c1_proyecciones_prov_2010_2040.xls"
-file <- file.path("..", "data",basename(url))
+url <- "https://raw.githubusercontent.com/pmoracho/R/master/femicidios.ar/data/poblacion.csv"
+file <- file.path(".", "data", basename(url))
 download.file(url, file)
+poblacion <- read.csv(file, stringsAsFactors = FALSE)
 
-df <- read_excel(file, sheet = 3, col_names = c("year", "total", "varones", "mujeres"))
+# ====================================================================================================
+# Merge de la data geográfica, los femicidios por provincia y la proyección de mujeres
+# ====================================================================================================
+nyear = 2020
+argentina@data %>% 
+  left_join(poblacion %>% 
+              filter(year == nyear) %>% 
+              select(provincia, mujeres), by= c("NAME_1" = "provincia")) %>% 
+  mutate(femPob = round(mujeres/Femicidios)) %>% 
+  select(-mujeres) -> argentina@data
 
-# Hay una solapa oculta
-df_lst <- list() 
-for (i in 3:26) {
-  read_excel(file, sheet = i, col_names = c("year", "total", "varones", "mujeres")) %>% 
-    filter(!is.na(year), year!="Año") %>% 
-    mutate(cod_prv = i -2,
-           year = as.numeric(year))-> df_lst[[i]]
- 
-}
+pal <- colorQuantile(palette = "Blues", domain = NULL, n = 5, reverse = TRUE)
+state_popup <- paste0("<strong>Provincia: </strong>", 
+                      argentina$NAME_1, 
+                      "<br><strong>1 femicidio cada </strong>", 
+                      argentina$femPob,
+                      " <strong>mujeres</strong>")
 
-df_lst[[3]]
+leaflet(data = argentina) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(femPob), 
+              fillOpacity = 0.8, 
+              color = "#BDBDC3", 
+              weight = 1, 
+              popup = state_popup)
