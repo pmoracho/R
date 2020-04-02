@@ -31,40 +31,58 @@ covid %>%
   summarise_at(vars(new_col_names), sum) %>% 
   gather(Fecha, casos, -Country.Region) %>% 
   mutate(Fecha = as.Date(gsub('d','', Fecha))) -> covid
+str(covid)
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
 
 covid %>% 
-  filter(casos > 0, Country.Region == 'Argentina')
+  filter(casos > 0, Country.Region == 'Argentina') %>% 
+  arrange(Fecha) %>% 
+  mutate(ndia = row_number(),
+         casos_norm = normalize(casos)) -> arg
 
+ndias <- nrow(arg)
 
-
-
-  spread(Country.Region, Fecha)
-  -> covid.data
-
-xx <- sapply(covid.data[1,-1], function(x) unname(unlist(x), force=TRUE))
-
-xx
-class(as.vector(xx))
-apply(covid.data[,-1],  1, function(x) as.vector(t(x[ min( which( x != 0 )):length(x) ])))
-
-covid.data %>% 
-  slice(2) %>% 
-  unlist(., use.names=FALSE)
-
-  group_by(Country.Region) %>% 
-  do(vec = unlist(t(.[,-1]), use.names=FALSE))  -> covid.data
 
 covid %>% 
+  filter(casos > 0, 
+         Country.Region != 'Argentina') %>% 
+  arrange(Country.Region, Fecha) %>% 
   group_by(Country.Region) %>% 
-  summarise_each(funs(sum),
-                 new_col_names) %>% 
-  group_by(Country.Region) %>% 
-  summarize(vec = c(everything()))
+  mutate(ndia = row_number(),
+         casos_norm = normalize(casos)) %>% 
+  filter(ndia <= ndias) -> resto
 
-covid.data %>% 
-  map_dbl(min( which( .$vec != 0 )))
+resto %>% 
+  semi_join(resto %>% 
+               filter(ndia==ndias),
+             by = c("Country.Region")
+             ) -> resto
 
-covid.data %>% 
-  group_by(Country.Region) %>% 
-  do(vec2 = .[,-1][ min( which( .x != 0 )) ]) %>% 
-  View
+
+resto %>% filter(Country.Region == "Brazil") %>% View()
+arg %>% View()
+plot(arg$ndia, arg$casos)
+resto %>% View
+arg %>% 
+  ggplot(mapping=aes(x=ndia, y=casos_norm)) +
+  geom_point()
+
+resto %>% 
+  union(arg) %>% 
+  filter(Country.Region %in% c('Argentina', 'Brazil', 'Chile', 'Mexico', 'Ecuador', '')) %>% 
+  ggplot(mapping=aes(x=ndia, y=(casos), color=Country.Region)) +
+  geom_point() +
+  geom_smooth(method = 'loess', alpha=.1, size = .5, se=FALSE) +
+  labs(title = paste("Los primeros", ndias, "dias"), 
+       subtitle = "Infecciones reportadas por día", 
+       caption = "Fuente: https://data.world/covid-19-data-resource-hub/covid-19-case-counts", 
+       y = "Casos", 
+       x = "Número de día",
+       color = NULL) +
+  theme_elegante_std(base_family = base_familiy) 
+
+arg %>% View
+
+unique(resto$Country.Region)
