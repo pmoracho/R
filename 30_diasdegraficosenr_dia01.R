@@ -3,6 +3,8 @@
 # Gráficos: Ggplo2 + Algo de dplyr
 # Font: Ralleway
 # Data: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
+# Para #30díasdegráficos y #rstatsES. Día 1: Un gráfico de barras con ggplot2 + tema propio + fuente: Ralleway. 
+# Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia01.R
 
 library("tidyverse")
 
@@ -24,8 +26,10 @@ covid.data %>%
   ungroup() %>% 
   select(pais = countriesAndTerritories, casos, fallecidos) %>% 
   gather(referencia, cantidad, -pais) %>% 
-  ggplot() +
-    geom_col(aes(x=pais, fill=referencia, y=cantidad), position = "dodge") +
+  ggplot(aes(x=pais, fill=referencia, y=cantidad)) +
+    geom_col(position=position_dodge(width=1)) +
+    geom_text(aes(label = format(cantidad, digits=0, big.mark = ',')),  vjust = .6, hjust=1.1,
+              position = position_dodge(width=1)) +
     coord_flip() +
     scale_y_log10(
       breaks = scales::trans_breaks("log10", function(x) 10^x),
@@ -37,5 +41,5 @@ covid.data %>%
        y = "log10(Cantidad)", 
        x = "País"
     ) +
-    scale_fill_discrete( palette = function(x) c("#67a9cf", "#ef8a62")) +
+    scale_fill_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
     theme_elegante_std(base_family = "Ralleway") 
