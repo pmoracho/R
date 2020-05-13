@@ -2,9 +2,10 @@
 # Tema personalizado: devtools::install_github("pmoracho/ggelegant")
 # Gráficos: Ggplo2 + Algo de dplyr
 # Font: Ralleway
-# Data: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
-# Para #30díasdegráficos y #rstatsES. Día 4: Un gráfico de líneas con facetas y  con ggplot2 + tema propio + fuente: Ralleway. 
-# Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia03.R
+# Data: https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0
+# Para #30díasdegráficos y #rstatsES. Día 4: Una comparativa de la evolución de casos diarios de COVID-19
+# en los 9 distritos con más casos de Argntina.
+# Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia04.R
 
 library("tidyverse")
 
@@ -15,27 +16,30 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   theme_elegante_std <- function(base_family) {}
 }
 
-covid.data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM",
-                       stringsAsFactors = FALSE)
+covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
 
-last_date <- max(as.Date(covid.data$dateRep,"%d/%m/%Y"))
+last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
 
 covid.data %>% 
-  filter(countriesAndTerritories %in% c('Argentina','Brazil', 'Chile', 'Bolivia', 'Paraguay', 'Uruguay')) %>% 
-  mutate(fecha = as.Date(dateRep, "%d/%m/%Y"), pais = countriesAndTerritories) %>% 
-  arrange(fecha) %>% 
-  group_by(pais) %>% 
-  mutate(dia = row_number()) %>% 
-  select(pais, dia, casos=cases, fallecidos=deaths) %>% 
-  gather(referencia, cantidad, -pais, -dia) %>% 
-  ggplot() +
-  geom_line(aes(x=dia, color=referencia, y=cantidad)) +
-  labs(title = paste("COVID-19"), 
-       subtitle = paste("Variación de casos y fallecidos por día - al: ", last_date) , 
-       caption = "Fuente: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", 
+  mutate(fecha = as.Date(fecha, "%d/%m/%Y")) %>% 
+  select(dia=dia_inicio, distrito=osm_admin_level_4, cantidad=nue_casosconf_diff) -> data
+
+data %>% 
+  inner_join(data %>% 
+               group_by(distrito) %>% 
+               summarize(cantidad = sum(cantidad)) %>% 
+               arrange(-cantidad) %>% 
+               top_n(9), by = c("distrito"), suffix=c("",".y")) %>% 
+  ggplot(mapping=aes(x=dia, y=cantidad)) +
+  geom_line(color="#67a9cf") +
+  geom_point(color="#67a9cf") +
+  geom_smooth(method = 'loess',
+              formula = 'y ~ x', alpha = 0.2, size = 1, span = .3, se=FALSE, color="#ef8a62") + 
+  labs(title = paste("COVID-19 en Argentina"), 
+       subtitle = paste0("Variación de casos diarios en los distritos con más casos (al: ", last_date, ")") , 
+       caption = "Fuente: https://github.com/SistemasMapache/Covid19arData", 
        y = "Cantidades", 
-       x = "# de días desde el 1er caso"
+       x = "Número de días desde el 1er caso"
   ) +
-  facet_wrap(~pais, scales="free") +
-  scale_color_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
+  facet_wrap(~distrito,scales="free") +
   theme_elegante_std(base_family = "Ralleway") 
