@@ -4,7 +4,7 @@
 # Font: Ralleway
 # Data: https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0
 # Para #30díasdegráficos y #rstatsES. Día 4: Una comparativa de la evolución de casos diarios de COVID-19
-# en los 9 distritos con más casos de Argntina.
+# en los 9 distritos, actualmente, con más casos de Argentina.
 # Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia04.R
 
 library("tidyverse")
