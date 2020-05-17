@@ -1,10 +1,9 @@
-# 30díasdegráficos con R - día 3 - Puntos
+# 30díasdegráficos con R - día 6 - Donuts
 # Tema personalizado: devtools::install_github("pmoracho/ggelegant")
 # Gráficos: Ggplo2 + ggrepel + Algo de dplyr
 # Font: Ralleway
 # Data: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
-# Para #30díasdegráficos y #rstatsES. Día 3: ¿Hay alguna relación entre el índice de desarrollo humano de cada país y 
-# la cantidad de infectados?
+# Para #30díasdegráficos y #rstatsES. Día 6: Composición del 95% de los casos de covid-19 en Argentina por distritos 
 # Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia06.R
 
 library("tidyverse")
@@ -41,23 +40,17 @@ data %>%
   ) -> data
 
 mac_perc <- sum(data$porc[data$distrito != 'Resto'])
+data$distrito <- with(data, reorder(distrito, porc))
 data %>% 
   ggplot(aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=distrito)) +
   geom_rect(color="white") +
-  # geom_label(aes(label=paste0(distrito, ": ",format(porc, digits=2), "%"),
-  #                x=3.5,y=(ymin+ymax)/2),inherit.aes = TRUE, show.legend = FALSE) +
-
   geom_label_repel(mapping = aes(x=3.5, y=ymin + (ymax - ymin)/2,
+                                 colour =  ifelse(porc > 10, 2, 1),
                                  label = paste0(distrito, ": ", format(porc, digits=2, trim=FALSE), "%\nCasos:", 
                                                 format(casos, big.mark = ",", trim=FALSE))),
                    family = "Ralleway", 
-                   nudge_y = .9,
-                   nudge_x = .9) +
-  # nudge_x = 1, nudge_y = 5, color="#67a9cf",
-  # vjust = -2, family = "Ralleway",  
-  # direction  = "y",
-  # hjust = 2) +
-  
+                   nudge_y = 1,
+                   nudge_x = 1) +
   coord_polar(theta="y") + # Try to remove that to understand how the chart is built initially
   xlim(c(2, 4)) +
   labs(title = paste("COVID-19 en Argentina"), 
@@ -72,5 +65,4 @@ data %>%
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank(),
         legend.position = "none") +
-  scale_fill_brewer(palette="Spectral")
-  
+  scale_fill_brewer(palette = "Blues")
