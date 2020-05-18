@@ -1,37 +1,14 @@
-# 30díasdegráficos con R - día 4- Facetas
+# 30díasdegráficos con R - día 7 - Ridgeline
 # Tema personalizado: devtools::install_github("pmoracho/ggelegant")
-# Gráficos: Ggplo2 + Algo de dplyr
+# Gráficos: Ggplo2 + ggridges + Algo de dplyr
 # Font: Ralleway
-# Data: https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0
-# Para #30díasdegráficos y #rstatsES. Día 4: Una comparativa de la evolución de casos diarios de COVID-19
-# en los 9 distritos, actualmente, con más casos de Argentina.
+# Data: https://github.com/SistemasMapache/Covid19arData
+# Para #30díasdegráficos y #rstatsES. Día 7: Una gráfica Ridgeline que muestra como se disibuyen las cantidades de
+# casos diaria de COVID 19 en argentina. Foco en los distritos que suman el 95% de los casos 
 # Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia07.R
 
 library("tidyverse")
 library("ggridges")
-
-if ("ggelegant" %in% rownames(installed.packages())) {
-  library("ggelegant")
-} else {
-  # devtools::install_github("pmoracho/ggelegant")
-  theme_elegante_std <- function(base_family) {}
-}
-
-covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
-
-last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
-
-
-# 30díasdegráficos con R - día 6 - Donuts
-# Tema personalizado: devtools::install_github("pmoracho/ggelegant")
-# Gráficos: Ggplo2 + ggrepel + Algo de dplyr
-# Font: Ralleway
-# Data: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
-# Para #30díasdegráficos y #rstatsES. Día 6: Composición del 95% de los casos de covid-19 en Argentina por distritos 
-# Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia06.R
-
-library("tidyverse")
-library("ggrepel")
 
 if ("ggelegant" %in% rownames(installed.packages())) {
   library("ggelegant")
@@ -78,5 +55,5 @@ data %>%
     ) +
     scale_x_continuous(breaks = c(c(0,5, 10, 20, 50), seq(from=75, to=max(data$casos)+25, by = 25))) +
     theme_elegante_std(base_family = "Ralleway") +
-    theme(legend.position = "none") -> p
+    theme(legend.position = "none")  
 
