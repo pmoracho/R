@@ -3,8 +3,8 @@
 # Gráficos: Ggplo2 + ggrepl + Algo de dplyr
 # Font: Ralleway
 # Data: https://github.com/SistemasMapache/Covid19arData
-# Para #30díasdegráficos y #rstatsES. Día 7: Una gráfica Ridgeline que muestra como se disibuyen las cantidades de
-# casos diaria de COVID 19 en argentina. Foco en los distritos que suman el 95% de los casos 
+# Para #30díasdegráficos y #rstatsES. Día 9: Una gráfica de áreas apiladas  con la evolución del 
+# COVID - 19 en Argentina (casos/fallcidos).
 # Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia09.R
 
 library("tidyverse")
