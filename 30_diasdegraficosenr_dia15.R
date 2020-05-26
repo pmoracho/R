@@ -68,10 +68,11 @@ plot_ggdendro <- function(hcdata,
                           branch.size = 1,
                           label.size  = 3,
                           nudge.label = 0.01,
-                          expand.y    = 0.1) {
+                          expand.y    = 0.1,
+                          nbreaks     = 10) {
   
   direction <- match.arg(direction) # if fan = FALSE
-  ybreaks   <- pretty(segment(hcdata)$y, n = 5)
+  ybreaks   <- pretty(segment(hcdata)$y, n = nbreaks)
   ymax      <- max(segment(hcdata)$y)
   
   ## branches
@@ -93,16 +94,16 @@ plot_ggdendro <- function(hcdata,
       coord_polar(direction = -1) +
       scale_x_continuous(breaks = NULL,
                          limits = c(0, nrow(label(hcdata)))) +
-      scale_y_reverse(breaks = ybreaks)
+      scale_y_reverse(breaks = ybreaks, labels = scales::comma)
   } else {
     p <- p + scale_x_continuous(breaks = NULL)
     if (direction %in% c("rl", "lr")) {
       p <- p + coord_flip()
     }
     if (direction %in% c("bt", "lr")) {
-      p <- p + scale_y_reverse(breaks = ybreaks)
+      p <- p + scale_y_reverse(breaks = ybreaks, labels = scales::comma)
     } else {
-      p <- p + scale_y_continuous(breaks = ybreaks)
+      p <- p + scale_y_continuous(breaks = ybreaks, labels = scales::comma)
       nudge.label <- -(nudge.label)
     }
   }
@@ -168,9 +169,9 @@ plot_ggdendro(hcdata,
               label.size  = 3,
               branch.size = .8,
               nudge.label = 0.02,
-              expand.y    = 0.2) +
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 5),
-                     labels = scales::comma) +
+              expand.y    = 0.2,
+              nbreaks     = 10) +
+  # scale_y_continuous(labels = scales::comma) +
   theme_elegante_std(base_family = "Ralleway") +
   labs(title = paste("COVID-19 en Argentina"), 
        subtitle = paste0("Agrupación de provincias por cantidad de casos en 5 grupos principales (al: ", last_date, ")"), 
