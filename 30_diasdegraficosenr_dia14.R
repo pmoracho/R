@@ -3,7 +3,8 @@
 # Gráficos: Ggplo2 + treemapify + Algo de dplyr
 # Font: Ralleway
 # Data: https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&limit=5000&format=csv
-# Para #30díasdegráficos y #rstatsES. Día 14: Un treemap usando ggplot + treemapify
+# Para #30díasdegráficos y #rstatsES. Día 14: Un treemap usando ggplot + treemapify para ver dónde está geográficamente, el problema 
+# del COVID - 19 en la Argentina. Spoiler: el 95% de los casos están en 6 provincias de las 23 del país.
 # Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia14.R
 
 library("tidyverse")
@@ -39,7 +40,7 @@ dias %>%
   mutate(porc = cumsum(casos/sum(casos))) %>% 
 
   ggplot(aes(area = casos, fill = casos, label=paste0(distrito, ": ", format(casos, big.mark = ".", decimal.mark = ",")),
-             subgroup = ifelse(porc <= .85, "85%", ""))) +
+             subgroup = ifelse(porc <= .95, "95%", ""))) +
   geom_treemap() +
   geom_treemap_subgroup_border() +
   geom_treemap_subgroup_text(place = "centre", grow = T, alpha = .5, colour =
