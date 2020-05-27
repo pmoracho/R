@@ -4,7 +4,7 @@
 # Font: Ralleway
 # Para #30díasdegráficos y #rstatsES. Día 16: Una clasificación por edad de los casos de COVID-19 en Argentina, 
 # usamos el paquete waffle y el geom_waffle
-# # Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia16.R
+# Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia16.R
 
 library("tidyverse")
 library("waffle")
@@ -18,7 +18,6 @@ if ("ggelegant" %in% rownames(installed.packages())) {
 
 
 covid.data <- read_delim('http://170.150.153.128/covid/covid_19_casos.csv', delim=";")
-
 last_date <- max(covid.data$fis, na.rm = TRUE)
 
 covid.data %>% 
@@ -54,4 +53,3 @@ covid.data %>%
        y = "",
        x = "") +
   theme(axis.text.x=element_blank())
-  
