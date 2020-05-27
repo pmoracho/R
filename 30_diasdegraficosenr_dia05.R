@@ -53,4 +53,3 @@ tbl_graph(edges=prepared.data, directed = TRUE) %>%
   labs(title = "Historia musical de Luis Albero Spinetta", 
        subtitle = "Los comienzos"
   ) 
-
