@@ -54,6 +54,5 @@ ggplot(data, aes(x=dia, y=cantidades, fill=metrica, color=metrica)) +
                    show.legend = FALSE) +
   scale_fill_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
   scale_color_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
-
   guides(color = FALSE, label=FALSE) +
   theme_elegante_std(base_family = "Ralleway")

@@ -1,9 +1,9 @@
-# 30díasdegráficos con R - día 16 - Waffle
+# 30díasdegráficos con R - día 16 - Sankey/lluvial
 # Tema personalizado: devtools::install_github("pmoracho/ggelegant")
-# Gráficos: Ggplo2 + geom_waffle + Algo de dplyr
+# Gráficos: Ggplo2 + ggalluvial + Algo de dplyr
 # Font: Ralleway
-# Para #30díasdegráficos y #rstatsES. Día 16: Una clasificación por edad de los casos de COVID-19 en Argentina, 
-# usamos el paquete waffle y el geom_waffle
+# Para #30díasdegráficos y #rstatsES. Día 17: Una grafico Sankey o alluvial de como es la evolución de los casos de COVID-19 en Argentina, 
+# por grupo etario y sex0.
 # Github: https://github.com/pmoracho/R/blob/master/30_diasdegraficosenr_dia17.R
 
 library("tidyverse")
