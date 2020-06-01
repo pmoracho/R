@@ -61,7 +61,7 @@ internado_edad %>%
   theme_elegante_std(base_family = "Ralleway") +
   labs(title = paste("COVID-19 en Argentina"), 
        subtitle = paste0("¿Cómo se distribuyen las internaciones entre el sexo y la edad?\nDatos al: ", last_date) , 
-       caption = "Fuente: https://datos.gob.ar", 
+       caption = "Fuente: https://datos.gob.ar/", 
        y = "", 
        x = ""
   ) +
@@ -71,4 +71,3 @@ internado_edad %>%
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank()) 
-
