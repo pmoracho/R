@@ -28,7 +28,6 @@ create_token(
   access_secret = "xx"
 )
 
-
 RAE_Corpus_1000 <- read.table(file="http://corpus.rae.es/frec/1000_formas.TXT", skip=1, header=FALSE,
                               fileEncoding = "Latin1", 
                               col.names = c("nr", "word", "Frec.absoluta", "Frec.normalizada"),
