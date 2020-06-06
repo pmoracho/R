@@ -40,7 +40,7 @@ plot_data %>%
                     family = "Ralleway",
                     vjust= 8,
                     hjust= -2) +
-  geom_text_repel(data = plot_data %>% 
+    geom_text_repel(data = plot_data %>% 
                     group_by(distrito) %>%
                     summarise(maximo = max(cantidad)),
                   aes(x = distrito, y = maximo, label=paste("Cantidad máxima en un día:",maximo, "casos")),
