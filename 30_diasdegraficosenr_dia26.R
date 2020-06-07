@@ -33,3 +33,4 @@ delitos %>%
        x = "Comunas"
   ) +
   scale_fill_manual(values=c("#56B4E9", "#009E73",  "#0072B2", "#E69F00"))
+
