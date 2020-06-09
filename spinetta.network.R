@@ -1,8 +1,8 @@
-library(igraph)
-library(networkD3)
-library(tidyverse)
-library(xlsx)
-
+library("igraph")
+library("networkD3")
+library("tidyverse")
+library("xlsx")
+library("ggraph")
 
 grupos <- read.xlsx("spinetta.data.xlsx", sheetName = "grupos", encoding="UTF-8")
 grupos_versiones <- read.xlsx("spinetta.data.xlsx", sheetName = "grupos_versiones", encoding="UTF-8")
@@ -32,3 +32,25 @@ simpleNetwork(data, height="100px", width="100px",
               opacity = 0.9,              # opacity of nodes. 0=transparent. 1=no transparency
               zoom = T                    # Can you zoom on the figure?
 )
+
+
+data %>% 
+  # filter(persona=="Luis Alberto Spinetta") %>% 
+  select(from = persona, to = grupo, name=persona) %>% 
+  graph_from_data_frame() %>% 
+  ggraph(layout = "linear") +
+  geom_edge_arc(aes(color=name),edge_alpha = 0.5, fold = TRUE) +
+  geom_node_text(aes(color=name, label = str_wrap(name,15)), size = 3, nudge_y = -0.8, angle = 90, fontface = "bold") +   
+  coord_cartesian(clip = "off") + 
+  theme_elegante_std(base_family = "Ralleway") +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") +
+  labs(title = "Historia musical de Luis Albero Spinetta", 
+       subtitle = "Los comienzos"
+  ) 
+  

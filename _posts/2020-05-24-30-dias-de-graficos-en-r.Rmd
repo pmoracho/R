@@ -40,7 +40,7 @@ library("ggelegant")
 
 ```
 
-### Introducción
+## Introducción
 
 A raíz de que el 12 de mayo se conmemora el nacimiento de Florence Nightingale, la enfermera creadora del diagrama de área polar y referente femenina de la visualización de datos, la comunidad [\@R4DS_es] lanzó un lindo desafío, [proyecto], uno distinto por día. Esta es la lista completa:
 
@@ -53,14 +53,14 @@ A raíz de que el 12 de mayo se conmemora el nacimiento de Florence Nightingale,
 | 5 | 16 de mayo | diagramas de arco |✓
 | 6 | 17 de mayo | gráficos de donut |✓
 | 7 | 18 de mayo | gráficos ridgeline |✓
-| 8 | 19 de mayo | gráficos de contorno |
-| 9 | 20 de mayo | gráficos de áreas apiladas |
-| 10 | 21 de mayo | ¡explorar paletas de colores! |
-| 11 | 22 de mayo | mapas de calor (_heatmap_) |
-| 12 | 23 de mayo | gráficos de paleta (_lollipop_) |
-| 13 | 24 de mayo | visualizar datos temporales |
-| 14 | 25 de mayo | gráficos de rectángulos/árbol (_treemap_)v
-| 15 | 26 de mayo | dendorgamas |
+| 8 | 19 de mayo | gráficos de contorno |✓
+| 9 | 20 de mayo | gráficos de áreas apiladas |✓
+| 10 | 21 de mayo | ¡explorar paletas de colores! |✓
+| 11 | 22 de mayo | mapas de calor (_heatmap_) |✓
+| 12 | 23 de mayo | gráficos de paleta (_lollipop_) |✓
+| 13 | 24 de mayo | visualizar datos temporales |✓
+| 14 | 25 de mayo | gráficos de rectángulos/árbol |✓
+| 15 | 26 de mayo | dendorgamas |✓
 | 16 | 27 de mayo | gráficos de waffle |
 | 17 | 28 de mayo | diagramas de sankey |
 | 18 | 29 de mayo | visualizar datos espaciales |
@@ -78,7 +78,7 @@ A raíz de que el 12 de mayo se conmemora el nacimiento de Florence Nightingale,
 | 30 | 10 de junio | diagramas de área polar o de Florence Nightingale |
 
 
-### Objetivos
+## Objetivos
 
 En lo personal, mi idea es aprovechar este desafío para:
 
@@ -86,7 +86,7 @@ En lo personal, mi idea es aprovechar este desafío para:
 * Probar y eventualmente ajustar, mi tema personalizado [`ggelegant`][ggelegante]
 * Tratar de usar datos actuales y no apoyarme en gráficas de ejemplo ya resueltas
 
-### Día 1: Gráfico de barras / Columnas
+## Día 1: Gráfico de barras / Columnas
 
 Una gráfica de barras o columnas, tal vez una de las más clásicas, muestran comparaciones numéricas entre una variable discreta y una serie de los valores continuos que toma cada una de estas variables discretas o "categorías". A diferencia de un histograma, los gráficos de barra no muetran un desarrollo continuo entre las categorías.
 
@@ -128,11 +128,14 @@ covid.data %>%
        x = ""
     ) +
     scale_fill_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
-    theme_elegante_std(base_family = "Ralleway") 
+    theme_elegante_std(base_family = "Ralleway") +
+    theme(plot.caption=element_text( margin=margin(1, 0, -.1, 0, "cm")),
+          plot.subtitle = element_text(margin=margin(0, 0, .8, 0, "cm")))
+
 
 ```
 
-### Día 2: Gráfico de líneas
+## Día 2: Gráfico de líneas
 
 Son gráficos que muestras la evolución de una o más variables continuas en un determinado intervalo, generalmente de tiempo. Lo habitual es que el ejex Y tenga un valor cuantitativo y el eje X tiene la seceuncia que representa el intervalo, En el plano cartesiano, se establecen los puntos X, Y y luego se van conectando estos mediante líneaas rectas.
 
@@ -171,7 +174,7 @@ covid.data %>%
   theme_elegante_std(base_family = "Ralleway") 
 ```
 
-### Día 3: Una gráfica de puntos
+## Día 3: Una gráfica de puntos
 
 También se los conoce como gráficos de dispersión o "Scatterplot". Suelen intentar mostrar la relación entre dos variables continuas por medio de los patrones que se forman. 
 
@@ -234,7 +237,7 @@ covid.data %>%
     theme_elegante_std(base_family = "Ralleway") 
 ```
 
-### Día 4: Facetas
+## Día 4: Facetas
 
 Las "Facetas" no es un tipo de gráfico sino más bien una forma de mostrar uno de estos. Cuando se tiene múltiples variables, muchas veces resulta confuso verlas todas en un mismo gráfico, el facetado permite dividir cada variable o grupo en múltiples graficos similares.
 
@@ -279,7 +282,7 @@ data %>%
 
 Una linda visualización es la que se legro mediante [geofaceteAR]:
 
-```{r dia4b, cache=TRUE, fig.height = 20, fig.width = 10, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia4b, cache=TRUE, fig.height = 20, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
 library("geofaceteAR")
 
 argentina_grid <-  data.frame(
@@ -310,7 +313,7 @@ data %>%
   theme_elegante_std(base_family = "Ralleway") 
 ```
 
-### Día 5: Un gráfico de Arcos
+## Día 5: Un gráfico de Arcos
 
 Los gráficos de arco forman parte de los diagramas de red, en este caso los nodos se colocan sobre un eje horizontal y la líneas o arcos señalan las relaciones entre cada nodo. Eventualmente se puede ajustar el grosor de la líne para incluir una nueva dimensión. En lo personal me resulta difíciles de leer pero entiendo que para algunas aplicaciones específicas pueden ser útiles. En este ejemplo, trato de mostrar las relaciones musicales interpresonales de **Luis Alberto Spinetta** en su primera etapa como músico.
 
@@ -364,7 +367,7 @@ tbl_graph(edges=prepared.data, directed = TRUE) %>%
   ) 
 ```
 
-### Día 6: Un gráfico de aros de cebolla
+## Día 6: Un gráfico de aros de cebolla
 
 Odio las donas, pero bueno, en realidad se llaman "donuts plots", una variante de un clásico gráfico de torta, solo sin el centro, a diferencia de los últimos, los gráficos de donas, al no mostrar el área completa, logran que el usuario se enfoque más en la longitud de cada sector, lo cual mejora la percepción de los cambios. Además, eventualmente permiten usar el área del centro para agregar más información. 
 
@@ -431,7 +434,7 @@ data %>%
   scale_fill_brewer(palette = "Blues")
 ```
 
-### Día 7: Gráficos "Ridgeline"
+## Día 7: Gráficos "Ridgeline"
 
 Los graficos "ridgeline" mapean la distribución de múltiples variables continuas con un conjunto de variables categoricas en la forma de curvas "suaves" que permite comparar  cada categoría:
 
@@ -487,8 +490,564 @@ data %>%
     theme(legend.position = "none")  
 ```
 
+## Día 8: Gráfico de contornos
 
+Este tipo de gráficos básicamente une puntos x e y que comparte un mismo vlor de una tercer variable z, el caso típico, son los mapa cartográficos , cuyas lineas unen puntos de semejante altura.
+
+
+```{r dia8, cache=TRUE, fig.height = 6, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("ggrepel")
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+covid.data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM",
+                       stringsAsFactors = FALSE)
+
+hdi <- read.csv("https://data.humdata.org/dataset/05b5d8f1-9e7f-4379-9958-125c203d12ac/resource/4a7fd374-7e35-4c04-b7c8-25e5943aa476/download/hdi_human_development_index_hdig_value.csv", stringsAsFactors = FALSE)
+hdi %>% 
+  group_by(country_code) %>% 
+  arrange(year) %>% 
+  slice(n()) %>% 
+  select(country_code, country, year, value) -> last_hdi
+
+
+last_date <- max(as.Date(covid.data$dateRep,"%d/%m/%Y"))
+paises_de_interes <- c( 'Argentina',
+                        "Niger", "Norway", "EEUU", "Mauritania")
+covid.data %>% 
+  group_by(countriesAndTerritories, countryterritoryCode) %>% 
+  summarize(casos = sum(cases), fallecidos = sum(deaths)) %>% 
+  ungroup() %>% 
+  inner_join(last_hdi,
+             by = c("countryterritoryCode" = "country_code")
+  ) %>% 
+  mutate(pais = ifelse(countriesAndTerritories == 'United_States_of_America', 'EEUU', countriesAndTerritories)) %>% 
+  select(pais, casos, fallecidos, HDI = value) %>% 
+  mutate(pais_etiquetado = ifelse(pais %in% paises_de_interes, paste0(pais, " (casos: ", format(casos, digits=0, big.mark = ',', trim=TRUE), " hdi: ", HDI, ")"), NA)) %>% 
+  ggplot(aes(x=HDI, y=casos)) +
+  geom_point(color = "#67a9cf", alpha=.5, size=3) +
+  geom_smooth(method = 'lm',formula='y ~ x', se=FALSE, color="#ef8a62") +
+  geom_density2d(contour = TRUE, n = 1000) +
+  geom_label_repel(mapping = aes(label = pais_etiquetado),
+                   color="#67a9cf",family = "Ralleway", vjust = -1.2, hjust = 1.1, fontface="bold") +
+
+  scale_y_log10(
+    breaks = scales::trans_breaks("log10", function(x) 10^x),
+    labels = scales::trans_format("log10", scales::math_format(10^.x))
+  ) +
+  labs(title = paste("COVID-19"), 
+       subtitle = paste0("¿Hay relación entre el desarrollo humano y la cantidad de infecciones?\n (Datos al: ", last_date, ")") , 
+       caption = "Fuente: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", 
+       y = "log10(Cantidad de infectados)", 
+       x = "Human development Index (2013)"
+  ) +
+  theme_elegante_std(base_family = "Ralleway")
+```
+
+## Día 9: Areas apiladas
+
+Es una variante del gráfico de areas, que a su vez es una variante del de lineas, solo que en este caso se "apilan" más de una variable, lo que es útil para compararlas.
+  
+```{r dia9, cache=TRUE, fig.height = 6, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("ggrepel")
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+covid.data %>% 
+  mutate(fecha=as.Date(fecha,"%d/%m/%Y")) %>% 
+  group_by(dia_inicio,fecha) %>% 
+  summarize(casos = sum(nue_casosconf_diff),
+         fallecidos = sum(nue_fallecidos_diff)) %>% 
+  select(dia = dia_inicio, fecha, casos, fallecidos) %>% 
+  pivot_longer(-c("dia", "fecha"), names_to = 'metrica', values_to='cantidades') -> data
+
+data %>% 
+  left_join(data %>% 
+              group_by(metrica) %>%
+              summarise(cantidades = max(cantidades), maximo = TRUE),
+            by = c("metrica", "cantidades")
+  ) %>% 
+  mutate(maximo = ifelse(maximo, paste0("Pico de ", metrica, " de ", cantidades, "\nel ", fecha), NA)) -> data
+
+last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
+
+ggplot(data, aes(x=dia, y=cantidades, fill=metrica, color=metrica)) + 
+  geom_area(alpha=0.6 , size=1) +
+  labs(title = paste("COVID-19 en Argentina"), 
+       subtitle = paste0("Variación de casos y fallecimientos por día (al: ", last_date, ")") , 
+       caption = "Fuente: https://github.com/SistemasMapache/Covid19arData", 
+       y = "Cantidades diarias", 
+       x = "Número de días desde el 1er caso"
+  ) +
+  geom_label_repel(mapping = aes(label = maximo),
+                   color = "white",
+                   segment.color="gray90",
+                   family = "Ralleway", 
+                   vjust = -1,
+                   hjust = 1.5,
+                   box.padding = 1,
+                   show.legend = FALSE) +
+  scale_fill_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
+  scale_color_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
+  guides(color = FALSE, label=FALSE) +
+  theme_elegante_std(base_family = "Ralleway")
+```
+
+## Día 10: Exploración de paletas de colores
+
+Nada del otro mundo, un script para generar una gráfica de ejemplo de una paleta determinada de colores, en este ejemplo explorando la del paquete `[wesanderson]`
+  
+```{r dia10, cache=TRUE, fig.height = 12, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("wesanderson")
+library("gridExtra")
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+colores <- 20
+paletas <- names(wes_palettes)
+
+data.frame(x=factor(1:colores), y=1) %>% 
+  ggplot(aes(x = x, y = y, fill = x)) + 
+  geom_col() +
+  theme_elegante_std(base_family = "Ralleway") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none")  -> g
+
+plots <- list()
+for (p in paletas) {
+  plots[[p]] <- g + scale_fill_manual(values = wes_palette(colores, name = p, type = "continuous"), name = "") +
+    labs(x = p)
+}
+grid.arrange(grobs = plots, ncol = 2)
+```
+
+## Día 11: Mapa de Calor
+
+Un mapa de calor muestra la variación en una determinada variable (por lo general continua) mediante el uso del color. En este ejemplo mapeamos tres variables, el distrito o provincia (categórica), la cantidad de días desde el primer contagio (categórica) y la variable continua de la cantidad de casos que es la que mapeamos a la dimensión del color. 
+
+```{r dia11, cache=TRUE, fig.height = 8, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("zoo")
+library("forcats")
+library("scales")
+  if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+# Dependiendo del horario, la última fila puede ser un placeholder si datos
+# covid.data <- covid.data[covid.data$dia_inicio != max(covid.data$dia_inicio),]
+
+last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
+first_date <- min(as.Date(covid.data$fecha,"%d/%m/%Y"))
+ndias <- max(covid.data$dia_inicio)
+
+
+dias <- expand.grid(distrito = unique(covid.data$osm_admin_level_4),
+                    dia = 1:ndias,
+                    stringsAsFactors = FALSE)
+dias$fecha = first_date + dias$dia - 1
+dias$casos = 0
+
+dias_rolling <- 3
+dias_ventana <- 14
+
+dias %>% 
+  left_join(covid.data, by=c("distrito" = "osm_admin_level_4", "dia" = "dia_inicio")) %>% 
+  mutate(casos = replace_na(nue_casosconf_diff, 0)) %>% 
+  select(dia, distrito, fecha=fecha.x, casos)  %>% 
+  group_by(dia, distrito, fecha) %>% 
+  summarise(casos = sum(casos)) %>%
+  arrange(distrito, dia) %>% 
+  group_by(distrito) %>% 
+  filter(dia >= ndias - dias_ventana - dias_rolling,
+         distrito != 'Indeterminado') %>% 
+  mutate(roll_casos_3 = rollmean(casos, dias_rolling, align='right', fill=0),
+         s_roll_casos_3 = replace_na((roll_casos_3-min(roll_casos_3))/(max(roll_casos_3)-min(roll_casos_3)),0),
+         label_casos = casos
+  ) %>% 
+  filter(dia >= ndias - dias_ventana ) %>% 
+  ggplot(aes(x = dia, y =   fct_reorder(distrito, casos), fill = s_roll_casos_3)) + 
+    geom_tile(colour="gray80", size=0.2) +
+    geom_text(aes(label=label_casos, color = s_roll_casos_3 > .7)) +
+    scale_color_manual(guide = FALSE, values = c("gray30", "gray90")) +
+    scale_fill_distiller(palette = "YlGnBu", direction = 1, na.value = "white") +
+    labs(title = paste("COVID-19 en Argentina"), 
+       subtitle = paste0("Evolución diaria de los casos por distrito (últimos ", dias_ventana, " días al: ", last_date, ")\n",
+                         "Los números son casos diarios, la escala de color en función del promedio de casos de los últimos ", dias_rolling, " días") , 
+       caption = "Fuente: https://github.com/SistemasMapache/Covid19arData", 
+       x = "Últimos días"
+    ) +
+    theme_elegante_std(base_family = "Ralleway") + 
+    scale_x_continuous(breaks = seq(ndias - dias_ventana, ndias, by = 1)) +
+    theme(axis.title.y=element_blank(),
+        legend.position = "none") 
+```
+
+## Día 12: Un gráfico lolipop 
+
+```{r dia12, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("forcats")
+library("countrycode")
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+covid.data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM",
+                       stringsAsFactors = FALSE)
+
+last_date <- max(as.Date(covid.data$dateRep,"%d/%m/%Y"))
+covid.data %>% 
+  group_by(countryterritoryCode) %>% 
+  summarize(casos = sum(cases), fallecidos = sum(deaths)) %>% 
+  arrange(-casos) %>% 
+  mutate(nr = row_number()) %>% 
+  select(code_pais = countryterritoryCode, casos, fallecidos, nr) -> data
+
+media_casos <- mean(data$casos)
+media_fallecidos <- mean(data$fallecidos)
+
+data %>% 
+  filter(nr <= 50) %>% 
+  mutate(sobre_media = casos > media_casos,
+         pais = countrycode(code_pais, origin = 'iso3c', destination = 'un.name.es')) %>% 
+  ggplot(aes(x=fct_reorder(pais, -nr), y=casos, color = sobre_media)) +
+  geom_segment(aes( y=0 , xend = pais, yend = casos)) + 
+  geom_point() +
+  coord_flip() +
+  geom_text(aes(label = format(abs(casos), digits=0, big.mark = ','),
+                vjust = .5,
+                hjust = -.1),
+            position = position_dodge(width=1)) +
+  labs(title = paste("COVID-19 en el mundo"), 
+       subtitle = paste("Casos por pais al: ", last_date, '\nLos primeros 50 países') , 
+       caption = "Fuente: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", 
+       y = "Casos", 
+       x = "País"
+  ) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5), limits = c(0, max(data$casos) * 1.01),
+                     labels = scales::comma) +
+
+  scale_color_manual(labels = c("Sobre la media", "Debajo de la media"), values = c("#67a9cf", "#ef8a62")) +
+  theme_elegante_std(base_family = "Ralleway") 
+```
+
+## Día 13: Serie temporal
+
+Nada del otro mundo, el clásico gráfico de lineas, en el eje X tenemos el tiempo y en el Y un precio, en este caso el vaalor del dólar en Argentina en los últimos años, con algunas anotaciones, como ser los comiencos de cada presidencia.
+
+```{r dia13, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("ggrepel")
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+presidencias <- data.frame(fecha = as.Date(c('2019-12-10', '2015-12-10')), presidencia=c('Alberto Fernández', 'Mauricio Macri'))
+
+dolar <- read.csv("https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&limit=5000&format=csv", na.strings = "", fileEncoding = "UTF-8-BOM",
+                       stringsAsFactors = FALSE)
+dolar$indice_tiempo = as.Date(dolar$indice_tiempo, format = "%Y-%m-%d")
+dolar %>% 
+  ggplot(mapping = aes(x=indice_tiempo, y=tipo_cambio_bna_vendedor)) + 
+  geom_line(size = 1, color="#67a9cf") +
+  geom_vline(data = presidencias,
+             mapping = aes(xintercept=fecha),
+             color = "#ef8a62",
+             linetype="dashed") +
+  geom_point(data = presidencias,
+             mapping = aes(x=fecha, y=10),
+             color = "#ef8a62",
+             size = 2) +
+  geom_label_repel(data = presidencias,
+                   mapping = aes(x=fecha, y=10, label = presidencia), 
+                   hjust= -1,
+                   color = "#ef8a62",
+                   family = "Ralleway", fontface = 'bold',
+                   arrow = arrow(length = unit(0.03, "npc"), type = "closed", ends = "first")
+  ) +      
+  
+  
+  labs(title = paste("Dólar en Argentina"), 
+       subtitle = paste("Cotización del Banco nación entre el", min(dolar$indice_tiempo), "y el" , max(dolar$indice_tiempo)),
+       caption = "Fuente: https://datos.gob.ar/", 
+       y = "Cotización en $", 
+       x = ""
+  ) +
+  scale_x_date(date_breaks = "12 month", date_labels="%Y-%m") +
+  theme_elegante_std(base_family = "Ralleway") 
+```
+
+# Día 12: Treemap
+
+Los diagramas de árbol o "treemap" mapean dos variables, una categorica y otra cuantitativa, visualmente se construyen áreas por cada categoría con una superficie consistente con la variable numérica. En este ejemplo mapeamos la cantidad de casos acumulada de COVID por provincia, destacando las provincias que suman 95% de los casos totales
+
+```{r dia14, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("ggrepel")
+library("treemapify")
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+# Dependiendo del horario, la última fila puede ser un placeholder si datos
+# covid.data <- covid.data[covid.data$dia_inicio != max(covid.data$dia_inicio),]
+
+last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
+first_date <- min(as.Date(covid.data$fecha,"%d/%m/%Y"))
+ndias <- max(covid.data$dia_inicio)
+dias <- expand.grid(distrito = unique(covid.data$osm_admin_level_4),
+                    dia = 1:ndias,
+                    stringsAsFactors = FALSE)
+
+dias %>% 
+  left_join(covid.data, by=c("distrito" = "osm_admin_level_4", "dia" = "dia_inicio")) %>% 
+  mutate(casos = replace_na(nue_casosconf_diff, 0)) %>% 
+  select(distrito, casos)  %>% 
+  filter(distrito != 'Indeterminado') %>% 
+  group_by(distrito) %>% 
+  summarise(casos = sum(casos)) %>% 
+  arrange(-casos) %>% 
+  mutate(porc = cumsum(casos/sum(casos))) %>% 
+
+  ggplot(aes(area = casos, fill = casos, label=paste0(distrito, ": ", format(casos, big.mark = ".", decimal.mark = ",")),
+             subgroup = ifelse(porc <= .95, "95%", ""))) +
+  geom_treemap() +
+  geom_treemap_subgroup_border() +
+  geom_treemap_subgroup_text(place = "centre", grow = T, alpha = .5, colour =
+                              "White", fontface = "italic", min.size = 0) +
+  geom_treemap_text(place = "middle", grow = T, reflow = T, alpha = 0.8, colour = "black", family= "Ralleway",
+                    padding.x = grid::unit(3, "mm"),
+                    padding.y = grid::unit(3, "mm")) +
+  theme_elegante_std(base_family = "Ralleway") +
+  labs(title = paste("COVID-19 en Argentina"), 
+       subtitle = paste0("Distribución de los casos por distritos al: ", last_date), 
+       caption = "Fuente: https://github.com/SistemasMapache/Covid19arData"
+  ) +
+  scale_fill_distiller(palette = "YlGnBu", direction = 1, na.value = "white") +
+  theme(legend.position = "none")
+```
+
+## Día 15: Dendograma
+
+```{r dia15, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("ggdendro")
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+dendro_data_k <- function(hc, k) {
+  
+  hcdata    <-  ggdendro::dendro_data(hc, type = "rectangle")
+  seg       <-  hcdata$segments
+  labclust  <-  cutree(hc, k)[hc$order]
+  segclust  <-  rep(0L, nrow(seg))
+  heights   <-  sort(hc$height, decreasing = TRUE)
+  height    <-  mean(c(heights[k], heights[k - 1L]), na.rm = TRUE)
+  
+  for (i in 1:k) {
+    xi      <-  hcdata$labels$x[labclust == i]
+    idx1    <-  seg$x    >= min(xi) & seg$x    <= max(xi)
+    idx2    <-  seg$xend >= min(xi) & seg$xend <= max(xi)
+    idx3    <-  seg$yend < height
+    idx     <-  idx1 & idx2 & idx3
+    segclust[idx] <- i
+  }
+  
+  idx                    <-  which(segclust == 0L)
+  segclust[idx]          <-  segclust[idx + 1L]
+  hcdata$segments$clust  <-  segclust
+  hcdata$segments$line   <-  as.integer(segclust < 1L)
+  hcdata$labels$clust    <-  labclust
+  
+  hcdata
+}
+
+set_labels_params <- function(nbLabels,
+                              direction = c("tb", "bt", "lr", "rl"),
+                              fan       = FALSE) {
+  if (fan) {
+    angle       <-  360 / nbLabels * 1:nbLabels + 90
+    idx         <-  angle >= 90 & angle <= 270
+    angle[idx]  <-  angle[idx] + 180
+    hjust       <-  rep(0, nbLabels)
+    hjust[idx]  <-  1
+  } else {
+    angle       <-  rep(0, nbLabels)
+    hjust       <-  0
+    if (direction %in% c("tb", "bt")) { angle <- angle + 45 }
+    if (direction %in% c("tb", "rl")) { hjust <- 1 }
+  }
+  list(angle = angle, hjust = hjust, vjust = 0.5)
+}
+
+plot_ggdendro <- function(hcdata,
+                          direction   = c("lr", "rl", "tb", "bt"),
+                          fan         = FALSE,
+                          scale.color = NULL,
+                          branch.size = 1,
+                          label.size  = 3,
+                          nudge.label = 0.01,
+                          expand.y    = 0.1,
+                          nbreaks     = 10) {
+  
+  direction <- match.arg(direction) # if fan = FALSE
+  ybreaks   <- pretty(segment(hcdata)$y, n = nbreaks)
+  ymax      <- max(segment(hcdata)$y)
+  
+  ## branches
+  p <- ggplot() +
+    geom_segment(data         =  segment(hcdata),
+                 aes(x        =  x,
+                     y        =  y,
+                     xend     =  xend,
+                     yend     =  yend,
+                     linetype =  factor(line),
+                     colour   =  factor(clust)),
+                 lineend      =  "round",
+                 show.legend  =  FALSE,
+                 size         =  branch.size)
+  
+  ## orientation
+  if (fan) {
+    p <- p +
+      coord_polar(direction = -1) +
+      scale_x_continuous(breaks = NULL,
+                         limits = c(0, nrow(label(hcdata)))) +
+      scale_y_reverse(breaks = ybreaks, labels = scales::comma)
+  } else {
+    p <- p + scale_x_continuous(breaks = NULL)
+    if (direction %in% c("rl", "lr")) {
+      p <- p + coord_flip()
+    }
+    if (direction %in% c("bt", "lr")) {
+      p <- p + scale_y_reverse(breaks = ybreaks, labels = scales::comma)
+    } else {
+      p <- p + scale_y_continuous(breaks = ybreaks, labels = scales::comma)
+      nudge.label <- -(nudge.label)
+    }
+  }
+  
+  # labels
+  labelParams <- set_labels_params(nrow(hcdata$labels), direction, fan)
+  hcdata$labels$angle <- labelParams$angle
+  
+  p <- p +
+    geom_text(data        =  label(hcdata),
+              aes(x       =  x,
+                  y       =  y,
+                  label   =  label,
+                  colour  =  factor(clust),
+                  angle   =  angle),
+              vjust       =  labelParams$vjust,
+              hjust       =  labelParams$hjust,
+              nudge_y     =  ymax * nudge.label,
+              size        =  label.size,
+              show.legend =  FALSE)
+  
+  # colors and limits
+  if (!is.null(scale.color)) {
+    p <- p + scale_color_manual(values = scale.color)
+  }
+  
+  ylim <- -round(ymax * expand.y, 1)
+  p    <- p + expand_limits(y = ylim)
+  
+  p
+}
+
+covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+# Dependiendo del horario, la última fila puede ser un placeholder si datos
+# covid.data <- covid.data[covid.data$dia_inicio != max(covid.data$dia_inicio),]
+
+last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
+first_date <- min(as.Date(covid.data$fecha,"%d/%m/%Y"))
+ndias <- max(covid.data$dia_inicio)
+dias <- expand.grid(distrito = unique(covid.data$osm_admin_level_4),
+                    dia = 1:ndias,
+                    stringsAsFactors = FALSE)
+
+dias %>% 
+  left_join(covid.data, by=c("distrito" = "osm_admin_level_4", "dia" = "dia_inicio")) %>% 
+  mutate(casos = replace_na(nue_casosconf_diff, 0)) %>% 
+  select(distrito, casos)  %>% 
+  filter(distrito != 'Indeterminado') %>% 
+  group_by(distrito) %>% 
+  summarise(casos = sum(casos)) %>% 
+  arrange(-casos) %>% 
+  mutate(porc = cumsum(casos/sum(casos))) -> data
+
+data_d <- as.data.frame(data[, 2])
+rownames(data_d) <- data$distrito
+
+D   <- dist(data_d)
+hc  <- hclust(D)
+hcdata <- dendro_data_k(hc, 5)
+
+plot_ggdendro(hcdata,
+              direction   = "rl",
+              label.size  = 3,
+              branch.size = .8,
+              nudge.label = 0.02,
+              expand.y    = 0.2,
+              nbreaks     = 10) +
+  # scale_y_continuous(labels = scales::comma) +
+  theme_elegante_std(base_family = "Ralleway") +
+  labs(title = paste("COVID-19 en Argentina"), 
+       subtitle = paste0("Agrupación de provincias por cantidad de casos en 5 grupos principales (al: ", last_date, ")"), 
+       caption = "Fuente: https://github.com/SistemasMapache/Covid19arData",
+       y = "Cantidad de casos",
+       x = "") 
+  
+
+```
 [proyecto]: https://github.com/cienciadedatos/datos-de-miercoles/blob/master/30-dias-de-graficos-2020.md
 [ggelegante]: https://github.com/pmoracho/ggelegant
 [\@R4DS_es]: https://twitter.com/R4DS_es
 [geofaceteAR]: https://github.com/electorArg/geofaceteAR
+[wesanserson]: https://github.com/karthik/wesanderson
