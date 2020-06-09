@@ -61,7 +61,7 @@ A raíz de que el 12 de mayo se conmemora el nacimiento de Florence Nightingale,
 | 13 | 24 de mayo | visualizar datos temporales |✓
 | 14 | 25 de mayo | gráficos de rectángulos/árbol |✓
 | 15 | 26 de mayo | dendorgamas |✓
-| 16 | 27 de mayo | gráficos de waffle |
+| 16 | 27 de mayo | gráficos de waffle |✓
 | 17 | 28 de mayo | diagramas de sankey |
 | 18 | 29 de mayo | visualizar datos espaciales |
 | 19 | 30 de mayo | gráficos de flujo (_stream graph_) |
@@ -1046,6 +1046,59 @@ plot_ggdendro(hcdata,
   
 
 ```
+
+## Día 16: Graficos de Waffle
+
+```{r dia16, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+library("tidyverse")
+library("waffle")
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+}
+
+
+covid.data <- read_delim('http://170.150.153.128/covid/covid_19_casos.csv', delim=";")
+last_date <- max(covid.data$fis, na.rm = TRUE)
+
+covid.data %>% 
+  filter(clasificacion_resumen == 'Confirmado',
+         sexo != 'NR') %>% 
+  mutate(internado = !is.na(fecha_internacion),
+         cui = !is.na(fecha_cui_intensivo),
+         arm = replace_na(asist_resp_mecanica == "SI",FALSE),
+         fallecido = 	replace_na(fallecido == "SI", FALSE),
+         sexo = ifelse(sexo == 'M', 'Masculino', 'Femenino')) %>% 
+  mutate(clasif_edad = case_when(edad_actual_anios <= 6 ~ '0 a 6',
+                                 edad_actual_anios > 6 &  edad_actual_anios <= 14 ~ '7 a 14',
+                                 edad_actual_anios > 14 & edad_actual_anios <= 35 ~ '15 a 35',
+                                 edad_actual_anios > 35 & edad_actual_anios <= 65 ~ '36 a 65',                          
+                                 edad_actual_anios > 65 ~ '>= 66',
+                          TRUE ~ 'Indeterminado')) %>% 
+  select(sexo, edad=edad_actual_anios, clasif_edad, internado, cui, arm, fallecido) %>% 
+  group_by(sexo, clasif_edad) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = round(100*(n / sum(n)),0),
+         clasif_edad = factor(clasif_edad, c('0 a 6', '7 a 14', '15 a 35', '36 a 65', '>= 66'))) %>%
+  ggplot(aes(fill = clasif_edad, values = freq)) +
+  geom_waffle(n_rows = 10, size = 0.33, colour = "white", flip = TRUE) +
+ 
+  scale_y_continuous(labels = function(x) x * 10) +
+  coord_equal() +
+  facet_wrap(~ sexo) +
+  scale_fill_manual(values=c("#E69F00", "#56B4E9", "#009E73",  "#0072B2", "#D55E00", "#CC79A7")) +
+  theme_elegante_std(base_family = "Ralleway") +
+  labs(title = paste("COVID-19 en Argentina"), 
+       subtitle = paste0("Clasificación etaria de infectados (al: ", last_date, ")\n"), 
+       caption = "Fuente: datos.gob.ar",
+       y = "",
+       x = "") +
+  theme(axis.text.x=element_blank())
+```
+
 [proyecto]: https://github.com/cienciadedatos/datos-de-miercoles/blob/master/30-dias-de-graficos-2020.md
 [ggelegante]: https://github.com/pmoracho/ggelegant
 [\@R4DS_es]: https://twitter.com/R4DS_es
