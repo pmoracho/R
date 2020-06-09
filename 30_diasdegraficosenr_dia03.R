@@ -17,10 +17,14 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   theme_elegante_std <- function(base_family) {}
 }
 
-covid.data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM",
-                       stringsAsFactors = FALSE)
+# Para descarga de los datos actualizados
+# covid.data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
+# hdi <- read.csv("https://data.humdata.org/dataset/05b5d8f1-9e7f-4379-9958-125c203d12ac/resource/4a7fd374-7e35-4c04-b7c8-25e5943aa476/download/hdi_human_development_index_hdig_value.csv", stringsAsFactors = FALSE)
+# saveRDS(covid.data, './data/covid.mundial.Rda')
+# saveRDS(hdi, './data/hdi.Rda')
+covid.data <- readRDS('./data/covid.mundial.Rda')
+hdi <- readRDS('./data/hdi.Rda')
 
-hdi <- read.csv("https://data.humdata.org/dataset/05b5d8f1-9e7f-4379-9958-125c203d12ac/resource/4a7fd374-7e35-4c04-b7c8-25e5943aa476/download/hdi_human_development_index_hdig_value.csv", stringsAsFactors = FALSE)
 hdi %>% 
   group_by(country_code) %>% 
   arrange(year) %>% 
