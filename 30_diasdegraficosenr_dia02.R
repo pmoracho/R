@@ -15,9 +15,11 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   # devtools::install_github("pmoracho/ggelegant")
   theme_elegante_std <- function(base_family) {}
 }
-  
-covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
 
+# Para descarga de los datos actualizados
+# covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+# saveRDS(covid.data, './data/covid.casos.arg.Rda') 
+covid.data <- readRDS('./data/covid.casos.arg.Rda')
 last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
 
 covid.data %>% 

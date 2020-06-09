@@ -1,0 +1,802 @@
+---
+title: "V. Manejo de bases de datos (Parte II)"
+author: ""
+date: "Abril 2020"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+mainfont: Times New Roman
+header-includes:
+- \usepackage{titling}
+- \pretitle{\begin{flushleft}\huge\bfseries}
+- \posttitle{\end{flushleft}}
+- \preauthor{\begin{flushleft}\Large}
+- \postauthor{\end{flushleft}}
+- \predate{\begin{flushleft}\large}
+- \postdate{\end{flushleft}}
+fontsize: 12pt
+urlcolor: blue
+linestretch: 1.15
+---
+\hyphenpenalty=10000
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Presentación
+
+En la primera parte de este módulo estudiamos los fundamentos para la creación de subconjuntos de observaciones y variables, la reasignación de nombres a variables y la ordenación de datos utilizando `base R` y `tidyverse`. En esta segunda parte trabajaremos en la creación y modificación de variables así como en la remodelación (_"reshape"_) y unión de bases de datos, tareas que ejecutadas adecuadamente, nos permiten dar mayor valor a nuestra información ya que suponen en muchos casos el paso previo a la obtención de estadísticos relevantes y/o a la visualización exploratoria. 
+
+Cuando hablamos de "crear" nos referimos al proceso de generación de nuevas variables, lo cual se hace usualmente a partir de la información contenida en otras variables. Por otro lado, "modificar" implica aplicar una transformación a una o más variables manteniendo su mismo nombre. 
+
+Nuevamente debe recordarse que los ejemplos que se tratarán son meramente representativos y no abarcan todas las necesidades que podemos encontrar en nuestro trabajo cotidiano con bases de datos. El objetivo es sobre todo desarrollar la intuición para enfrentar con éxito cualquier reto relacionado con estas tareas. Por ello, en la primera sección hablaremos de algunas de las actividades que se consideran más recurrentes en cuanto refiere a la modificación y creación de variables. 
+
+Antes de iniciar, carguemos nuestras librerías y la base de datos **`vuelos`** con las que trabajamos en la primera parte de este módulo:
+
+```{r eval=FALSE}
+library(tidyverse)
+library(nycflights13)
+vuelos <- flights
+```
+
+## 1. Creación y modificación de variables
+
+### 1.1 Generación de categorías con base en los valores de una variable numérica continua
+
+Una de las tareas más comunes cuando trabajamos con datos numéricos continuos (que pueden tomar prácticamente cualquier valor) es la construcción de categorías a partir de ellos. Supongamos por ejemplo que queremos clasificar el retraso en la salida de los vuelos (variable **"dep_delay"**) de acuerdo con las categorías **"Antes de tiempo"** para vuelos con retraso negativo (menor a cero), **"A tiempo"** para vuelos con retraso de 0 a 15 minutos y **"Retrasado"** para vuelos con retraso de 16 minutos en adelante. 
+
+La función más útil para esta tarea es **`cut()`** (parte de `base R`) que crea factores ordenados. Su estructura básica es la siguiente:
+
+```{r eval=FALSE}
+cut(objeto, breaks=, labels=, include.lowest=FALSE)
+```
+`breaks` se refiere al número de puntos de corte, `labels` a los nombres de las categorías e `include.lowest=FALSE` es una opción por default que podemos cambiar a `TRUE` si deseamos generar una categoría para el punto de corte más bajo. Si  indicamos `breaks` con un número cualquiera, **R** generará los rangos de forma automática y agrupará los valores según las categorías que definimos. Aunque esto no es lo que queremos, veamos de forma rápida cómo funciona:
+
+```{r eval=FALSE}
+retraso_dos <- cut(vuelos$dep_delay, breaks=3, 
+          labels = c("Antes de tiempo", "A tiempo", "Retrasado"))
+table(retraso_dos)
+View(retraso_dos)
+# La mayoría de los vuelos se clasifican como "Antes de tiempo"
+# Esto no es lo que deseamos
+```
+**Para utilizar el argumento `breaks` de forma óptima, la regla general es que el número de puntos de corte debe ser un elemento mayor al número de categorías.** En este caso, como queremos tres categorías, definiremos cuatro puntos de corte: el primero será el retraso más bajo, el segundo -1, el tercero 15 y el cuarto el retraso más alto. Para averiguar cuáles son el primero y cuarto puntos de corte emplearemos la función **`range()`** de la siguiente forma:
+
+```{r eval=FALSE}
+range(vuelos$dep_delay, na.rm=TRUE)
+# ¿Por qué se usa na.rm=TRUE?
+```
+La función nos regresa los valores mínimo y máximo de un conjunto de datos. En nuestro caso, el retraso más bajo es de -43 minutos y el más alto de 1,301 minutos. Con esta información, crearemos una variable que llamaremos **"retraso_baser"**:
+
+```{r eval=FALSE}
+vuelos$retraso_baser <- cut(vuelos$dep_delay, 
+          breaks= c(-43,-1,15, 1301), 
+          labels= c("Antes de tiempo", "A tiempo", "Retrasado"))
+
+# Una opción alternativa es usar min() y max() de la siguiente forma:
+vuelos$retraso_cut <- with(flights, cut(dep_delay,  
+  breaks= c(min(dep_delay, na.rm=TRUE),-1,15, 
+            max(dep_delay, na.rm=TRUE)), 
+    labels= c("Antes de tiempo", "A tiempo", "Retrasado")))
+
+# ¿Obtenemos el mismo resultado? 
+identical(vuelos$retraso_baser, vuelos$retraso_cut)
+
+```
+La instrucción puede leerse de la siguiente forma: Para los vuelos con retraso de -43 hasta -1 minutos, crear la categoría "Antes de tiempo"; para aquellos con retraso de 0 a 15 minutos, la categoría "A tiempo" y para aquellos de 16 hasta 1,301 minutos, la categoría "Retrasado".
+
+Podrá notarse el uso del operador **`$`** que como recordaremos del módulo II, nos permite el acceso a elementos por nombre. **Eso significa que al realizar una asignación bajo la estructura `bd$nueva_variable <- operacion` lo que hacemos es generar un nuevo nombre en nuestra base de datos.**
+
+Con `tidyverse`, utilizaremos la función **`mutate()`** que nos permite crear una o más variables al mismo tiempo mientras se conserva el resto. La función "contraria" es  **`transmute()`**, que conserva sólo la o las variables creadas. Su uso es el siguiente:
+
+```{r eval=FALSE}
+# Fuera del contexto del operador %>% o antes de otras funciones
+mutate(objeto, nueva_var_uno= operacion, nueva_var_dos=operacion, ...)
+
+# Después de un operador %>%
+mutate(nueva_var_uno=operacion, nueva_var_dos, operacion,...)
+```
+Si queremos que la nueva o nuevas variables formen parte de nuestra base de datos original, tendremos que reasignar sobre el mismo nombre. Ilustremos esto creando la variable **"retraso_tidy"**:
+
+```{r eval=FALSE}
+mutate(vuelos, retraso_tidy= cut(dep_delay, 
+          breaks= c(-43,-1,15, 1301), 
+          labels= c("Antes de tiempo", "A tiempo", "Retrasado"))) -> vuelos
+```
+Verifiquemos que las variables creadas bajo los dos métodos son iguales:
+
+```{r eval=FALSE}
+identical(vuelos$retraso_catr, vuelos$retraso_catt)
+```
+
+### 1.2 Generación de categorías con base en los valores de una variable numérica discreta
+
+En muchos casos, las categorías de una variable se encuentran codificadas como datos numéricos discretos (es decir, toman valores dentro de un rango limitado). Un ejemplo típico son los meses del año que suelen aparecer como 1 para "Enero", 2 para "Febrero" y así sucesivamente. Si queremos que en lugar de números se muestren las categorías, tendremos que crear un factor con las etiquetas apropiadas. Veamos este procedimiento utilizando nuestra variable **"month"**.
+
+El primer paso es crear un vector de etiquetas como el siguiente:
+```{r eval=FALSE}
+meses <- c("Ene","Feb","Mar","Abr","May","Jun", "Jul", "Ago", 
+	"Sep", "Oct","Nov","Dic")
+```
+El segundo es llamar a la función **`factor`** y usar el argumento **`labels`** para que las etiquetas de nuestros niveles sean las correspondientes a las de nuestro vector **"meses"**. Incluímos `ordered=TRUE` para garantizar que las categorías queden ordenadas de menor a mayor (de enero a diciembre)
+```{r eval=FALSE}
+vuelos$mes <- factor(vuelos$month, labels=meses, ordered=TRUE)
+```
+Una forma sencilla de verificar que el procedimiento fue correcto es generar una tabla con **"month"** y **"mes"** de forma tal que sólo aparezcan valores en la diagonal principal (es decir, en las intersecciones entre el mes como numérico y el mes como factor con etiqueta):
+```{r eval=FALSE}
+with(vuelos, table(month,mes))
+```
+
+### 1.3 Uso de condiciones
+
+En algunas bases de datos podemos hallar codificaciones como 1 para "Mujer" y 2 para "Hombre". Si quisiéramos darle sentido a los números y convertirlos en etiquetas, podemos recurrir a la función **`ifelse()`** (o a su similar **`dplyr::if_else`**) que se usa de la siguiente forma:
+
+```{r eval=FALSE}
+ifelse(prueba/condicion,"valor_si_verdadero","valor_si_falso")
+```
+El siguiente es un ejemplo rápido del uso de la función. La instrucción que se da a **R** es: Si el valor de **"sexo"** es igual a 1, crea la etiqueta "Mujer"; en otro caso, crea la etiqueta "Hombre". "Anidamos" **`ifelse()`** con la función **`factor()`** para generar un factor y no una cadena de caracteres:
+```{r}
+set.seed(12345)
+df <- data.frame(sexo=sample(c(1,2),15,replace=TRUE))
+df$hm <- factor(ifelse(df$sexo==1,"Mujer","Hombre")); df
+```
+
+**`ifelse()`** y **`dplyr::if_else()`** nos permiten generar diversos tipos de combinaciones. Veamos algunos ejemplos:
+
+```{r eval=FALSE}
+# Si bd$var contiene NA, cambiarlos a 0. En otro caso, dejar mismo valor.
+ifelse(is.na(bd$var),0,bd$var)
+dplyr::if_else(is.na(bd$var),0,bd$var)
+
+# Si bd$var es igual o mayor a 0.5, clasificar como 1 y como 0 en otro caso
+ifelse(bd$var>=0.5,1,0)
+dplyr::if_else(bd$var>=0.5,1,0)
+
+# Si bd$var es igual o mayor a 150, establecer 150 como valor máximo
+# dejando el resto de los valores iguales
+ifelse(bd$var>=150,150,bd$var) 
+dplyr::if_else(bd$var>=150,150,bd$var)
+```
+Pero, ¿qué sucede si queremos generar categorías con base en más de una condición? En el caso de valores numéricos, usar **`cut()`** es la opción más intuitiva y directa. Por ejemplo, la instrucción
+
+```{r eval=FALSE}
+cut(dep_delay,  
+  breaks= c(-43,-1,15, 1301), 
+    labels= c("Antes de tiempo", "A tiempo", "Retrasado")
+```
+
+puede leerse de manera general como: "Si la variable se encuentra entre tales valores, generar cierta categoría (...)". Al recurrir a **`ifelse()`** o **`if_else()`** necesariamente tendríamos que "anidar" puesto que en estricto sentido estas funciones sólo generan dos valores (uno cuando la condición se cumple y otro cuando no). El código sería el siguiente:
+
+```{r eval=FALSE}
+ifelse(dep_delay%in%c(-43:-1), "Antes de tiempo", 
+    ifelse(dep_delay%in%c(0:15), "A tiempo", "Retrasado"))
+```
+
+Esto representa potenciales problemas en términos de claridad de código ya que por cada categoría adicional se tendría que "anidar" otro **`ifelse()`** y otro paréntesis.
+
+Pensemos en una variable como **"niveles"** y supongamos que queremos generar cuatro categorías: "Básica" (preescolar hasta secundaria), "Media superior" (bachillerato), "Superior" (pedagógica, profesional y técnico superior universitario) y "Posgrado" (maestría y doctorado):
+
+```{r eval=FALSE}
+set.seed(9876)
+niveles <- c("Preescolar", "Primaria", "Secundaria", "Secundaria técnica", 
+	"Bachillerato general", "Bachillerato técnico", "Pedagógica",
+	"Profesional", "Técnico Superior Universitario", "Maestría", "Doctorado")
+
+niveles_educ <- data.frame(niveles=c(sample(niveles, 50, replace=TRUE)))
+View(niveles_educ)
+```
+En este caso, requeriríamos tres **`ifelse()`** anidados. Para hacer frente a este tipo de tareas de una forma más clara en cuanto a código, tenemos dos opciones: recurrir a **`dplyr::case_when`** o al procedimiento de modificación de valores que vimos en el segundo módulo. 
+
+Veamos primero cómo se utiliza **`case_when`**, función que nos permitirá crear la variable **"grupo_tidy"**:
+
+```{r eval=FALSE}
+niveles_educ <- dplyr::mutate(niveles_educ, 
+  grupo_tidy= dplyr::case_when(
+      niveles%in%c("Preescolar", "Primaria", "Secundaria",
+        "Secundaria técnica") ~ "Básica",
+      
+      niveles%in%c("Bachillerato general", 
+        "Bachillerato técnico") ~ "Media superior",
+      
+      niveles%in%c("Pedagógica", "Profesional", 
+	      "Técnico Superior Universitario") ~ "Superior",
+      
+      niveles%in%c("Maestría", "Doctorado") ~ "Posgrado"))
+```
+Como se aprecia, **`case_when`** hace uso del operador de fórmulas al que nos referimos en el módulo II y tiene una sencilla estructura:
+
+```{r eval=FALSE}
+          case_when(
+              condicion ~ valor,
+              condicion ~ valor
+          )
+
+# No olvidar que:
+# Una condición genera un vector de valores TRUE o FALSE
+```
+Cuando creamos **"grupo_tidy"** le "dimos" a **`case_when`** cuatro **`if`** y ningún **`else`** por lo que establecimos cuatro categorías para cuatro condiciones pero ninguna categoría en la cual englobar los valores que no cumplieran dichas condiciones. Dicho de otra forma, tras crear los grupos "Básica", "Media Superior" y "Superior" se entendería que los valores restantes ("Maestría" y "Doctorado") se encontrarían en el grupo "Posgrado". El argumento para definir este  **`else`** es simplemente `TRUE ~ valor`. Traduzcamos esto en código: 
+
+```{r eval=FALSE}
+niveles_educ <- dplyr::mutate(niveles_educ, 
+  grupo_tidy_dos= dplyr::case_when(
+      niveles%in%c("Preescolar", "Primaria", "Secundaria",
+        "Secundaria técnica") ~ "Básica",
+      
+      niveles%in%c("Bachillerato general", 
+        "Bachillerato técnico") ~ "Media superior",
+      
+      niveles%in%c("Pedagógica", "Profesional", 
+	      "Técnico Superior Universitario") ~ "Superior",
+      
+      TRUE ~ "Posgrado"))
+
+# ¿Tenemos el mismo resultado?
+identical(niveles_educ$grupo_tidy, niveles_educ$grupo_tidy_dos)
+```
+
+El procedimiento de modificación de valores que vimos en el segundo módulo nos permitía cambiar subconjuntos de datos de una forma como la siguiente:
+
+```{r}
+set.seed(067)
+(x <- c(sample(1:25,20,replace=TRUE)))
+x[x>=10] <- 10; x
+# Todos los valores mayores o iguales a 10 se fijan en 10
+```
+Cuando aplicamos esta idea a la creación de una nueva variable, nuestra estructura será:
+
+```{r eval=FALSE}
+      nueva_variable[condiciones_variable_de_referencia] <- valor
+```
+Cuando se realiza la primera asignación, `valor` se reflejará en los mismos renglones de `nueva_variable` que cumplan las `condiciones_variable_de_referencia` mientras que en el resto se generarán `NA`. Las `NA` se modificarán de forma paulatina hasta abarcar todos los renglones o hasta que no se establezcan más condiciones. Ejecutemos de forma individual cada bloque de código para visualizar esta idea:
+
+```{r eval=FALSE}
+# Bloque 1
+niveles_educ$grupo_baser[niveles_educ$niveles%in%c("Preescolar", "Primaria",
+      "Secundaria", "Secundaria técnica")] <- "Básica"
+View(niveles_educ[,c(1,4)])
+
+# Bloque 2
+niveles_educ$grupo_baser[niveles_educ$niveles%in%c("Bachillerato general",
+      "Bachillerato técnico")] <- "Media superior"
+View(niveles_educ[,c(1,4)])
+
+# Bloque 3
+niveles_educ$grupo_baser[niveles_educ$niveles%in%c("Pedagógica", "Profesional",
+      "Técnico Superior Universitario")] <- "Superior"
+View(niveles_educ[,c(1,4)])
+
+# Bloque 4
+niveles_educ$grupo_baser[niveles_educ$niveles%in%c("Maestría",
+      "Doctorado")] <- "Posgrado"
+View(niveles_educ[,c(1,4)])
+
+identical(niveles_educ$grupo_tidy, niveles_educ$grupo_baser)
+```
+    
+### 1.4 Trabajando con variables numéricas continuas
+
+Supongamos que queremos determinar cuál es la velocidad en kilómetros por hora para cada vuelo. Para ello, utilizaremos **`distance`** y **`air_time`**; la primera está expresada en millas y la segunda en minutos, por lo que será necesario convertir tanto a kilómetros como a horas. Sabemos que velocidad es igual a distancia sobre tiempo, que una milla equivale a 1.60934 kilómetros y que una hora tiene sesenta minutos. Con esta información, podemos crear la variable **`vel_kmh`** que calculamos de la siguiente manera:
+
+```{r eval=FALSE}
+vuelos <- mutate(vuelos, vel_kmh = ((distance/air_time)*60)*1.60934)
+
+# Veamos qué tipo de información nos brinda la nueva variable
+summary(vuelos$vel_kmh)
+```
+
+Supongamos ahora que queremos expresar en horas y minutos el tiempo de duración de cada vuelo. Una aproximación en tres pasos consistiría en extraer el número de horas, después el número de minutos y finalmente unir ambas expresiones. En el primer paso, podemos emplear las funciones **`floor()`** o **`trunc()`** que regresan la parte entera de un vector. En el segundo, nos valdremos del operador **`%%`** que nos devuelve el resto de una división. Finalmente, haremos uso de la función **`paste0()`** para unir o "pegar" los resultados de los pasos anteriores. 
+
+Un detalle a notar es que para los "restos" menores a 10, el operador **`%%`** nos regresará dígitos y no números en formato 01, 02, etc.. Por ello, incorporaremos dentro de **`paste0()`** un condicional **`ifelse()`** de forma tal que si el número de minutos es menor a 10, se le agregue un cero a la cantidad. Veamos estos pasos en código:
+
+```{r eval=FALSE}
+vuelos <- mutate(vuelos, 
+      # Calculamos primero las horas
+      horas= floor(air_time/60), 
+      
+      # Extraemos los minutos
+      min= air_time%%60,
+      
+      # Unimos los resultados
+      # Lo primero que "pegamos" es el número de horas
+      # Agregamos el separador :
+      horas_min=paste0(horas,":",
+      
+      # La última cantidad a pegar será el número de minutos
+      # Esta cantidad resultará de lo que arroje el ifelse
+      # Si el número es menor a 10, se le "pega" un 0
+      # En caso contrario, permanece la misma cantidad
+              ifelse(min<10,paste0("0",min),min)))
+      # El segmento de código que crea "horas_min" es igual a:
+      # horas_min=paste0(horas,":",ifelse(min<10,paste0("0",min),min)))
+      # Pero se explicó por separado para propósitos ilustrativos
+
+vuelos[,c("air_time", "horas", "min", "horas_min")] 
+```
+El resultado debe ser el siguiente:
+```{r eval=FALSE}
+# A tibble: 336,776 x 4
+   air_time horas   min horas_min
+      <dbl> <dbl> <dbl> <chr>    
+ 1      227     3    47 3:47     
+ 2      227     3    47 3:47     
+ 3      160     2    40 2:40     
+ 4      183     3     3 3:03     
+ 5      116     1    56 1:56     
+ 6      150     2    30 2:30     
+ 7      158     2    38 2:38     
+ 8       53     0    53 0:53     
+ 9      140     2    20 2:20     
+10      138     2    18 2:18     
+# ... with 336,766 more rows
+```
+
+En general, podemos crear nuevas variables aplicando los diferentes operadores aritméticos que vimos en el segundo módulo de acuerdo con nuestras propias necesidades. En este ejemplo, además de obtener dos variables numéricas, generamos una más de tipo **`character`** partiendo de una misma variable. 
+
+Otro tipo de transformación útil con variables numéricas continuas es la "normalización" que básicamente consiste en cambiar las escalas de las variables dependiendo de su dispersión y concentración (valores mínimos y máximos así como la distribución de los datos). Algunas de las más comunes son:
+
+* **Aplicación de logaritmo natural**
+* **"Recorte" (_"clipping"_) en valores máximos o mínimos**
+* **"Normalización"**, para centrar los datos en un valor mínimo de cero y uno máximo de uno
+* **"Estandarización"**, para expresar una cantidad en términos de su desviación estándar y 
+* **El cálculo de percentiles**, para clasificar una observación de acuerdo con el porcentaje de observaciones que se encuentran por debajo de ella.
+
+La primera es útil cuando la distribución de observaciones está "sesgada" debido a valores extremos(_"outliers"_) tanto en cantidad como en dimensión, como suele ocurrir en variables como los ingresos individuales. La segunda se emplea cuando los _"outliers"_ no son tan numerosos. La tercera cuando los datos tienden a distribuirse dentro de un rango no tan amplio. La cuarta cuando existen algunos valores extremos pero no en un rango que amerite "recortarlos". Finalmente, el cálculo de percentiles suele aplicarse en pruebas estandarizadas para determinar la posición de un determinado individuo respecto a su grupo, aunque también se emplea con variables como ingreso, edad, peso, etc., con la misma finalidad.  
+
+Veamos cómo aplicar las primeras cuatro transformaciones con algunas variables de nuestra base **`vuelos`**:
+
+```{r eval=FALSE}
+# Acceso a la documentación de las funciones
+?log
+?min
+?max
+?scale
+
+# Transformar la variable "distance" a su logaritmo natural
+mutate(vuelos, distance_log=log(distance)) -> vuelos
+
+# Recortar el valor de retrasos mayores o iguales a 500 en 500
+mutate(vuelos, 
+      distance_trunc= ifelse(dep_delay>=500, 500, dep_delay)) -> vuelos
+
+# Normalización de la variable "horas"
+mutate(vuelos, horas_norm=
+    (horas-min(horas,na.rm=TRUE))/ (max(horas, na.rm=TRUE)- min(horas,
+                  na.rm=TRUE))) -> vuelos
+
+# Expresión de una variable en términos de sus desviaciones estándar
+mutate(vuelos, air_time_scale=as.numeric(scale(air_time))) -> vuelos
+````
+Por último, generemos una base de datos de prueba para mostrar el cálculo de percentiles. La función que utilizaremos es **`ecdf()`** con la que obtenemos el percentil en el que se ubica cada observación.
+
+```{r}
+# Imaginaremos que examinamos a 100 personas con una prueba
+# El rango de calificación de la prueba va de 0 a 100 puntos
+set.seed(612)
+test <- data.frame(resultado=sample(0:100,100,replace=TRUE))
+# View(test)
+
+# Calculemos los percentiles
+# ecdf regresa una probabilidad entre 0 y 1 
+within(test, {
+  percentil <- ecdf(resultado)(resultado)
+	            }) -> test
+```
+
+Sin entrar en detalles técnicos, podemos decir básicamente que `ecdf(resultado)(resultado)` es una instrucción que nos regresa la probabilidad asociada a cada observación de la variable `test$resultado` de tener un valor menor o igual a ella misma. Expliquemos con mayor detalle accediendo a las primeras cinco observaciones: 
+```{r}
+head(test,5)
+```
+Como podemos ver, la probabilidad para un resultado de 95 puntos es de 0.99, lo que significa que el 99 por ciento de las observaciones tienen un puntaje igual o menor a 95 puntos. Para 12 puntos, la probabilidad es de 0.10 por lo que el 10 por ciento de las observaciones tendrán 12 puntos o menos. 
+
+De lo anterior tenemos que si restamos **1 - `test$percentil`** tendríamos la probabilidad de que una observación se encuentre por encima de cierto valor. Así, la probabilidad de que se obtenga un resultado mayor a 95 puntos es de `1 - 0.99 = 0.01` (1 por ciento).
+
+El siguiente código genera una gráfica en la que podemos observar las probabilidades asociadas a cada observación de `test$resultado`. Por ejemplo, si nos situamos en el eje X en 20, tenemos que en el eje Y la probabilidad es de alrededor de 0.15 (es decir, el 15 por ciento de las observaciones tienen un resultado de 20 o menor). Si nos desplazamos hacia 30, veremos que la probabilidad es de alrededor de 0.33. Podemos realizar la misma exploración visual para cualquier resultado. 
+
+```{r fig.width=6, fig.height=5, fig.align="center", echo=TRUE}
+library(tidyverse)
+ggplot(test, aes(resultado)) + 
+	stat_ecdf(geom = "point", pad=FALSE, size=2.5, colour="red") + 
+	theme_bw() +
+	labs(x="Resultado", y="Probabilidad")+
+	scale_x_continuous(breaks=seq(0,100,5)) +
+	scale_y_continuous(breaks=seq(0,1,0.1))
+```
+
+Antes de concluir esta sección, presentamos una nueva función: **`within()`**, que al igual que **`with()`** evalúa una expresión dado cierto objeto, aunque a diferencia de la última, permite modificar un objeto. Es una alternativa en `base R` a **`mutate()`** y a **`transform()`**, función que no abordaremos en este curso pero cuya documentación puede encontrarse [aquí.](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/transform) Una particularidad de **`within()`** es que incorpora nuevas variables a nuestra `data.frame` de izquierda a derecha, por lo que debemos tomar eso en cuenta si deseamos que las variables creadas se muestren en cierto orden.
+
+
+### 1.5 Transformación de múltiples variables
+
+En ocasiones nos interesa aplicar una misma transformación a dos o más variables o a todas las variables de una misma clase. Por ejemplo, supongamos que queremos obtener los logaritmos naturales para **"distance"** y de **"vel_kmh"**. Aunque por supuesto podemos hacerlo de forma individual, la opción más eficiente en términos de código es emplear **`mutate_at()`** que nos permite modificar variables con nombres o posiciones específicas. El primer argumento de esta función es el nombre del objeto, el segundo el vector de posiciones y el tercero la función a aplicar. Para efectos didácticos, seleccionaremos sólo tres variables y usaremos la función **`log()`**: 
+
+```{r eval=FALSE}
+# Por posición
+select(vuelos, c(carrier, distance,vel_kmh)) %>%
+	mutate_at(c(2:3), log) -> vuelos_log_pos
+
+# Por nombre
+select(vuelos, c(carrier, distance,vel_kmh)) %>%
+	mutate_at(c("distance", "vel_kmh"), log) -> vuelos_log_name
+```
+
+Supongamos ahora que queremos coercionar a factor (usando **`as.factor()`**) todas nuevas variables de tipo `character`. Una alternativa es ubicar todas las variables con esa característica e indicar sus posiciones en **`mutate_at()`**. Sin embargo, **`mutate_if()`** hace esa tarea por nosotros al aplicar una transformación a variables de un mismo tipo:
+
+```{r eval=FALSE}
+mutate_if(vuelos, is.character, as.factor) -> vuelos_fac
+str(vuelos_fac)
+```
+## 2. "Remodelando" bases de datos
+
+En ocasiones, la información contenida en bases de datos se presenta en formato "ancho" por lo que el número de columnas tiende a ser muy grande. Es el caso típico cuando trabajamos con datos que se registran a lo largo del tiempo (longitudinales) donde cada año representa una variable (columna). Cuando esto ocurre, la generación de gráficas tiende a ser complicada por lo que es necesario "colapsar" el número de columnas y reducirlo de forma tal que los años se agrupen en una sola variable. A esto se le denomina "remodelar" de un formato "ancho" a uno "largo" (reducir el número de columnas y ampliar el número de renglones). Dependiendo de nuestras necesidades, también podemos pasar de "largo" a "ancho".
+    
+Las librerías **`reshape2`** y **`tidyr`** nos permiten realizar estas tareas a través de las funciones **`melt()`** y **`dcast()`** (en **`reshape2`**) y **`pivot_longer()`** y **`pivot_wider()`** en **`tidyr`**. Veremos cómo usar la primera función de cada librería con la base de datos `genderdata.csv` que fue proprocionada. La base no está pre-procesada, así que realizaremos primero las siguientes tareas:
+    
+* Instalar **`reshape2`** y cargarla en nuestro espacio de trabajo junto con **`tidyverse`**
+* Leer utilizando **`read.csv()`** con las opciones default que ya conocemos. Al archivo le asignaremos el nombre **gd**
+* Eliminar las columnas 1,2, 4 y 64
+    
+```{r eval=FALSE, echo=FALSE}
+library(reshape2)
+library(tidyverse)
+gd <- read.csv("genderdata.csv", header=TRUE, stringsAsFactors=FALSE)
+gd <- gd[,-c(1,2,4,64)] 
+```
+Generemos una vista rápida con `View(gd)`. Como se podrá apreciar, la primera columna contiene los nombres de los países y el resto corresponden a años de 1960 a 2018. Dado que estos nombres no resultan fáciles de leer, los cambiaremos. La primera columna se modificará a **"pais"** (sin acento) y para el resto crearemos una secuencia desde 1960 a 2018 utilizando pasos de 1. Para ello, recurriremos a las funciones **`paste0()`** y **`seq()`** que hemos visto anteriormente. 
+
+Ahora analicemos la estructura con `str(gd)`. Se verá que todas las columnas son de tipo `character`.Por ello, coercionaremos a numérico los valores de las columnas 2 a 60 con **`mutate_at()`**. Seleccionemos también tres países para nuestro ejemplo: **"Mexico", "Canada", "United States"**.Verifiquemos nuevamente con `str(gd)` que nuestros cambios hayan sido realizados.
+      
+```{r eval=FALSE, echo=FALSE}
+colnames(gd) <- c("pais", paste0(seq(1960,2018,1)))
+colnames(gd)
+gd[,c(2:60)] <- lapply(gd[,c(2:60)],as.numeric)
+gd<- with(gd, gd[pais%in%c("Mexico","Canada","United States"),])
+str(gd)
+```
+
+Ahora estamos listos para cambiar la forma de la base de datos a un formato largo que sea legible para que **R** pueda graficarlo. Primero lo haremos con **`melt()`**. Esta función se vale de una o más variables de identificación (**`id.vars`**) que corresponden a columnas de tipo `character` o `factor` (variables que son "medidas" y que permanecen como columnas) y variables de medición (**`measure.vars`**), que son esencialmente las que contienen cantidades. Los argumentos más importantes de la función son entonces:
+
+```{r eval=FALSE}
+melt(objeto, id.vars=, measure.vars=)
+# id.vars y measure.vars pueden especificarse con índices o strings
+````
+Cuando ninguno de los dos argumentos se indica, la(s) variable(s) de tipo `character` o `factor` son las `id.vars` y el resto las `measure.vars`. En nuestro caso, no sería necesario especificar esos argumentos; sin embargo,lo haremos para efectos ilustrativos. El argumento **`id.vars`** sera **"pais"** y las **`measure.vars`** serán las columnas correspondientes a los años. Debido a que sería complejo indicar todos los nombres para estas columnas, utilizaremos sus índices:
+
+```{r eval=FALSE}
+gd_melt <- melt(gd, id.vars="pais", measure.vars=2:60)
+# Equivalente a melt(gd)
+head(gd_melt,10)
+
+            pais variable    value
+1         Canada     1960 70.72416
+2         Mexico     1960 96.51482
+3  United States     1960 66.13174
+4         Canada     1961 71.09696
+5         Mexico     1961 97.41176
+6  United States     1961 66.64803
+7         Canada     1962 71.13650
+8         Mexico     1962 98.39504
+9  United States     1962 66.69216
+10        Canada     1963 70.87559
+
+```
+Como se aprecia, la función "colapsa" los años en una columna llamada **"variable"** y los valores en otra llamada **"value"**. Podemos cambiar los nombres de esta columna directamente desde el llamado a la función con los argumentos `variable.name="nombre` y `value.name="nombre` aunque resulta más intuitivo y fácil de recordar el uso de **`rename()`** usando el operador **`%>%`**. Usaremos el nombre **"Porcentaje"** para **"value"** y **"Año"** para **"variable"**. Nuestro código sería:
+
+```{r eval=FALSE}
+gd_melt <- melt(gd, id.vars="pais", measure.vars=2:60)%>%
+	rename(Porcentaje=value, Año=variable)
+
+# Si usamos los argumentos de melt(), el código sería: 
+# gd_melt <- melt(gd, id.vars="pais", measure.vars=2:60, 
+#       variable.name="Año", value.name="Porcentaje")
+```
+Ahora que tenemos nuestra base en formato largo, podemos graficar sin mayores complicaciones. Ejecutemos el siguiente código en consola y veamos el resultado:
+
+```{r eval=FALSE}
+ggplot(gd, aes(x=Año, y=Porcentaje, color=pais, fill=pais, group=pais)) +
+	geom_line(size=1.2) +
+	theme_classic() +
+	labs(title="Porcentaje de personas -15/+64 años que dependen de la PEA")+
+	scale_x_discrete(breaks=seq(1960,2015,5))+
+	theme(legend.title = element_blank())
+```
+
+Realicemos el mismo procedimiento con **`pivot_longer()`**. Esta función nos permite trabajar con distintos niveles de complejidad en bases de datos en formato ancho. El caso más sencillo es el que trabajamos en esta sección; sin embargo, pueden encontrarse diversos modelos en este artículo de `tidyr` llamado justamente ["Pivoting".](https://tidyr.tidyverse.org/articles/pivot.html)
+
+Como se podrá observar, el primer ejemplo del artículo es muy similar al nuestro por lo que sólo será necesario adaptar el código de la siguiente forma:
+
+```{r eval=FALSE}
+gd %>% 
+  pivot_longer(-pais, names_to = "Año", 
+    values_to = "Porcentaje") -> gd_pivot_longer
+View(gd_pivot_longer)
+```
+La diferencia entre **`melt()`** y **`pivot_longer()`** está en el resultado en consola pues la primera alterna los nombres de los países mientras que la segunda genera bloques para cada país. 
+
+**`dcast()`** y **`pivot_wider()`** incrementan el número de columnas y disminuyen el de renglones. Esto es útil si requerimos presentar información 000on un índice consecutivo (variable **X**). Supongamos que queremos saber cuál es el promedio que otorgan hombres y mujeres según su ocupación para la variable **rank**. Con **`dcast()`** podemos lograr esto de forma muy sencilla:
+
+``` {r eval=FALSE}
+dcast_rank <- dcast(enc, ocupacion~genero, value.var="rank", 
+               fun.aggregate = mean, na.rm=TRUE)
+dcast_rank[,2:3] <- round(dcast_rank[,2:3],2); dcast_rank
+
+      ocupacion Hombre Mujer
+1   Ama de casa   7.50  7.04
+2   Comerciante   6.93  6.72
+3   Desempleado   6.54  6.24
+4      Empleado   6.52  6.24
+5    Estudiante   6.76  6.45
+6        Obrero   6.44  6.12
+7          Otro   7.46  6.80
+8 Profesionista   6.41  6.37
+9       Turista   8.17  8.17
+```
+El primer argumento es nuestra base de datos, el segundo es una fórmula que indica la distribución de las columnas, el tercero es la variable de donde se obtendrán los valores y el cuarto es la función que se utilizará. Sobre el segundo argumento es importante señalar que los elementos al lado izquierdo del operador **`~`** corresponderán a las columnas que mantendremos como referencia mientras que los elementos a la derecha corresponderán a las columnas que se "expandirán". Esto nos permite construir fórmulas como **`a + b ~ c`**.
+
+Con **`dcast()`** el argumento **na.rm=TRUE** para la función **`mean()`** no se incorpora en la forma que conocemos (es decir, al interior de **`mean()`**) sino que es un argumento por sí mismo. A fin de dar formato a la tabla y generar el resultado final, se utilizó la función **`round()`**.
+
+Ahora bien, supongamos que queremos regresar nuestra base de datos `gd_melt` (o `gd_pivot_longer`) a un formato ancho pero sólo para los años 2015 a 2018. Utilizando un poco de **`baseR`** haremos lo siguiente:
+
+```{r eval=FALSE}
+(gd_cast_uno <- dcast(gd_melt[gd_melt$variable%in%c(2015:2018),], 
+      pais~variable, value.var="value"))
+```
+Como se observa, para el primer argumento elegimos explícitamente el subconjunto de años 2015-2018 empleando el operador **`[ ]`**.  El mismo resultado puede alcanzarse utilizando el argumento `subset`. Para ello se requiere la función **`.`** (punto) de la librería **`plyr`**:
+
+```{r eval=FALSE}
+(gd_cast_dos <- dcast(gd_melt, pais~variable,value.var="value", 
+                  subset= plyr::.(variable%in%c(2015:2018))))
+```
+Para obtener una tabla similar a `rank_dcast` con **`pivot_wider()`** tenemos al menos dos alternativas, una que hace uso de **`baseR`** y otra con **`dplyr`**. Ejecutemos una a una las soluciones:
+
+```{r eval=FALSE}
+# pivot_wider más base r
+(pw_rank_br <- pivot_wider(enc[!is.na(enc$rank),c(2:4)], names_from=genero, 
+	values_from=rank, values_fn = list(rank = mean))))
+
+# pivot_wider más funciones de dplyr
+pw_rank_tv <- select(enc, c("ocupacion","genero","rank"))%>%
+	filter(!is.na(rank))%>%
+	pivot_wider(names_from=genero, values_from=rank, values_fn=list(rank=mean))
+```
+
+Como se aprecia, ambas tienen en común la selección de columnas específicas y la exclusión de observaciones omitidas. Para **`pivot_wider()`** todas las variables que no sean consideradas en `names_from` y `values_from` serán columnas de nombres. (Con `names_from=genero`, la instrucción es que los valores de `genero` sean los nombres de las columnas a expandir por lo que los valores de `ocupacion` serían la columna de referencia) Asimismo, esta función no permite la incorporación del argumento `na.rm=TRUE` cuando utilizamos **`mean()`**, por lo que es necesario descartar las `NA` de forma previa. 
+
+¿Cómo utilizaríamos **`pivot_wider`** para obtener el mismo resultado que `gd_cast_uno` o `gd_cast_dos`?
+
+```{r eval=FALSE, echo=FALSE}
+gd_pw <- filter(gd_pivot_longer, Año%in%c(2015:2018))%>%
+	pivot_wider(names_from=Año, values_from=Porcentaje)
+```
+
+## 3. Unión de bases de datos
+
+Existen tres formas principales de unir bases de datos. La primera es adicionando columnas (combinación horizontal), la segunda incorporando renglones (combinación vertical) y la tercera integrando columnas y renglones a través de identificadores comunes entre diversas bases de datos. A continuación se explica cada uno de esos procedimientos.  
+
+### 3.1 Adición de columnas
+
+El principio básico para unir bases de datos empleando columnas es que todas tengan el mismo número de renglones que la `data.frame` original. En **`baseR`**, la función que nos permite realizar esta operación es `cbind()` mientras que con **`dplyr`** usamos `bind_cols`. Estas funciones son útiles cuando tenemos elementos de una misma base de datos distribuidos en otras bases y queremos manipular variables para después reunir todo en una sola `data.frame`. A continuación, un ejemplo con `vuelos`.
+
+```{r eval=FALSE}
+v_uno <- select(vuelos, c(year,day,month))%>%
+	mutate(month=ifelse(month<10, paste0("0",month), month),
+		day=ifelse(day<10, paste0("0",day), day),
+		month_day=paste0(day,"-",month,"-",year), 
+		month_day=base::as.Date(month_day, format="%d-%m-%Y"))
+
+v_dos <- select(vuelos, c(distance, air_time))%>%
+	mutate(vel_kmh = ((distance/air_time)*60)*1.60934)
+
+v_def <- cbind(v_uno, v_dos)
+```
+
+### 3.2 Adición de renglones
+
+La adición de renglones es una actividad recurrente cuando queremos incluir en una sola base de datos un conjunto de registros similares para diferentes sujetos u objetos. El INEGI, por ejemplo, es organismo que recurre a esta "fragmentación" de información al asignar para cada estado, encuesta o proyecto una base de datos. 
+
+La integración de renglones a una base de datos suele tener como requisito la coincidencia en el nombre y el número de columnas. Esto aplica con la función `rbind()` de `baseR` pero no con `bind_rows()` de `dplyr`. 
+
+Veamos un sencillo ejemplo:
+
+````{r}
+bind_rows(data.frame(x = 1:3), data.frame(y = 1:4))
+```
+Como se observa, la función genera de forma automática `NA` para los renglones 4 a 7 en `x` y para los renglones 1 a 3 en `y`. Si intentamos hacer esta misma operación con `rbind()` recibiremos un mensaje de error:
+
+```{r error=TRUE}
+rbind(data.frame(x = 1:3), data.frame(y = 1:4))
+```
+
+Esta funcionalidad resulta útil cuando queremos unir columnas con elementos de una misma clase pero alojados en columnas de nombre distinto. Veamos el siguiente ejemplo:
+
+```{r}
+x <- data.frame(NOMBRES=c("Ana", "Juan","Pedro", "Vanessa"))
+y <- data.frame(nombres=c("Ernesto", "Gabriel", "Antonio"))
+
+
+xy <- dplyr::bind_rows(x,y)%>%
+	mutate_at(1:2,function(x) as.character(x))
+# Se realiza coerción en este ejemplo porque R crea factores por default
+```
+
+Ahora sólo necesitamos la función **`coalesce()`** de `dplyr()`para unir las dos columnas en una sola:
+
+```{r}
+(xy <- mutate(xy, nombre_unico = coalesce(NOMBRES, nombres)))
+```
+
+## 3.3 Unión a través del uso de identificadores
+
+Las bases de datos relacionales han sido diseñadas para enfrentar el problema del almacenamiento masivo de información en un solo objeto. Gracias a este tipo de estructuras podemos "separar" la información en partes más pequeñas (denominadas "tablas") y vincularla a través de variables o conjuntos de variables comunes conocidas como "llaves".
+
+Aunque existen distintos tipos de llaves, lO usual es referirse a las "primarias" (_"primary keys"_) y las "foráneas" (_"foreign keys"_). Una llave primaria es aquella que identifica una observación en su propia tabla por lo que contienen sólo valores únicos no nulos. La llave primaria puede consistir de una o múltiples columnas o campos. 
+
+Por su parte, una llave foránea es una llave empleada para vincular dos tablas. Las llaves foráneas son un campo o campos en una tabla que se refieren a la llave primaria de otra tabla. En el lenguaje de bases de datos relacionales, se dice que la tabla que contiene la llave foránea es la "tabla secundaria" (_"child table"_) y la que contiene la llave primaria es la "principal" o "referenciada" (_"parent table"_). 
+
+Si accedemos nuevamente a la metadata de `flights` encontraremos que en el caso de `carrier` se nos sugiere consultar `airlines`. Si ejecutamos ese código en consola obtendremos lo siguiente:
+
+```{r eval=FALSE}
+airlines
+# A tibble: 16 x 2
+   carrier name                       
+   <chr>   <chr>                      
+ 1 9E      Endeavor Air Inc.          
+ 2 AA      American Airlines Inc.     
+ 3 AS      Alaska Airlines Inc.       
+ 4 B6      JetBlue Airways            
+ 5 DL      Delta Air Lines Inc.       
+ 6 EV      ExpressJet Airlines Inc.   
+ 7 F9      Frontier Airlines Inc.     
+ 8 FL      AirTran Airways Corporation
+ 9 HA      Hawaiian Airlines Inc.     
+10 MQ      Envoy Air                  
+11 OO      SkyWest Airlines Inc.      
+12 UA      United Air Lines Inc.      
+13 US      US Airways Inc.            
+14 VX      Virgin America             
+15 WN      Southwest Airlines Co.     
+16 YV      Mesa Airlines Inc.    
+```
+
+`airlines` es una tabla de 16 renglones y dos columnas: **"carrier"** y **"name"**. Dado que se trata de valores únicos, podemos decir que en la tabla `airlines`, **"carrier"** es una llave primaria (pues vincula de manera unívoca una abreviatura con un nombre de aerolínea) mientras que esa misma columna en `flights` es una llave secundaria. 
+
+Debe tomarse en cuenta que no todas las tablas tienen llaves primarias por lo que al hacer las uniones suele suceder que el orden de las observaciones se modifique. En esos casos es posible agregar una llave "sustituta" (_"surrogate key"_) utilizando `mutate()` y `row_number()` o `seq()`. De esa forma, podemos regresar a nuestra estructura original utilizando `order()` o `arrange()` que vimos anteriormente. Una explicación detallada sobre datos relacionales, llaves y los procedimientos que veremos a continuación se encuentran en el [capítulo 13 de **"R for Data Science"**.](https://r4ds.had.co.nz/relational-data.html)
+
+Antes de abordar los distintos tipos de unión, carguemos en nuestro espacio de trabajo el libro de Excel `ejemplojoin.xlsx` utilizando la librería **`rio`** instalada de forma previa con el siguiente código. Exploremos la estructura del archivo y creemos los objetos `nombres` y `compras`. 
+
+```{r eval=FALSE}
+install.packages("rio")
+library("rio")
+ejemplojoin <- rio::import_list("ejemplojoin.xlsx", setclass = "tbl")
+
+# Crear los objetos "nombres" y "compras"
+```
+
+### 3.3.1 Unión interna (_"inner join"_ o _"natural join"_)
+
+Equivale a una intersección en términos de teoría de conjuntos. Si tenemos dos tablas `x` y `y`, la unión interna nos regresará los renglones de `x` que tengan correspondencias en `y` y todas las columnas de ambas tablas. 
+Eso significa que el resultado serán todos los renglones de la tabla 1 (que llamaremos "x") que tengan correspondencias en la tabla además de todas las columnas de ambas tablas. Si existen múltiples matches entre `x` y `y` se regresan todas las combinaciones. 
+
+Supongamos que nuestra tabla secundaria es `compras` y la de referencia es `nombres`. Si usamos **`merge()`** de `baseR`, sólo es necesario indicar el nombre de las tablas así como la variable llave. Por su parte, `dplyr` tiene la función específica **`inner_join()`**: 
+
+```{r eval=FALSE, include=FALSE}
+ij_merge <- merge(compras, nombres, by="id")
+ij_dplyr <- inner_join(compras, nombres, by="id")
+```
+
+Ambas tablas tendrán 24 renglones correspondientes a las 3 compras de cada uno de los ocho id comunes entre `nombres` y `compras`. Como se aprecia, las tablas resultantes tienen una columna adicional. En general, el número de variables en las nuevas tablas será el número de variables en `x` más el número de variables en `y` menos uno, que corresponde a la llave.
+
+### 3.3.2 Unión desde la izquierda (_"left join"_)
+
+Regresa todos los renglones en `x`. Si existen renglones en `x` que no tengan match en `y` se mostrarán valores omitidos (`NA`). Si existen múltiples matches entre `x` y `y`, se muestran todas las combinaciones. Con **`merge()`** agregamos el argumento `all.x=TRUE` mientras que con `dplyr` empleamos la función **`left_join()`**.
+
+```{r eval=FALSE}
+lj_merge <- merge(compras, nombres, by="id", all.x=TRUE)
+lj_dplyr <- left_join(compras, nombres, by="id")
+```
+La tabla resultante tiene 45 renglones. Existen 8 id comunes entre las tablas y cada uno tiene tres compras. Por su parte, 7 id que realizaron tres compras no tienen un nombre asignado en  `nombres`.
+
+### 3.3.3 Unión desde la derecha (_"right join"_)
+
+Regresa todos los renglones de `y`. Si los renglones en `y` no tienen match con los de `x`, se mostrarán valores omitidos. Asimismo, si existen múltiples matches entre `x` y `, se guardarán en la nueva tabla. Con **`merge()`** agregamos el argumento `all.y=TRUE` mientras que con `dplyr` empleamos la función **`right_join()`**.
+
+```{r eval=FALSE}
+rj_merge <- merge(compras, nombres, by="id", all.y=TRUE)
+rj_dplyr <- right_join(compras, nombres, by="id")
+```
+La tabla resultante tiene 31 renglones. La tabla `nombres` tiene ocho coincidencias respecto a `compras` y cada coincidencia tiene a su vez tres registros. Por su parte, existen siete id en `nombres` que no tienen matches en `compras` por lo que sólo se muestra un renglón por registro. 
+
+### 3.3.4 Unión completa (_"full join"_)
+
+Como su nombre lo indica, regresa todos los renglones de `x` y `y`, con valores omitidos para los casos de no coincidencia. Con **`merge()`** agregamos el argumento `all=TRUE` mientras que con `dplyr` empleamos la función **`full_join()`**.
+
+```{r eval=FALSE}
+fj_merge <- merge(compras, nombres, by="id", all=TRUE)
+fj_dplyr <- full_join(compras, nombres, by="id")
+```
+
+La tabla resultante tiene 52 renglones:
+* 24 corresponden a ocho coincidencias `id` entre `nombres` y `compras` con tres compras cada uno. 
+* 21 corresponden a siete `id` en `compras` con tres registros cada uno que no tienen match en `nombres`
+* 7 son registros individuales en `nombres` que no tienen coincidencias en `compras`.
+
+### 3.3.5 Precauciones y notas adicionales sobre uniones
+
+En ocasiones, las llaves no tienen el mismo nombre aunque podemos reconocerlas en el contexto de nuestro  análisis de datos. Cuando eso ocurre, tenemos dos alternativas: modificar los nombres en nuestras tablas para homogeneizar las llaves o utilizar opciones adicionales en nuestras funciones. 
+
+Con **`merge()`**, utilizamos `by.x=` y `by.y=` para referirnos respectivamente a las variables llave en `x` y `y`:
+
+```{r eval=FALSE}
+merge(x, y, by.x= "id_x", by.y= "id_y")
+```
+
+Con la familia de funciones de `dplyr` empleamos el esquema `by = c("a" = "b")`, que equivale a indicar que las columnas a matchear son `"a"` en `x` y `b` en `y`. Si nuestras llaves fueran por ejemplo, `ID` en `x` y `id_` en `y`, llamamos a la función de la siguiente forma:
+
+```{r eval=FALSE}
+inner_join(x, y, by=c("ID"="id_"))
+```
+
+Debemos tomar en cuenta que el tipo de unión que usemos estará determinada por nuestros objetivos de análisis y por la estructura de nuestros datos. Por tanto, el paso clave es identificar con claridad nuestras tablas primarias y secundarias. Esto se logra normalmente revisando con detenimiento los documentos metodológicos y los metadatos asociados a nuestra información. 
+
+## 4. Ejercicio
+
+1. Descargar los microdatos 2018 para "Defunciones registradas (mortalidad general)" del sitio del  [INEGI](https://www.inegi.org.mx/programas/mortalidad/default.html#Microdatos) utilizando la función **`download.file()`**
+
+2. Descomprimir el archivo con **`unzip()`** y  verificar su estructura con **`View()`**. ¿Cuál es el archivo que contiene la documentación de la base de datos? ¿Cuáles son las bases de datos que contienen las defunciones generales y la lista de claves sobre los tipos de defunción?
+
+3. Cargar las bases de datos de defunciones y de listas de claves utilizando el siguiente código sustituyendo `BASE_DE_DATOS` por el nombre y la extensión apropiadas. `defun` es el nombre de nuestra tabla secundaria y `cat` el de la primaria.  
+
+```{r eval=FALSE}
+library(foreign)
+
+defun <- as_tibble(read.dbf("BASE_DE_DATOS", as.is=TRUE))
+cat <- as_tibble(read.dbf("BASE_DE_DATOS", as.is=TRUE))
+```
+ 
+4. Homogeneizar a minúsculas los nombres de las variables en cada tabla
+
+5. Identificar en `cat` la variable llave que nos permitirá agregar a `defun` una columna que describa individualmente cada tipo de fallecimiento. Cambiar en `defun` el nombre de la llave por el que aparece en `cat`.
+
+6. Crear en `defun` la variable `id_prog` con la función `row_number()`.
+
+7. Ejecutar la unión apropiada utilizando **`merge()`** o la función específica de la familia **`join()`** y ordenar de acuerdo con `id_prog` y seleccionar, en el siguiente orden: `id_prog`, la variable llave y `descrip`. Asignar el nombre `def_cat` a la tabla resultante. 
+
+8. Verificar que la llave esté asociada correctamente a una descripción de fallecimiento. Utilizar `View()`.
+
+```{r eval=FALSE, echo=FALSE}
+# Descargamos el archivo zip de defunciones generales 2018
+mort <- download.file("https://www.inegi.org.mx/contenidos/programas/mortalidad/microdatos/defunciones/2018/defunciones_base_datos_2018_dbf.zip",
+	"mort") 
+# Descomprimimos el archivo con unzip()
+mort_zip <- unzip("mort")
+# ¿Cuál es la estructura de nuestro archivo descomprimido?
+View(mort_zip)
+# Revisar el pdf "Descripcion BD_Defunciones 2018"
+
+# Utilizaremos DEFUN18.dbf y CATMINDE.dbf
+# El primero contiene la base de datos y el segundo el catálogo de causas de muerte
+
+library(foreign)
+
+defun <- as_tibble(read.dbf("DEFUN18.dbf", as.is=TRUE))
+cat <- as_tibble(read.dbf("CATMINDE.dbf", as.is=TRUE))
+
+# Nombres en minúsculas para manipulación más rápida
+colnames(defun) <- tolower(colnames(defun))
+colnames(cat) <- tolower(colnames(cat))
+
+# Para tener una columna en común para merge
+defun <- rename(defun, cve=causa_def)%>%
+	mutate(id_prog=row_number())
+
+# Usamos all.x=TRUE para conservar todos nuestros renglones de defun
+# De esa forma forzamos el match de "cve" en cat con "cve" en defun
+def_cat <- merge(defun, cat, by="cve",all.x=TRUE)%>%
+	arrange(id_prog)%>%
+	select(id_prog, cve,presunto,descrip)
+
+View(def_cat)
+
+```
