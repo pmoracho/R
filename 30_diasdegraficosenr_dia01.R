@@ -15,8 +15,10 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   theme_elegante_std <- function(base_family) {}
 }
 
-covid.data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM",
-                       stringsAsFactors = FALSE)
+# Para descarga de los datos actualizados
+# covid.data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
+# saveRDS(covid.data, './data/covid.mundial.Rda')
+covid.data <- readRDS('./data/covid.mundial.Rda')
 
 last_date <- max(as.Date(covid.data$dateRep,"%d/%m/%Y"))
 covid.data %>% 
