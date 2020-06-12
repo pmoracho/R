@@ -15,9 +15,14 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   theme_elegante_std <- function(base_family) {}
 }
 
-delitos <- read.csv("http://cdn.buenosaires.gob.ar/datosabiertos/datasets/mapa-del-delito/delitos_2019.csv", 
-                    na.strings = "", fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
-comunas <- st_read('https://bitsandbricks.github.io/data/CABA_comunas.geojson')
+# delitos <- read.csv("http://cdn.buenosaires.gob.ar/datosabiertos/datasets/mapa-del-delito/delitos_2019.csv", 
+#                     na.strings = "", fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
+# comunas <- st_read('https://bitsandbricks.github.io/data/CABA_comunas.geojson')
+# saveRDS(delitos, "./data/delitos.caba.Rda")
+# saveRDS(comunas, "./data/comunas.caba.Rda")
+
+delitos <- readRDS("./data/delitos.caba.Rda")
+comunas <- readRDS("./data/comunas.caba.Rda")
 
 delitos %>% 
   na.exclude() %>% 

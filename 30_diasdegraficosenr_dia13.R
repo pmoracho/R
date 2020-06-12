@@ -19,8 +19,11 @@ if ("ggelegant" %in% rownames(installed.packages())) {
 
 presidencias <- data.frame(fecha = as.Date(c('2019-12-10', '2015-12-10')), presidencia=c('Alberto Fernández', 'Mauricio Macri'))
 
-dolar <- read.csv("https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&limit=5000&format=csv", na.strings = "", fileEncoding = "UTF-8-BOM",
-                       stringsAsFactors = FALSE)
+# dolar <- read.csv("https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&limit=5000&format=csv", na.strings = "", fileEncoding = "UTF-8-BOM",
+#                        stringsAsFactors = FALSE)
+# saveRDS(dolar, './data/dolar.Rda')
+dolar = readRDS('./data/dolar.Rda')
+
 dolar$indice_tiempo = as.Date(dolar$indice_tiempo, format = "%Y-%m-%d")
 dolar %>% 
   ggplot(mapping = aes(x=indice_tiempo, y=tipo_cambio_bna_vendedor)) + 
