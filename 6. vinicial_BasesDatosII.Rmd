@@ -16,15 +16,20 @@ header-includes:
 - \postauthor{\end{flushleft}}
 - \predate{\begin{flushleft}\large}
 - \postdate{\end{flushleft}}
+
+    
 fontsize: 12pt
 urlcolor: blue
 linestretch: 1.15
+markdown_extensions:
+    - admonition
 ---
 \hyphenpenalty=10000
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 
 ## Presentación
 
@@ -86,6 +91,30 @@ vuelos$retraso_cut <- with(flights, cut(dep_delay,
 identical(vuelos$retraso_baser, vuelos$retraso_cut)
 
 ```
+
+***
+**(1) NOTA de PM**
+
+Esto `breaks= c(-43,-1,15, 1301)` tiene un problema, que lo podemos apreciar con este ejemplo
+
+```{r}
+cut(c(-43, -1, 0, 13, 15, 18),  
+    breaks= c(-43,-1,15, 1301), 
+    labels= c("Antes de tiempo", "A tiempo", "Retrasado"))
+```
+
+Si bien, el rango mínimo es -43, el `break` no es inclusivo, debiéramos indicar en todo caso `-44` pero mucho mejor, es definir los extremos de esta forma:
+
+```{r}
+cut(c(-43, -1, 0, 13, 15, 18),  
+    breaks= c(-Inf,-1,15, Inf), 
+    labels= c("Antes de tiempo", "A tiempo", "Retrasado"))
+```
+
+Usando `Inf` y `-Inf` terminamos de cubrir todo el espectro de los números naturales en este caso, pero funciona con los reales también. Definir los cortes de esta forma es "a prueba de balas", cualquier nuevo valor más allá de los extremos estaría contemplado. El usar números concretos para los extremos, puede tener utilidad, cuando solo nos interesa ciertos rangos y lo que salen de ellos, directamente no los queremos contemplar y los dejamos como `NA`.
+
+***
+
 La instrucción puede leerse de la siguiente forma: Para los vuelos con retraso de -43 hasta -1 minutos, crear la categoría "Antes de tiempo"; para aquellos con retraso de 0 a 15 minutos, la categoría "A tiempo" y para aquellos de 16 hasta 1,301 minutos, la categoría "Retrasado".
 
 Podrá notarse el uso del operador **`$`** que como recordaremos del módulo II, nos permite el acceso a elementos por nombre. **Eso significa que al realizar una asignación bajo la estructura `bd$nueva_variable <- operacion` lo que hacemos es generar un nuevo nombre en nuestra base de datos.**
@@ -122,9 +151,33 @@ meses <- c("Ene","Feb","Mar","Abr","May","Jun", "Jul", "Ago",
 	"Sep", "Oct","Nov","Dic")
 ```
 El segundo es llamar a la función **`factor`** y usar el argumento **`labels`** para que las etiquetas de nuestros niveles sean las correspondientes a las de nuestro vector **"meses"**. Incluímos `ordered=TRUE` para garantizar que las categorías queden ordenadas de menor a mayor (de enero a diciembre)
+
 ```{r eval=FALSE}
 vuelos$mes <- factor(vuelos$month, labels=meses, ordered=TRUE)
 ```
+
+***
+**(2) NOTA de PM**
+
+Esto `factor(vuelos$month, labels=meses, ordered=TRUE)` tiene un potencial y yo diría bastante habitual problema, veamos este caso:
+
+```{r echo=TRUE, message=TRUE, warning=TRUE, error=TRUE}
+meses <- c("Ene","Feb","Mar","Abr","May","Jun", "Jul", "Ago", 
+	"Sep", "Oct","Nov","Dic")
+factor(c(1,2,12), labels=meses, ordered=TRUE)
+```
+Si en nuestra variable, no tenemos todos los valores esperados, no podremos convertirla a factor. En el ejemplo solo tenemos 3 de los posibles 12 meses. Para solucionar esto, es mucho mejor ser más explícitos:
+
+```{r}
+meses <- c("Ene","Feb","Mar","Abr","May","Jun", "Jul", "Ago", 
+	"Sep", "Oct","Nov","Dic")
+factor(c(1,2,12), levels=1:12, labels=meses, ordered=TRUE)
+```
+
+Con `levels` definimos los valores esperados en nuestra variable, no importará si no existen, el `factor` guardará ese lugar
+
+***
+
 Una forma sencilla de verificar que el procedimiento fue correcto es generar una tabla con **"month"** y **"mes"** de forma tal que sólo aparezcan valores en la diagonal principal (es decir, en las intersecciones entre el mes como numérico y el mes como factor con etiqueta):
 ```{r eval=FALSE}
 with(vuelos, table(month,mes))
@@ -137,12 +190,38 @@ En algunas bases de datos podemos hallar codificaciones como 1 para "Mujer" y 2 
 ```{r eval=FALSE}
 ifelse(prueba/condicion,"valor_si_verdadero","valor_si_falso")
 ```
+
+***
+**(3) NOTA de PM**
+
+Me parece importante señalar que, lo que las funciones `ifelse()` o `if_else()` esperan como entrada, más que una prueba o condición, es un valor "lógico", eventualmente producto de una prueba/condición. Es muy sutil, pero, ¿por qué te lo comento? Por que sabiendo esto, podemos entender que la prueba/condición podría darse en una instancia anterior, muchas veces, por claridad en el código, generamos las pruebas lógicas en un vector o columna para luego sí usarlas en un `ifelse()` en particular. Es decir es igual de válido hacer `ifelse(sexo=='Mujer',,)` como `ifelse(es_mujer,,)`
+
+***
+
 El siguiente es un ejemplo rápido del uso de la función. La instrucción que se da a **R** es: Si el valor de **"sexo"** es igual a 1, crea la etiqueta "Mujer"; en otro caso, crea la etiqueta "Hombre". "Anidamos" **`ifelse()`** con la función **`factor()`** para generar un factor y no una cadena de caracteres:
+
 ```{r}
 set.seed(12345)
 df <- data.frame(sexo=sample(c(1,2),15,replace=TRUE))
 df$hm <- factor(ifelse(df$sexo==1,"Mujer","Hombre")); df
 ```
+
+***
+**(4) NOTA de PM**
+
+Entiendo el ejemplo que quieres dar, pero, cuando se trata de pasar a un factor una columna numérica, puedes hacerlos directo sin pasar por el `ifelse()`
+
+```{r}
+set.seed(12345)
+df <- data.frame(sexo=sample(c(1,2),15,replace=TRUE))
+df$hm <- factor(df$sexo, labels = c("Mujer","Hombre")); df
+```
+
+Simplemente hay que dar en orden las etiquetas que quieres para cada valor.
+
+***
+
+
 
 **`ifelse()`** y **`dplyr::if_else()`** nos permiten generar diversos tipos de combinaciones. Veamos algunos ejemplos:
 
@@ -206,6 +285,31 @@ niveles_educ <- dplyr::mutate(niveles_educ,
       
       niveles%in%c("Maestría", "Doctorado") ~ "Posgrado"))
 ```
+
+***
+**(5) NOTA de PM**
+
+Esto es una nota de estilo, puedes obviarla. En mi caso el código anterior lo escribiría así
+
+```{r eval=FALSE}
+niveles_educ %>% 
+  mutate(grupo_tidy = case_when( 
+      niveles%in%c("Preescolar", "Primaria", "Secundaria",
+        "Secundaria técnica") ~ "Básica",
+      niveles%in%c("Bachillerato general", 
+        "Bachillerato técnico") ~ "Media superior",
+      niveles%in%c("Pedagógica", "Profesional", 
+	      "Técnico Superior Universitario") ~ "Superior",
+      niveles%in%c("Maestría", "Doctorado") ~ "Posgrado")
+    ) -> niveles_educ_new
+```
+
+* Primero el `data.frame`
+* luego el verbo (sin el namespace `dplyr::`) en algunos caso cuando hay conflicto con otro paquete si lo uso obviamente
+* finalmente la asignación a derecha -> con un nuevo nombre de objeto. Prefiero que cada lote de comandos `tidy` generen un nuevo objeto, por que muchas veces tengo que volver a atrás y me resulta útil seguir conservando los datos originales del lote, para volver a correr el lote de comandos.
+
+***
+
 Como se aprecia, **`case_when`** hace uso del operador de fórmulas al que nos referimos en el módulo II y tiene una sencilla estructura:
 
 ```{r eval=FALSE}
@@ -236,6 +340,7 @@ niveles_educ <- dplyr::mutate(niveles_educ,
 # ¿Tenemos el mismo resultado?
 identical(niveles_educ$grupo_tidy, niveles_educ$grupo_tidy_dos)
 ```
+
 
 El procedimiento de modificación de valores que vimos en el segundo módulo nos permitía cambiar subconjuntos de datos de una forma como la siguiente:
 
@@ -275,6 +380,47 @@ View(niveles_educ[,c(1,4)])
 
 identical(niveles_educ$grupo_tidy, niveles_educ$grupo_baser)
 ```
+
+***
+**(6) NOTA de PM**
+
+Ya que se trata de un curso de datos, te sugiero una forma de resolver este problema, que en algunos casos es mucho más clara. Se trata de usar una tabla de equivalencias, dónde cada `nivel` lo asociamos a un `grupo_baser`. algo como esto:
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+set.seed(9876)
+niveles <- c("Preescolar", "Primaria", "Secundaria", "Secundaria técnica", 
+             "Bachillerato general", "Bachillerato técnico", "Pedagógica",
+             "Profesional", "Técnico Superior Universitario", "Maestría", "Doctorado")
+
+niveles_educ <- data.frame(niveles=c(sample(niveles, 50, replace=TRUE)), stringsAsFactors = FALSE)
+
+# 
+# Ahora definimos nuestras equivalencias, da nivel mapea un grupo_baser
+# 
+tribble(
+  ~niveles,                         ~grupo_baser,
+  "Preescolar",                     "Básica",
+  "Primaria",                       "Básica",
+  "Secundaria",                     "Básica",
+  "Secundaria técnica",             "Básica",
+  "Bachillerato general",           "Media superior",
+  "Bachillerato técnico",           "Media superior",
+  "Pedagógica",                     "Superior",
+  "Profesional",                    "Superior",
+  "Técnico Superior Universitario", "Superior",
+  "Maestría",                       "Posgrado",
+  "Doctorado",                      "Posgrado"
+) -> equivalencias
+
+niveles_educ %>% 
+  left_join(equivalencias)
+```
+
+la relación finalmente la resolvemos con un `left_join` aunque bien podría hacerse mediante un `match()` de R base. Cuando las transformaciones son muchas, este mecanismo es más cómodo y organizado.
+
+****
+
     
 ### 1.4 Trabajando con variables numéricas continuas
 
@@ -333,6 +479,16 @@ El resultado debe ser el siguiente:
 # ... with 336,766 more rows
 ```
 
+***
+**(7) NOTA de PM**
+
+Una forma más simple, que te evita el `ifelse()` y el `paste0()` es formatear la cadena mediante `sprintf()`, habría que dar una introducción a los patrones de formateo de esta función, al menos los más simples. Te permitiría resolver todo así:
+
+```{r eval=FALSE}
+horas_min = sprintf("%02d:%02d", horas, min)
+```
+***
+
 En general, podemos crear nuevas variables aplicando los diferentes operadores aritméticos que vimos en el segundo módulo de acuerdo con nuestras propias necesidades. En este ejemplo, además de obtener dos variables numéricas, generamos una más de tipo **`character`** partiendo de una misma variable. 
 
 Otro tipo de transformación útil con variables numéricas continuas es la "normalización" que básicamente consiste en cambiar las escalas de las variables dependiendo de su dispersión y concentración (valores mínimos y máximos así como la distribución de los datos). Algunas de las más comunes son:
@@ -385,6 +541,22 @@ within(test, {
 	            }) -> test
 ```
 
+***
+
+**(8) NOTA de PM**
+
+La sintaxis `ecdf(resultado)(resultado)` podría llamar la atención de alguno. Se explica si menciones que `ecd()` en vez de retornar un dato, retorna una función:
+
+```{r eval}
+class(ecdf(test$resultado))
+```
+
+Por lo que finalmente `ecdf(resultado)(resultado)` terminará siendo algo asi:
+`funcion_retornada_por_ecdf(resultado)` 
+
+***
+
+
 Sin entrar en detalles técnicos, podemos decir básicamente que `ecdf(resultado)(resultado)` es una instrucción que nos regresa la probabilidad asociada a cada observación de la variable `test$resultado` de tener un valor menor o igual a ella misma. Expliquemos con mayor detalle accediendo a las primeras cinco observaciones: 
 ```{r}
 head(test,5)
@@ -422,15 +594,36 @@ select(vuelos, c(carrier, distance,vel_kmh)) %>%
 	mutate_at(c("distance", "vel_kmh"), log) -> vuelos_log_name
 ```
 
+**(9) NOTA de PM**
+
+Es útil mencionar, en el caso de `mutate_at()` y de otros verbos de `dplyr` el uso `vars()` así:
+
+```{r eval=FALSE}
+select(vuelos, c(carrier, distance,vel_kmh)) %>%
+  mutate_at(vars(distance, vel_kmh), log)
+```
+
+Usando `vars()` escribes las variables de la forma habitual en `dplyr`, sin comillas, pero aparte te permite usar los "helpers" de selección `?select_helpers` 
+
+***
+
 Supongamos ahora que queremos coercionar a factor (usando **`as.factor()`**) todas nuevas variables de tipo `character`. Una alternativa es ubicar todas las variables con esa característica e indicar sus posiciones en **`mutate_at()`**. Sin embargo, **`mutate_if()`** hace esa tarea por nosotros al aplicar una transformación a variables de un mismo tipo:
 
 ```{r eval=FALSE}
 mutate_if(vuelos, is.character, as.factor) -> vuelos_fac
 str(vuelos_fac)
 ```
+
 ## 2. "Remodelando" bases de datos
 
 En ocasiones, la información contenida en bases de datos se presenta en formato "ancho" por lo que el número de columnas tiende a ser muy grande. Es el caso típico cuando trabajamos con datos que se registran a lo largo del tiempo (longitudinales) donde cada año representa una variable (columna). Cuando esto ocurre, la generación de gráficas tiende a ser complicada por lo que es necesario "colapsar" el número de columnas y reducirlo de forma tal que los años se agrupen en una sola variable. A esto se le denomina "remodelar" de un formato "ancho" a uno "largo" (reducir el número de columnas y ampliar el número de renglones). Dependiendo de nuestras necesidades, también podemos pasar de "largo" a "ancho".
+
+***
+**(10) NOTA de PM**
+
+`tidyverse` y `ggplot` explotan mucho el concepto del `tidy data`, la idea: _"Cada fila es una observación, cada variable  es una columna"_, si se va a trabajar con estos paquetes va a ser necesario remodelar los datos a un formato `tidy`. No se si lo has visto, pero es muy interesante la lectura del capitulo de ["Datos ordenados"](https://es.r4ds.hadley.nz/datos-ordenados.html) del libro de .
+
+***
     
 Las librerías **`reshape2`** y **`tidyr`** nos permiten realizar estas tareas a través de las funciones **`melt()`** y **`dcast()`** (en **`reshape2`**) y **`pivot_longer()`** y **`pivot_wider()`** en **`tidyr`**. Veremos cómo usar la primera función de cada librería con la base de datos `genderdata.csv` que fue proprocionada. La base no está pre-procesada, así que realizaremos primero las siguientes tareas:
     
@@ -444,7 +637,33 @@ library(tidyverse)
 gd <- read.csv("genderdata.csv", header=TRUE, stringsAsFactors=FALSE)
 gd <- gd[,-c(1,2,4,64)] 
 ```
+
 Generemos una vista rápida con `View(gd)`. Como se podrá apreciar, la primera columna contiene los nombres de los países y el resto corresponden a años de 1960 a 2018. Dado que estos nombres no resultan fáciles de leer, los cambiaremos. La primera columna se modificará a **"pais"** (sin acento) y para el resto crearemos una secuencia desde 1960 a 2018 utilizando pasos de 1. Para ello, recurriremos a las funciones **`paste0()`** y **`seq()`** que hemos visto anteriormente. 
+
+***
+**(11) NOTA de PM**
+
+Bien tu comentario acerca de la normalización de los nombres de variables. Me detendría un poco más explicando que es un nombre de variable adecuado y cual no y por qué. Por ejemplo, la molestia que significa trabajar con nombres con espacio o caracteres especiales, o nombres demasiado largos. 
+
+¿Cómo es un nombre sintácticamente correcto en R?
+
+* Combinan letras, dígitos, punto (.) y guión bajo (_).
+* Comienzan con una letra o un punto, si comienzan con un punto, no puede continuar por un dígito.
+* Las palabras reservadas en R no pueden utilizarse.
+
+Acerca del uso del `.` hay opiniones que sugieren no usarlo ya que es una notación muy usada en las funciones genéricas de OOP.
+
+Es útil usar `make.names()` para hacer válido algo que no lo es:
+
+```{r}
+make.names("Este es un nombre invalido")
+```
+
+Aparte de `View()` te recomiendo `dplyr::glimpse()`  que es una especie de `str()` mejorado.
+
+Por otro lado, no tengo nada para comentarte acerca de las funciones `melt()` o `dcast()`, ya que he preferido siempre ir por el lado `tidyverse`, lo único que podría decirte, pero es una cuestión de criterio totalmente opinable, es si vale la pena abrir el juego a dos herramientas en un curso introductorio, ¿sirve? ¿confunde? es una pregunta no una aseveración. 
+
+***
 
 Ahora analicemos la estructura con `str(gd)`. Se verá que todas las columnas son de tipo `character`.Por ello, coercionaremos a numérico los valores de las columnas 2 a 60 con **`mutate_at()`**. Seleccionemos también tres países para nuestro ejemplo: **"Mexico", "Canada", "United States"**.Verifiquemos nuevamente con `str(gd)` que nuestros cambios hayan sido realizados.
       
@@ -515,7 +734,7 @@ View(gd_pivot_longer)
 ```
 La diferencia entre **`melt()`** y **`pivot_longer()`** está en el resultado en consola pues la primera alterna los nombres de los países mientras que la segunda genera bloques para cada país. 
 
-**`dcast()`** y **`pivot_wider()`** incrementan el número de columnas y disminuyen el de renglones. Esto es útil si requerimos presentar información 000on un índice consecutivo (variable **X**). Supongamos que queremos saber cuál es el promedio que otorgan hombres y mujeres según su ocupación para la variable **rank**. Con **`dcast()`** podemos lograr esto de forma muy sencilla:
+**`dcast()`** y **`pivot_wider()`** incrementan el número de columnas y disminuyen el de renglones. Esto es útil si requerimos presentar información o un índice consecutivo (variable **X**). Supongamos que queremos saber cuál es el promedio que otorgan hombres y mujeres según su ocupación para la variable **rank**. Con **`dcast()`** podemos lograr esto de forma muy sencilla:
 
 ``` {r eval=FALSE}
 dcast_rank <- dcast(enc, ocupacion~genero, value.var="rank", 
@@ -579,6 +798,13 @@ Existen tres formas principales de unir bases de datos. La primera es adicionand
 
 El principio básico para unir bases de datos empleando columnas es que todas tengan el mismo número de renglones que la `data.frame` original. En **`baseR`**, la función que nos permite realizar esta operación es `cbind()` mientras que con **`dplyr`** usamos `bind_cols`. Estas funciones son útiles cuando tenemos elementos de una misma base de datos distribuidos en otras bases y queremos manipular variables para después reunir todo en una sola `data.frame`. A continuación, un ejemplo con `vuelos`.
 
+***
+**(12) NOTA de PM**
+
+Si bien, es correcto que el principio de combinación mediante `cbind` o `bind_cols` sea el tener la misma cantidad de filas, realmente, el principio fundamental es que las filas de un `data.frame`, tengan una relación con el otro, que en el caso de estas funciones esta limitada técniamente a una relación 1 a 1 y a un orden en los datos que haga coincidir de manera coherente una fila cono otra. Conceptualmente, estas funciones, entran igual dentro de los principios de bases de datos relacionales, solo que la clave relacional, en este caso, es el número de fila. 
+
+***
+
 ```{r eval=FALSE}
 v_uno <- select(vuelos, c(year,day,month))%>%
 	mutate(month=ifelse(month<10, paste0("0",month), month),
@@ -635,6 +861,48 @@ Aunque existen distintos tipos de llaves, lO usual es referirse a las "primarias
 
 Por su parte, una llave foránea es una llave empleada para vincular dos tablas. Las llaves foráneas son un campo o campos en una tabla que se refieren a la llave primaria de otra tabla. En el lenguaje de bases de datos relacionales, se dice que la tabla que contiene la llave foránea es la "tabla secundaria" (_"child table"_) y la que contiene la llave primaria es la "principal" o "referenciada" (_"parent table"_). 
 
+***
+**(13) NOTA de PM**
+
+Alejandro, en mi opinión, yo no me metería con los conceptos de claves primarias o foráneas, son conceptos técnicos de las bases de datos, que los has planteado correctamente pero no son conceptos útiles para el trabajo con los datos en R, trataré de explicarte:
+
+* En BR (Bases relacionales) hay tres aspectos bien separados
+  * Diseño
+  * Administración
+  * Consulta
+  
+* Un usuario típico de R solo alcanza a ver el último punto. Si bien es cierto que entender algo del diseño de BR es útil, siempre va a ser a un nivel más macro.
+* Los conceptos de claves primarias y/o foráneas, son conceptos que se ven en diseño y administración, pero es algo invisible en las consultas
+
+**¿Por que los conceptos de PK o FK no aportarían nada?**
+
+* Una tabla puede no tener PK (algunos motores lo permiten, otros no)
+* Una tabla puede tener PK y aún así nunca usarse para hacer una relación 
+* Las FK son para mantener la integridad referencial: no eliminar una fila si tiene una referencia en otra tabla. Un usuario de R a menos que tenga que diseñar una base de datos nunca va a necesitar entender esto y aún así la integridad referencial se puede manejar por afuera de la BD.
+* Ambos conceptos dependen del concepto de índices, básicamente, estructuras externas a la tabla que permiten eventualmente mejorar la performance en múltiples consultas, pero son totalmente invisibles al usuario.
+
+**¿Y que mencionar de BR a un futuro usuario de R?** Yo diría los conceptos básicos que le servirán para entender las relaciones y hacer luego las consultas. Algunas ideas o conceptos que podrías usar:
+
+* El concepto fundamental que guía a las BR es la no repetición de los datos (es una super simplificación, por que hay otros conceptos importantísimos, pero no quiero entrar en la teoría)
+
+* Las BR son Bases de datos que particionan la información en múltiples tablas, y permiten "relacionar" distintas tablas por medio de una o más columna de las mismas. 
+
+* Un ejemplo simple, si tengo una base de datos de presupuestos que le he hecho a los clientes ¿Es necesario que cada uno de los presupuestos tenga todos los datos del cliente (nombre, dirección, tel y un largo etc)? ¿Qué pasa cuando un cliente cambia su nombre, teléfono, etc? ¿Hay que trasladar este cambio a todos los presupuestos? Aquí entra el concepto de bases relacionales, cada presupuesto, no tiene los datos del cliente, solo tiene uno, el código, número o id de cliente (como lo quieras llamar, por convención le decimos ID) este dato/columna/variable, nos dice cual es el cliente del presupuesto y nos da la relación directa 1 a 1 con la tabla de los Clientes (1 presupuesto 1 cliente), que por supuesto también tiene su ID de cliente, junto con todos los datos propios del mismo.
+
+* Este es un concepto distinto a como se suelen manejar los datos en estadísticas, dónde se suele trabajar con una única tabla (que llaman base de datos) con todos los datos. Este enfoque seguramente no cambie, aún partiendo de una BR, seguramente necesitemos llegar a una estructura mas plana para realizar un análisis estadístico clásico, por eso es importante saber hacer las "consultas" que nos permitan hacernos de todo los datos que necesitemos.
+
+* Las bases relacionales trabajan con datos "vivos" que cambian todo el tiempo, se agregan, se quitan, cambian, en estadísticas trabajamos con "fotos" de los datos, una instantánea en un determinado momento, pero aún así, para hacer esa foto, necesitaremos entender como funcionan las Bases relacionales.
+
+* Las relaciones entre tablas, pueden ser 1 a 1 como ya dijimos en el caso de 1 presupuesto tiene 1 cliente, o bien pueden ser 1 a n, por ejemplo si viéramos la relación en sentido inverso 1 cliente pude tener muchos presupuestos.
+
+* La relación entre tablas puede darse de forma natural y coherente: presupuestos.id_cliente = clientes.id_cliente, sin embargo, el concepto relacional es agnóstico de los datos. Las relaciones entre los datos, es lo que tu digas que son, en el momento en que haces una consulta, incluso no necesariamente tengan que ser relaciones coherentes, mientras los tipos de datos que uses para relacionar sean los mismos, ningún motor de BD te va a decir nada, el resultado serán datos más o menos coherentes. 
+
+* La idea por supuesto no es hacer relaciones incoherentes, el punto anterior es para remarcar la idea que las relaciones no son algo rígido, sino algo dinámico y existen más allá de la implementación técnica (que podrían ser los conceptos de PK o FK)
+
+* En bases de datos, la referencia obligada es el SQL (structured query language). Te recomiendo ver alguna referencia mínima, `dplyr` esta fuertemente influenciado por este lenguaje. Todo lo que un usuario de R puede necesitar saber en cuanto a las Bases relacionales se pueden resolver leyendo este estándar o mucho mejor alguna introducción o tutorial. 
+ 
+***
+
 Si accedemos nuevamente a la metadata de `flights` encontraremos que en el caso de `carrier` se nos sugiere consultar `airlines`. Si ejecutamos ese código en consola obtendremos lo siguiente:
 
 ```{r eval=FALSE}
@@ -662,6 +930,13 @@ airlines
 
 `airlines` es una tabla de 16 renglones y dos columnas: **"carrier"** y **"name"**. Dado que se trata de valores únicos, podemos decir que en la tabla `airlines`, **"carrier"** es una llave primaria (pues vincula de manera unívoca una abreviatura con un nombre de aerolínea) mientras que esa misma columna en `flights` es una llave secundaria. 
 
+***
+**(14) NOTA de PM**
+
+En este ejemplo yo diría algo un poco más abstracto, `airlines` es una tabla cuya columna "clave" es `carrier` y  en `flights` cada fila que representa un vuelo, por supuesto pertenece a una `airlines` y tiene a su vez, la columna `carrier` (si querés la podes llamar clave secundaria). Le decimos claves o llaves primarias a aquellas que identifican a la entidad/tabla, y secundaria, cuando están en otra tabla. No siempre las relaciones son entre primarias y secundarias, muchas veces pueden ser entre secundarias y secundarias (de la misma entidad).
+
+***
+
 Debe tomarse en cuenta que no todas las tablas tienen llaves primarias por lo que al hacer las uniones suele suceder que el orden de las observaciones se modifique. En esos casos es posible agregar una llave "sustituta" (_"surrogate key"_) utilizando `mutate()` y `row_number()` o `seq()`. De esa forma, podemos regresar a nuestra estructura original utilizando `order()` o `arrange()` que vimos anteriormente. Una explicación detallada sobre datos relacionales, llaves y los procedimientos que veremos a continuación se encuentran en el [capítulo 13 de **"R for Data Science"**.](https://r4ds.had.co.nz/relational-data.html)
 
 Antes de abordar los distintos tipos de unión, carguemos en nuestro espacio de trabajo el libro de Excel `ejemplojoin.xlsx` utilizando la librería **`rio`** instalada de forma previa con el siguiente código. Exploremos la estructura del archivo y creemos los objetos `nombres` y `compras`. 
@@ -676,12 +951,19 @@ ejemplojoin <- rio::import_list("ejemplojoin.xlsx", setclass = "tbl")
 
 ### 3.3.1 Unión interna (_"inner join"_ o _"natural join"_)
 
+***
+**(15) NOTA de PM**
+
+Me hace un poco de "ruido" que hables de unión, cuando efectivamente existe el concepto de `union` en SQL y es distinto a este, pero la traducción más natural de `join` es esa. Lo que sí, tal vez resaltaría aquí, la naturaleza "horizontal" de este tipo de unión.
+
+***
+
 Equivale a una intersección en términos de teoría de conjuntos. Si tenemos dos tablas `x` y `y`, la unión interna nos regresará los renglones de `x` que tengan correspondencias en `y` y todas las columnas de ambas tablas. 
 Eso significa que el resultado serán todos los renglones de la tabla 1 (que llamaremos "x") que tengan correspondencias en la tabla además de todas las columnas de ambas tablas. Si existen múltiples matches entre `x` y `y` se regresan todas las combinaciones. 
 
 Supongamos que nuestra tabla secundaria es `compras` y la de referencia es `nombres`. Si usamos **`merge()`** de `baseR`, sólo es necesario indicar el nombre de las tablas así como la variable llave. Por su parte, `dplyr` tiene la función específica **`inner_join()`**: 
 
-```{r eval=FALSE, include=FALSE}
+```{r eval=FALSE}
 ij_merge <- merge(compras, nombres, by="id")
 ij_dplyr <- inner_join(compras, nombres, by="id")
 ```
@@ -737,6 +1019,26 @@ Con la familia de funciones de `dplyr` empleamos el esquema `by = c("a" = "b")`,
 ```{r eval=FALSE}
 inner_join(x, y, by=c("ID"="id_"))
 ```
+
+***
+**(16) NOTA de PM**
+
+Tener en cuenta que las columnas que tienen el mismo nombre en cada tabla, pero no forman parte de la clave de relación entre ambas, se renombran automáticamente con el postfijo `.x` y `.y`, esto habría que hacerlo notar, por que es habitual que cuando ocurra esto, no encontremos las columna que teníamos antes de la relación.
+
+```{r}
+df1 <- data_frame(id=1, columna="A")
+df2 <- data_frame(id=1, columna="B")
+
+df1
+df2
+
+df1 %>% 
+  left_join(df2, by="id")
+```
+
+`tidyverse` hace un muy buen trabajo para encontrar las columnas en común entre cada tabla, pero es mejor que indiquemos explícitamente las columnas claves con el `by`.
+
+***
 
 Debemos tomar en cuenta que el tipo de unión que usemos estará determinada por nuestros objetivos de análisis y por la estructura de nuestros datos. Por tanto, el paso clave es identificar con claridad nuestras tablas primarias y secundarias. Esto se logra normalmente revisando con detenimiento los documentos metodológicos y los metadatos asociados a nuestra información. 
 
