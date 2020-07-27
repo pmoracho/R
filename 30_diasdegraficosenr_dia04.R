@@ -17,7 +17,7 @@ if ("ggelegant" %in% rownames(installed.packages())) {
 }
 
 # Para descarga de los datos actualizados
-# covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+# covid.data <- read.csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
 # saveRDS(covid.data, './data/covid.casos.arg.Rda') 
 covid.data <- readRDS('./data/covid.casos.arg.Rda')
 
@@ -25,19 +25,28 @@ last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
 
 covid.data %>% 
   mutate(fecha = as.Date(fecha, "%d/%m/%Y")) %>% 
-  select(dia=dia_inicio, distrito=osm_admin_level_4, cantidad=nue_casosconf_diff) -> data
+  select(dia=dia_inicio, distrito=osm_admin_level_4, cantidad=nue_casosconf_diff) %>% 
+  complete(distrito, dia, fill=list(cantidad=0)) %>% 
+  arrange(distrito, dia)  -> data
+
+ultimo_dia <- max(data$dia)
 
 data %>% 
-  inner_join(data %>% 
-               group_by(distrito) %>% 
-               summarize(cantidad = sum(cantidad)) %>% 
-               arrange(-cantidad) %>% 
-               top_n(9), by = c("distrito"), suffix=c("",".y")) %>% 
+  filter(dia > ultimo_dia - 50,
+         distrito != 'Indeterminado') %>% 
+  select(distrito, dia, cantidad) -> plot_data
+
+plot_data %>% 
+  inner_join(plot_data %>%
+               group_by(distrito) %>%
+               summarize(cantidad = sum(cantidad)) %>%
+               arrange(-cantidad) %>%
+               top_n(9), by = c("distrito"), suffix=c("",".y")) %>%
   ggplot(mapping=aes(x=dia, y=cantidad)) +
   geom_line(color="#67a9cf") +
   geom_point(color="#67a9cf") +
   geom_smooth(method = 'loess',
-              formula = 'y ~ x', alpha = 0.2, size = 1, span = .3, se=FALSE, color="#ef8a62") + 
+              formula = 'y ~ x', alpha = 0.2, size = 1, span = .6, se=FALSE, color="#ef8a62") + 
   labs(title = paste("COVID-19 en Argentina"), 
        subtitle = paste0("Variación de casos diarios en los distritos con más casos (al: ", last_date, ")") , 
        caption = "Fuente: https://github.com/SistemasMapache/Covid19arData", 
@@ -45,7 +54,8 @@ data %>%
        x = "Número de días desde el 1er caso"
   ) +
   facet_wrap(~distrito,scales="free") +
-  theme_elegante_std(base_family = "Ralleway") 
+  theme_elegante_std(base_family = "Assistant") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 library("geofaceteAR")
 
@@ -58,21 +68,21 @@ argentina_grid <-  data.frame(
               "Chubut", "Santa Cruz", "Tierra del Fuego"),
   stringsAsFactors = FALSE
 )
-unique(data$distrito)
-data %>% 
-  filter(distrito!='Indeterminado') %>% 
+
+plot_data %>% 
   ggplot(mapping=aes(x=dia, y=cantidad)) +
-  geom_line(color="#67a9cf") +
+  geom_line(color="#67a9cf", size=.5) +
   geom_point(color="#67a9cf") +
-  geom_smooth(method = 'loess',
+  geom_smooth(method = 'lm',
               formula = 'y ~ x', alpha = 0.2, size = 1, span = .3, se=FALSE, color="#ef8a62") + 
   labs(title = paste("COVID-19 en Argentina"), 
-       subtitle = paste0("Variación de casos diarios en los distritos con más casos (al: ", last_date, ")") , 
+       subtitle = paste0("Variación de casos diarios por distrito (al: ", last_date, ")") , 
        caption = "Fuente: https://github.com/SistemasMapache/Covid19arData", 
        y = "Número de casos", 
        x = "Número de días desde el 1er caso"
   ) +
   facet_geo(~ distrito, grid = argentina_grid, scales = "free_y") +
   # facet_wrap(~ distrito, scales = "free_y") +
-  theme_elegante_std(base_family = "Ralleway") -> p
+  theme_elegante_std(base_family = "Assistant") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) -> p
   ggsave(filename = 'argentina.png', plot = p, device = "png", width = 10, height = 18)

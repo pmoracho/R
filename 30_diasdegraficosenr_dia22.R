@@ -19,22 +19,31 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   theme_elegante_std <- function(base_family) {}
 }
 
+api.security <- readRDS("twiter.api.security.Rda")
+
 # Twitter API
 create_token(
-  app = "xx",
-  consumer_key = "xx",
-  consumer_secret = "xx",
-  access_token = "xx",
-  access_secret = "xx"
+  app = api.security$app,
+  consumer_key = api.security$consumer_key,
+  consumer_secret = api.security$consumer_secret,
+  access_token = api.security$access_token,
+  access_secret = api.security$access_secret
 )
 
+# Datos Originales
 RAE_Corpus_1000 <- read.table(file="http://corpus.rae.es/frec/1000_formas.TXT", skip=1, header=FALSE,
-                              fileEncoding = "Latin1", 
+                              fileEncoding = "Latin1",
                               col.names = c("nr", "word", "Frec.absoluta", "Frec.normalizada"),
                               stringsAsFactors = FALSE)
 
-stopwords <- read.csv("https://countwordsfree.com/stopwords/spanish/txt", 
+stopwords <- read.csv("https://countwordsfree.com/stopwords/spanish/txt",
                       col.names="word", header=FALSE, stringsAsFactors = FALSE)
+
+# Datos reproducibles
+saveRDS(RAE_Corpus_1000, "./data/rae_corpus_1000.Rda")
+saveRDS(stopwords, "./data/stopwords.Rda")
+
+
 
 twits <- get_timeline("pmoracho", n = 5000)
 twits %>%

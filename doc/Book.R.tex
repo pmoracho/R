@@ -1,3 +1,7 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Introducción a las estadísticas con R
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \documentclass[spanish]{extbook}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -17,11 +21,10 @@
 \usepackage[spanish]{babel}
 \usepackage{times}
 \usepackage{color}
-
-% for adjustwidth environment
+\usepackage[spanish]{babel}
+\geometry{marginparwidth=0.5cm,a4paper,verbose,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1cm,headheight=1cm,headsep=1cm,footskip=1cm}
 \usepackage[strict]{changepage}
 
-% for formal definitions
 \usepackage{framed}
 
 % environment derived from framed.sty: see leftbar environment definition
@@ -90,16 +93,16 @@
 %     numberfirstline = false,
 %     breaklines=true,
 %   }
- 
+
 % minimizar fragmentado de listados
 \lstnewenvironment{listing}[1][]
    {\lstset{#1}\pagebreak[0]}{\pagebreak[0]}
- 
+
 \lstdefinestyle{consola}
    {basicstyle=\scriptsize\bf\ttfamily,
     backgroundcolor=\color{gray75},
    }
- 
+
 \lstdefinestyle{R}
 {
 	language=R,
@@ -129,20 +132,27 @@
   breakatwhitespace=true,
   tabsize=4
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cuerpo principal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{Introducción a las estadísticas con R}
 \date{2018-01-20}
 \author{Peter Daalgard\\
-\small{Traducido al español por Patricio Moracho}
+    \small{Traducido al español por Patricio Moracho}
 }
 \begin{document}
+
 \maketitle
 \include{00.Prefacio}
 \cleardoublepage
 \pdfbookmark{\contentsname}{Contenido}
+
 \tableofcontents
 \include{01.Capitulo.1}
 \include{02.Capitulo.2}
 \include{03.Capitulo.3}
 \include{04.Capitulo.4}
 \include{05.Capitulo.5}
+
 \end{document}

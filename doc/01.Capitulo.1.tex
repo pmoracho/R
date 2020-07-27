@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conceptos Básicos}
 
-El propósito de este capítulo es que empiece a usar  \textbf{R}.  Asumimos que
+El propósito de este capítulo es que empiece a usar  \textbf{R}. Asumimos que
 ya tiene una instalación funcional del software y del paquete \texttt{ISwR} que
 contiene los conjuntos de datos para este libro. Las instrucciones para obtener
 e instalar el software se encuentran en el \index{Apéndice A}. Como ya
@@ -14,7 +14,7 @@ elemental para seleccionar desde menús, mover ventanas, etc. Sin embargo, hago
 excepciones cuando soy consciente de dificultades específicas con una
 plataforma o características específicas de la misma.
 
-\begin{tradnote} 
+\begin{tradnote}
 	Al momento de la traducción la versión actual de R es la
 	3.4.2, aún así, lo ejemplos y el código en general del libro son totalmente
 	consistentes con las nuevas versiones. Asimismo es importante notar que el
@@ -36,7 +36,7 @@ iniciarlo desde el menú del sistema, haciendo doble clic en un icono o
 introduciendo el comando \textquotedbl{}R\textquotedbl{} en la línea de
 comandos del sistema. Esto producirá una ventana de consola o hará que
 \textbf{R} se inicie como un programa interactivo en la ventana del terminal
-actual. 
+actual.
 
 \begin{figure}[H]
   \includegraphics[width=\linewidth]{fig-1.png}
@@ -96,7 +96,7 @@ expresión aritmética y obtener un resultado. (La segunda línea es la respuest
 de la máquina.)
 
 \begin{lstlisting}[language=R]
-> 2 + 2 
+> 2 + 2
 [1] 4
 \end{lstlisting}
 
@@ -104,7 +104,7 @@ De esta forma vemos que la máquina sabe que 2 más 2 son 4. Por supuesto,
 también sabe hacer otros cálculos estándar, como ser $e^{-2}$:
 
 \begin{lstlisting}[language=R]
-> exp(-2) 
+> exp(-2)
 [1] 0.1353353
 \end{lstlisting}
 
@@ -116,7 +116,7 @@ número de esa línea. Considere el caso de generar 15 números aleatorios
 a partir de una distribución normal:
 
 \begin{lstlisting}[language=R]
-> rnorm(15) 
+> rnorm(15)
 [1]  -0.18326112 -0.59753287 -0.67017905 0.16075723  1.28199575
 [6]   0.07976977  0.13683303  0.77155246 0.85986694 -1.01506772
 [11] -0.49448567  0.52433026  1.07732656 1.09748097 -1.09318582
@@ -137,7 +137,7 @@ ya que se trata justamente de una generación de números aleatoria.
 	ejecución de \texttt{set.seed(<número>)}, el \texttt{<número>}, no importa
 	cual, es lo que hace repetible y consistente los datos aleatorios
 
-\end{tradnote} 
+\end{tradnote}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Asignaciones}
@@ -161,7 +161,7 @@ generalmente ignorado por \textbf{R}, pero note que agregar un espacio en medio
 de un <- cambia el significado a \textquotedbl{}menos que\textquotedbl{}
 seguido por \textquotedbl{}menos\textquotedbl{} (¡a la inversa, omitir el
 espacio al comparar una variable con un número negativo tiene consecuencias
-inesperadas!). 
+inesperadas!).
 
 \begin{tradnote}
 	Es importante hacer notar, que si bien, por motivos históricos
@@ -169,16 +169,16 @@ inesperadas!).
 	de la forma habitual en otros lenguajes, mediante el operador de igualdad (\texttt{=}),
 	sin embargo en la práctica es mucho más habitual ver la asignaciones
 	escritas mediante \texttt{<-}.
-\end{tradnote} 
+\end{tradnote}
 
 No hay un resultado inmediatamente visible, pero a partir de ahora,
 \texttt{x} tiene el valor 2 y puede ser utilizado en las siguientes
 expresiones aritméticas.
 
 \begin{lstlisting}[language=R]
-> x 
-[1] 2 
-> x + x 
+> x
+[1] 2
+> x + x
 [1] 4
 \end{lstlisting}
 
@@ -211,8 +211,8 @@ objetos individuales.  Un vector de datos es simplemente un arreglo de números,
 y una variable vectorial puede ser construida así:
 
 \begin{lstlisting}[language=R]
-> weight <- c(60, 72, 57, 90, 95, 72) 
-> weight 
+> weight <- c(60, 72, 57, 90, 95, 72)
+> weight
 [1] 60 72 57 90 95 72
 \end{lstlisting}
 
@@ -231,9 +231,9 @@ kilogramos dividido por el cuadrado de la altura en metros. Esto podría
 calcularse de la siguiente manera:
 
 \begin{lstlisting}[language=R]
-> height <- c(1.75, 1.80, 1.65, 1.90, 1.74, 1.91) 
-> bmi <- weight/height^2 
-> bmi 
+> height <- c(1.75, 1.80, 1.65, 1.90, 1.74, 1.91)
+> bmi <- weight/height^2
+> bmi
 [1] 19.59184 22.22222 20.93664 24.93075 31.37799 19.73630
 \end{lstlisting}
 
@@ -263,15 +263,15 @@ de la media y la desviación estándar de la variable de peso: $\bar{x} = \sum x
 \end{lstlisting}
 
 A continuación, salvamos la media en una variable \texttt{xbar} y continuamos
-con el cálculo de la desviación estándar $SD = \sqrt{\sum (x_i -\bar{x})^2/(n)}$. 
-Hacemos esto en pasos para ver los componentes individuales. Las desviaciones 
-de la media son: 
+con el cálculo de la desviación estándar $SD = \sqrt{\sum (x_i -\bar{x})^2/(n)}$.
+Hacemos esto en pasos para ver los componentes individuales. Las desviaciones
+de la media son:
 
 \begin{lstlisting}[language=R]
 > xbar <- sum(weight)/length(weight)
 > weight - xbar
 [1] -14.333333 -2.333333 -17.333333  15.666667 20.666667
-[6] -2.333333 
+[6] -2.333333
 \end{lstlisting}
 
 Observe cómo \texttt{xbar}, que tiene una longitud de 1, es reciclada y
@@ -287,7 +287,7 @@ serán:
 Como este comando es bastante similar al anterior, es conveniente introducirlo
 editando el comando anterior. En la mayoría de los sistemas que ejecutan
 \textbf{R}, el comando anterior se puede recuperar con la tecla de flecha hacia
-arriba. 
+arriba.
 
 La suma de las desviaciones cuadradas se obtiene del mismo modo con
 
@@ -348,7 +348,7 @@ mean of x
 El parámetro \texttt{mu=22.5} define el valor de \texttt{mu}, que representa la
 letra griega $\mu$ usada convencionalmente para el definir teoricamente la
 media. Si este valor no se indica, \texttt{t.test} usaría  \texttt{mu=0} por
-defecto, que no es de interés aquí.  
+defecto, que no es de interés aquí.
 
 Para un test como este, obtenemos una salida más extensa que en los ejemplos
 anteriores. Los detalles se explican en el capítulo 5, pero es importante poner
@@ -369,7 +369,7 @@ indica que tenemos muy poca información sobre el verdadero promedio.
 Uno de los aspectos más importantes de la presentación y análisis de datos es
 la generación de gráficos adecuados. \textbf{R} - como antes \textbf{S} - tiene
 un modelo para construir gráficos que permite la producción simple de gráficos
-estándar, así como el control fino sobre los componentes del mismo. 
+estándar, así como el control fino sobre los componentes del mismo.
 
 Si quieres investigar la relación entre  \texttt{weight} y \texttt{height}, una
 primer aproximación es contrastarlos uno con el otro en una gráfica. Esto se
@@ -446,18 +446,18 @@ un archivo. Todas las expresiones R devuelven un valor (posiblemente NULL),
 pero a veces ese valor es ``invisible''  y no se imprime valor alguno en la
 consola.
 
-\newpage
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[width=0.95\textwidth]{fig-3.png}
-	\caption{Gráfico usando \texttt{pch=2}}
-	\label{fig:fig-3}
-	\centering
-	\includegraphics[width=0.95\textwidth]{fig-4.png}
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{fig-3.png}
+    \caption{Gráfico usando \texttt{pch=2}}
+    \label{fig-3}
+ \end{figure}
+
+ \begin{figure}[H]
+    \includegraphics[width=\linewidth]{fig-4.png}
 	\caption{Sobreimponiendo una curva de referencia, usando \texttt{lines(...)}}
-	\label{fig:fig-4}
-\end{figure}
-\newpage
+    \label{fig-4}
+ \end{figure}
+
 
 Las expresiones suelen incluir referencias a variables, operadores como
 \texttt{+} y llamadas de función, así como algunos otros elementos en los que
@@ -504,7 +504,7 @@ La función \texttt{plot} es, de hecho, un ejemplo de una función que tiene una
 gran variedad de parámetros para poder modificar símbolos, anchos de línea,
 títulos, tipo de eje, etcétera. Usamos la forma alternativa de especificar
 parámetros al establecer el símbolo de la gráfica en triángulos con
-\texttt{plot(height, weight, pch=2)}. 
+\texttt{plot(height, weight, pch=2)}.
 
 La forma \texttt{pch=2} se conoce como definición de parámetro por nombre, esta
 forma permite la comparación de los parámetros de llamada con los formales de
@@ -513,10 +513,10 @@ la función y por lo tanto permite relacionar a ambos. La palabra clave
 especificación del carácter de graficado. Esta forma de indicar cualquier
 parámetro permite usar un orden arbitrario. De este modo, se puede escribir
 \texttt{plot(x=height, y=weight)} y obtener el mismo gráfico que
-\texttt{plot(y=weight, x=height)}.  
+\texttt{plot(y=weight, x=height)}.
 
 Los dos tipos de especificación de parámetros --posicional y por nombre-- pueden
-usarse al mismo tiempo. 
+usarse al mismo tiempo.
 
 Aunque no haya parámetros para el llamado a una función, es necesario escribir
 \texttt{ls()}, con los paréntesis, para mostrar el contenido del espacio de
@@ -559,7 +559,7 @@ parámetros \texttt{...} representan el resultado recibido desde otra función.
 
 \begin{lstlisting}[language=R]
 # El resultado de matrix(1:4, nrow = 2) es la entrada de data.frame(...)
-> df <- data.frame(matrix(1:4, nrow = 2)) 
+> df <- data.frame(matrix(1:4, nrow = 2))
 
   X1 X2
 1  1  3
@@ -664,7 +664,7 @@ comilla usando los caracteres \texttt{\"}, como en:
 \begin{lstlisting}[language=R]
 > cat("What is \"R\"?\n")
 What is "R"?
-> 
+>
 \end{lstlisting}
 
 También hay maneras de insertar otros caracteres de control y glifos
@@ -725,7 +725,7 @@ modifica luego la forma en que éste se mostrará:
 \begin{lstlisting}[language=R]
 > x <- c(red="Huey", blue="Dewey", green="Louie")
 > x
-    red    blue   green 
+    red    blue   green
  "Huey" "Dewey" "Louie"
 \end{lstlisting}
 
@@ -923,15 +923,15 @@ Volveremos a las operaciones tabulares en la Sección \ref{tables}.
 Es habitual en los datos estadísticos tener variables categóricas, que indican
 algún tipo de subdivisión, como ser clase social, diagnóstico primario, estadio
 tumoral, etapa de la pubertad de Tanner, etc. Normalmente estos datos se
-trabajan como algún tipo de código numérico. 
+trabajan como algún tipo de código numérico.
 
 Sin embargo en \textbf{R} podemos definir estas variables como
 \textit{Factores}, un tipo de estructura, que entre otras cosas, permite
-asignar un nombre descriptivo a estas categorías.  
+asignar un nombre descriptivo a estas categorías.
 
 Hay ciertos análisis dónde es esencial para \textbf{R} distinguir
 entre estos códigos categóricos y variables cuyos valores tienen un significado
-numérico directo (véase el capítulo 7). 
+numérico directo (véase el capítulo 7).
 
 Un factor tiene un conjunto de niveles, digamos 4 como ejemplo, internamente un
 factor de 4 niveles esta constituido por: (a) un vector de números enteros de 1
@@ -957,7 +957,7 @@ práctica hacerlo. El resultado final se ve claramente:
 
 \begin{lstlisting}[language=R]
 > fpain
-[1] none   severe medium medium mild  
+[1] none   severe medium medium mild
 Levels: none mild medium severe
 > as.numeric(fpain)
 [1] 1 4 3 3 2
@@ -968,7 +968,7 @@ Levels: none mild medium severe
 La función \texttt{as.numeric} recupera la codificación numérica: 1-4 y
 \texttt{levels} recupera los nombre de cada nivel. Observe que la codificación
 original de 0 a 3 ha desaparecido, esto es por que la representación interna de
-un \texttt{factor} siempre comienza por 1. 
+un \texttt{factor} siempre comienza por 1.
 
 \begin{tradnote} De hecho, todos los objetos en \textbf{R} se indizan a partir de 1, a
 diferencia de otros lenguajes como \textbf{C} dónde el índice inicial es el
@@ -988,7 +988,7 @@ polinomiales), por lo que es mejor ignorar los factores ordenados por ahora.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 En algunos casos es útil combinar una colección de objetos en un único objeto
-compuesto. Esto lo podemos lograr usando las \textit{listas}. 
+compuesto. Esto lo podemos lograr usando las \textit{listas}.
 
 Podemos construir una lista a partir de los objetos individuales que la
 conformarán, usando la función \texttt{list}.
@@ -1011,7 +1011,7 @@ símbolo habitual > cambia por el +. Esto puede suceder de forma inadvertida
 debido, por ejemplo, a la falta de un paréntesis, o algún caso semejante; en
 esos casos, o bien se completa la expresión en la línea siguiente o se puede
 presionar la tecla ESC (Windows and Macintosh) o Ctrl-C (Unix). En windows
-también podremos usar el botón ``Stop''. 
+también podremos usar el botón ``Stop''.
 
 Para combinar los dos vectores anteriores en una lista:
 
@@ -1185,7 +1185,7 @@ flujo en la programación en \textbf{R}. De todas formas su utilidad esta fuera
 del alcance en esta etapa.  Cale la pena prestar atención a lo que realmente
 sucede cuando usamos una expresión lógica como índice. El resultado termina
 siendo un vector lñogico tal como lo hemos secripto en la sección
-\ref{vectores}, 
+\ref{vectores},
 
 \begin{lstlisting}[language=R]
 > intake.pre > 7000 & intake.pre <= 8000
@@ -1389,14 +1389,14 @@ $short.velocity
 [1] 1.325652
 
 > sapply(thuesen, mean, na.rm=T)
- blood.glucose short.velocity 
-     10.300000       1.325652 
+ blood.glucose short.velocity
+     10.300000       1.325652
 \end{lstlisting}
 
 Observe que ambas funciones dotaron a los resultados de un nombre informativo,
 lo cual es otra razón para usar estas funciones en vez de los ciclos
 explicítos. El segundo parámetro to \texttt{lapply/sapply} es el nombre de la
-función que se aplicará , en este caso \texttt{mean}. 
+función que se aplicará , en este caso \texttt{mean}.
 
 Cualquier otro parámetro se pasa a la función a continuación; en este caso
 pasamos \texttt{na.rm=T} para indicar que se eliminen los valores faltantes
@@ -1440,8 +1440,8 @@ factores.)
 
 \begin{lstlisting}[language=R]
 > tapply(energy$expend, energy$stature, median)
- lean obese 
- 7.90  9.69 
+ lean obese
+ 7.90  9.69
 \end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

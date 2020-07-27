@@ -19,3 +19,4 @@
 /*.Rcheck
 /.venv
 /.Rprofile
+.httr-oauth

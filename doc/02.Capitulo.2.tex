@@ -24,12 +24,12 @@ anterior es posible que la salida sea similar a esto:
 
 \begin{lstlisting}[language=R]
 > ls()
- [1] "bmi"           "d"             "exp.lean"      "exp.obese"    
- [5] "fpain"         "height"        "hh"            "intake.post"  
- [9] "intake.pre"    "intake.sorted" "l"             "m"            
-[13] "mylist"        "o"             "oops"          "pain"         
-[17] "sel"           "v"             "weight"        "x"            
-[21] "xbar"          "y"   
+ [1] "bmi"           "d"             "exp.lean"      "exp.obese"
+ [5] "fpain"         "height"        "hh"            "intake.post"
+ [9] "intake.pre"    "intake.sorted" "l"             "m"
+[13] "mylist"        "o"             "oops"          "pain"
+[17] "sel"           "v"             "weight"        "x"
+[21] "xbar"          "y"
 \end{lstlisting}
 
 Recuerde no omitir los paréntesis al invocar a \texttt{ls}().
@@ -87,7 +87,7 @@ pegar. También puede utilizar \textbf{ESS} (Emacs Speaks Statistics), que
 funciona en todas las plataformas. Es un "modo" para el editor \textbf{Emacs}
 en el que puede ejecutar toda la sesión en un búfer. Puede obtener la
 \textbf{ESS} y las instrucciones de instalación de \textbf{CRAN} (ver Apéndice
-A).  
+A).
 
 Una forma alternativa de redirigir la salida a un archivo es usar la función
 \texttt{sink}. Se trata en gran medida de una reliquia de la época de las
@@ -123,14 +123,14 @@ se ha ejecutado \textbf{R}.
 Más allá de un cierto nivel de complejidad, seguramente no querrá trabajar con
 \textbf{R} línea por línea. En estas situaciones, es mejor trabajar con scripts
 \textbf{R}, colecciones de líneas de código almacenadas en un archivo o en la
-memoria de la computadora de alguna forma. 
+memoria de la computadora de alguna forma.
 
 Una opción es usar la función de \texttt{source}, que es algo así como lo
 opuesto a \texttt{sink}. Toma la entrada (es decir, los comandos desde un
 archivo) y los ejecuta. Nótese, sin embargo, que todo el archivo se comprueba
 sintácticamente antes de que ejecutar cualquier instrucción. A menudo es útil
 configurar \texttt{echo=T} en la llamada para que los comandos sean impresos
-junto con la salida. 
+junto con la salida.
 
 Otra opción es de naturaleza más interactiva. Puedes trabajar con un editor que
 le permite enviar una o más líneas del script a una instancia de R en
@@ -140,8 +140,8 @@ Macintosh de R tienen ventanas de scripting simples incorporadas, y un número
 importante de Editores de texto tienen la funcionalidad para enviar los
 comandos a R.
 
-\begin{tradnote} 
-	
+\begin{tradnote}
+
 	Actualmente son muchas las herramientas para trabajar en R, muchas más de
 	las que existían al momento de la publicación original de este libro. En
 	lineas generales hoy tenemos R en las tres principales plataformas:
@@ -173,7 +173,7 @@ necesitar o incluso entender. Este libro está escrito de tal manera que la
 mayor parte del código que probablemente necesitará en relación con los
 procedimientos estadísticos se describe en el texto, y el compendio en el
 Apéndice C está diseñado para proporcionar una visión general básica. Sin
-embargo, es evidente que no es posible abarcar todo.  
+embargo, es evidente que no es posible abarcar todo.
 
 \textbf{R} también viene con una amplia ayuda en línea en forma de texto, así
 como en forma de una serie de archivos HTML que se pueden leer utilizando
@@ -181,7 +181,7 @@ cualquier navegador Web Se puede acceder a las páginas de ayuda a través de
 ``help'' en la barra de menú de Windows e introduciendo \texttt{help.start()} en
 cualquier plataforma. Encontrará que las páginas son de naturaleza técnica. La
 precisión y la concisión prevalecen aquí sobre la legibilidad y la pedagogía
-(algo que se aprende a apreciar después de la exposición a lo contrario).  
+(algo que se aprende a apreciar después de la exposición a lo contrario).
 
 Desde la línea de comandos, siempre puede introducir \texttt{help(aggregate)}
 para obtener ayuda de la función \texttt{aggregate} o utilizar el prefijo
@@ -194,7 +194,7 @@ obtener una lista de nombres de comandos que contienen un patrón dado. La
 función \texttt{help.search} es similar, pero utiliza coincidencias difusas y
 busca más profundamente en las páginas de ayuda, de modo que podrá localizar,
 por ejemplo, el coeficiente de correlación de Kendall en \texttt{cor.test} si
-utiliza \texttt{help.search("kendal")}. 
+utiliza \texttt{help.search("kendal")}.
 
 También está disponible con las distribuciones de \textbf{R}, un conjunto de
 documentos en varios formatos. Es particularmente interesante ``An Introduction
@@ -254,7 +254,7 @@ memoria en todo momento. Se requiere entonces, un mecanismo para la carga bajo
 demanda. En muchos paquetes, esto funciona a través de un mecanismo llamado
 \textit{carga perezosa} ("lazy loading,"), que permite al sistema "simular" que
 los datos están sí  en memoria, pero en realidad no se cargan hasta que son
-referenciados por primera vez.  
+referenciados por primera vez.
 
 Con este mecanismo, los datos están al alcance de la mano. Por ejemplo, si
 escribe \texttt{thuesen}, se muestra el \texttt{data.frame} de dicho nombre.
@@ -308,10 +308,10 @@ ruta de búsqueda del sistema. Puede ver la misma con el comando:
 
 \begin{lstlisting}[language=R]
 > search()
- [1] ".GlobalEnv"        "thuesen"           "package:ISwR"     
- [4] "tools:rstudio"     "package:stats"     "package:graphics" 
- [7] "package:grDevices" "package:utils"     "package:datasets" 
-[10] "package:methods"   "Autoloads"         "package:base"     
+ [1] ".GlobalEnv"        "thuesen"           "package:ISwR"
+ [4] "tools:rstudio"     "package:stats"     "package:graphics"
+ [7] "package:grDevices" "package:utils"     "package:datasets"
+[10] "package:methods"   "Autoloads"         "package:base"
 \end{lstlisting}
 
 Nótese que \texttt{thuesen} se coloca en segundo lugar en la ruta de búsqueda.
@@ -322,7 +322,7 @@ rutinas estadísticas básicas como el test de Wilcoxon, y los otros paquetes
 contienen de forma similar varias funciones y conjuntos de datos. (El sistema
 de paquetes es modular, y puede ejecutar \textbf{R} con un conjunto mínimo de
 paquetes para usos específicos. Por último, \texttt{package:ISwR} contiene los
-conjuntos de datos utilizados para este libro. 
+conjuntos de datos utilizados para este libro.
 
 
 Puede haber varios objetos del mismo nombre en diferentes partes de la ruta de
@@ -330,13 +330,13 @@ búsqueda. En ese caso, \textbf{R} elige la primera (es decir, busca primero en
 \texttt{.GlobalEnv}, luego en \texttt{thuesen}, y así sucesivamente). Por esta
 razón, hay que tener un poco de cuidado con los objetos "sueltos" que se
 definen en el espacio de trabajo fuera de un \texttt{data.frame}, ya que se
-utilizarán antes que cualquier vector y factor del mismo nombre en el 
+utilizarán antes que cualquier vector y factor del mismo nombre en el
 \texttt{data.frame} específico. Por la misma razón, no es una buena idea dar a
 un \texttt{data.frame} el mismo nombre que a una de las variables dentro de él.
 Tenga en cuenta también que cambiar un \texttt{data.frame} después de
 adjuntarlo no afectará a las variables disponibles a partrir del
 \texttt{attach}, ya que adjuntar implica una operación de copia (virtual) del
-\texttt{data.frame} 
+\texttt{data.frame}
 
 No es posible adjuntar \texttt{data.frame} antes de \texttt{.GlobalEnv} o después de
 \texttt{package:base}. Sin embargo, es posible adjuntar más de un \texttt{data.frame}. Las
@@ -358,16 +358,16 @@ aunque exista una función del sistema con el mismo nombre.
 Puede eliminar un \texttt{data.frame} de la ruta de búsqueda con
 \texttt{detach}. Si no se dan argumentos, el \texttt{data.frame} en la posición
 2 se elimina, que es generalmente lo que se desea. \texttt{.GlobalEnv} y \texttt{package:base} no
-se pueden desadjuntar (\texttt{detach}) del entorno. 
+se pueden desadjuntar (\texttt{detach}) del entorno.
 
 \begin{lstlisting}[language=R]
 > detach()
 > search()
 
- [1] ".GlobalEnv"        "package:ISwR"      "tools:rstudio"    
+ [1] ".GlobalEnv"        "package:ISwR"      "tools:rstudio"
  [4] "package:stats"     "package:graphics"  "package:grDevices"
- [7] "package:utils"     "package:datasets"  "package:methods"  
-[10] "Autoloads"         "package:base"    
+ [7] "package:utils"     "package:datasets"  "package:methods"
+[10] "Autoloads"         "package:base"
 \end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -393,7 +393,7 @@ utilizan de la siguiente manera:
 22           4.9           1.03
 
 > thue3 <- transform(thuesen,log.gluc=log(blood.glucose))
-> thue3 
+> thue3
 
    blood.glucose short.velocity log.gluc
 1           15.3           1.76 2.727853
@@ -556,7 +556,7 @@ título \textit{x} e \textit{y} se establecen en cadenas vacías.
 \begin{figure}[H]
   \includegraphics[width=\linewidth]{fig-5.png}
   \caption{La disposición de una gráfica estándar.}
-  \label{fig:fig-5}
+  \label{fig-5}
 \end{figure}
 
 Sin embargo, el hecho de que no se trace ningún gráfico no significa que no haya
@@ -609,17 +609,17 @@ dividir una figura en varias subfiguras utilizando los parámetros \texttt{mfrow
 y \texttt{mfcol}.
 
 Por ejemplo, los tamaños de margen predeterminados son algo más de 5, 4, 4 y 2
-líneas.  Puede definir \texttt{par(mar=c(4,4,2,2)+0.1)} antes de graficar. Esto
+líneas, sin embargo es posible modificar esto definiendo \texttt{par(mar=c(4,4,2,2)+0.1)} antes de graficar. Esto
 quita una línea fuera del margen inferior y dos líneas fuera del margen superior
 del gráfico, lo que reducirá la cantidad de espacios en blanco no utilizados
 cuando no haya un título o subtítulo principal. Si se mira cuidadosamente, se
-notará que la Figura \ref{fig:fig-5} tiene una región de trazado algo más
+notará que la Figura \ref{fig-5} tiene una región de trazado algo más
 pequeña que las otras gráficas de este libro. Esto se debe a que las otras
 gráficas se han realizado con márgenes reducidos por razones de composición
 tipográfica.
 
 Sin embargo, no tiene sentido describir los parámetros gráficos de forma
-completa en este momento. Ya volveremos a ellos, cuando los utilicemos 
+completa en este momento. Ya volveremos a ellos, cuando los utilicemos
 para gráficos específicos.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -707,7 +707,7 @@ Note el uso de un parámetro por defecto para \texttt{xlab}. Si no se especifica
 indicada en el parámetro \texttt{x} para transformarla luego en una cadena y así
 poder usarla; esto quiere decir, que si le pasamos \texttt{rnorm(100)} al
 parámetro \texttt{x} entonces la etiqueta para el eje se convertirá en
-\texttt{"rnom(100)"}. Observe también el uso de un parámetro \texttt{...}, que
+\texttt{''rnom(100)''}. Observe también el uso de un parámetro \texttt{...}, que
 recoge cualquier parámetro  y lo pasa a las dos llamadas a la función
 \texttt{hist}.
 
@@ -736,11 +736,102 @@ x
 x^2
 \end{lstlisting}
 
-\newpage
+Fíjense en la construcción \texttt{while(condición) expresión}, que dice
+que la expresión debe ser evaluada siempre y cuando la condición sea
+\texttt{VERDADERA}. La prueba se realiza en la parte superior del bucle, por lo
+que la expresión podría no ser evaluada nunca.
+
+Una variación del mismo algoritmo con la condición en la parte inferior del
+bucle se puede escribir con una construcción de repetición:
+
+\begin{lstlisting}[language=R]
+> x <- y/2
+> repeat{
++     x <- (x + y/x)/2
++     if (abs(x*x-y) < 1e-10) break
++ }
+> x
+[1] 111.1081
+\end{lstlisting}
+
+Esto también ilustra otras tres estructuras de control del flujo: a) una
+\textit{expresión compuesta}, que son varias expresiones unidas entre llaves; b)
+una construcción \texttt{if} para una ejecución condicional; y c) una exprexión
+\texttt{break}, que hace que el bucle finalice.
+
+Por cierto, el bucle podría permitir que \texttt{y} sea un vector simplemente
+cambiando la condición de terminación a:
+
+\begin{lstlisting}[language=R]
+if (all(abs(x*x - y) < 1e-10)) break
+\end{lstlisting}
+
+Esto iteraría excesivamente por algunos elementos, pero la aritmética
+vectorizada probablemente compensaría con creces eso. Sin embargo, la
+construcción de bucle más frecuentemente utilizada es pael \texttt{for}, que
+construye un bucle sobre un conjunto fijo de valores como en el siguiente
+ejemplo, que traza un conjunto de curvas de potencia en el intervalo unitario.
+
+\begin{lstlisting}[language=R]
+> x <- seq(0, 1,.05)
+> plot(x, x, ylab="y", type="l")
+> for ( j in 2:8 ) lines(x, x^j)
+\end{lstlisting}
+
+Observa la \textit{variable de ciclo} \texttt{j}, que toma un valor de la
+secuencia con cada vuelta del ciclo, para usarla en la llamada a \texttt{lines}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Classes and generic functions}
+\subsection{Clases y funciones genéricas}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+La programación orientada a objetos consiste en crear sistemas coherentes de
+datos y métodos que funcionen sobre ellos. Uno de los propósitos es simplificar
+los programas, acomodando el hecho de que tendrá métodos conceptualmente
+similares para diferentes tipos de datos, aunque las implementaciones terminen
+siendo diferentes. Un ejemplo de clásico, es el \textit{método print}: Tiene
+sentido imprimir muchos tipos de objetos de datos, pero el diseño de la
+impresión dependerá de lo que sea cada objeto. Generalmente tendrá una
+\textit{clase} de objetos de datos y un \textit{método print} para esa clase.
+Hay varios lenguajes orientados a objetos que implementan estas ideas de
+diferentes maneras.
+
+La mayor parte del código básico de \textbf{R} utiliza el mismo sistema de
+objetos que la versión 3 de \textbf{S}. En los últimos años se ha desarrollado
+un sistema de objetos alternativo similar al de la versión 4 de \textbf{S}. El
+nuevo sistema tiene varias ventajas sobre el antiguo, pero limitaremos la
+atención a este último. El sistema de objetos \textbf{S3} es un sistema simple
+en el que un objeto tiene un atributo de \texttt{class}, que es simplemente un
+vector de carácter. Un ejemplo de ello es que todos los valores de retorno de
+las pruebas clásicas como \texttt{t.test} tienen la clase \texttt{"htest"}, lo
+que indica que son el resultado de una prueba de hipótesis. Cuando se imprimen
+estos objetos, se hace mediante \texttt{print.htest}, que crea una bonita salida
+(véase el capítulo 5 para más ejemplos). Sin embargo, desde un punto de vista
+programático, estos objetos son sólo listas, y puedes, por ejemplo, extraer el
+\textit{p}-valor escribiendo
+
+\begin{lstlisting}[language=R]
+> t.test(bmi, mu=22.5)$p.value
+[1] 0.7442183
+\end{lstlisting}
+
+La función \texttt{print} es una función generica (\textit{generic function}),
+un tipo de función que actua de forma diferente de acuerdo al parámetro inical.
+Esto generalmente se ve así:
+
+\begin{lstlisting}[language=R]
+> print
+function (x, ...)
+UseMethod("print")
+<environment: namespace:base>
+\end{lstlisting}
+
+\texttt{UseMethod("print")} significa que \textbf{R} le va a pasar el control a
+una función cuyo nombre depende de la clase de objeto (\texttt{print.htest} para
+los objetos de la clase \texttt{"htest"}, etc.) o, en caso de no encontrarse, se
+invocará \texttt{print.default}. Para ver todos los métodos disponibles para
+\texttt{print}, escriba \texttt{methods(print)} (hay unos 138 disponibles en
+\textbf{R} 2.6.2, demasiados para mostrarlos aquí)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data entry}
