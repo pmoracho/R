@@ -22,7 +22,7 @@ plataforma o características específicas de la misma.
 	directamente trabajando sobre la consola \textbf{R}, sin embargo, el lector
 	puede trabajar con entornos más complejos de desarrollo como
 	\textbf{Rstudio} que no debería significar grandes diferencias.
-\end{tradnote} \newpage
+\end{tradnote}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Primeros pasos
@@ -61,7 +61,7 @@ Todos los ejemplos de este libro deberían ejecutarse si los escribes
 exactamente como están impresos, siempre y cuando tengas el paquete
 \texttt{ISwR} no sólo instalado sino también cargado en tu ruta de búsqueda
 actual. Esto se hace introduciendo:
-\newpage
+
 
 \begin{lstlisting}[language=R]
 > library(ISwR)
@@ -360,7 +360,6 @@ promedio fuera de hecho de 22,5. (Hablando de forma poco académica: en realidad
 menor que -0.3449.) Sin embargo, también se puede observar el intervalo de
 confianza del 95\% para la media real. Este intervalo es bastante amplio, lo que
 indica que tenemos muy poca información sobre el verdadero promedio.
-\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Gráficos}\label{graficos}
@@ -530,7 +529,6 @@ misma. El conjunto de los parámetros formales de una función, por ejemplo,
 \texttt{plot.default} (que es la función que se llama cuando se le pasa a
 \texttt{plot} un parámetro \texttt{x} porque no existe un método especial de
 trazado), puede verse con:
-\newpage
 
 \begin{lstlisting}[language=R]
 > args(plot.default)
@@ -596,7 +594,6 @@ evitar errores. Los vectores lógicos pueden tomar el valor \texttt{TRUE} o
 \texttt{T} y \texttt{F} (si tiene cuidado de no redefinirlas). Los vectores
 lógicos se construyen usando la función \texttt{c} al igual que cualquier otros
 tipo de vector:
-\newpage
 
 \begin{lstlisting}[language=R]
 > c(T,T,F,T)
@@ -615,7 +612,7 @@ más de un valor a menudo suelen ser el resultado de expresiones relacionales:
 \end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Encomillado y secuencias de escape}
+\subsection{Encomillado y secuencias de escape}\label{encomillado}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Las cadenas de caracteres entrecomilladas requieren algunas consideraciones
@@ -713,7 +710,7 @@ También podemos concatenar directamente vectores de distinta cantidad de elemen
 
 \begin{tradnote} Note que el vector \texttt{x} contiene 3 elementos, el vector
 \texttt{y} dos, y \texttt{5} es un vector en sí mismo de un solo elemento
-\end{tradnote} \newpage
+\end{tradnote}
 
 De todas formas no necesitamos usar \texttt{c} para crear un vector de longitud
 1. Muchos escriben \texttt{c(1)}, pero para \textbf{R} es exactamente lo mismo
@@ -874,7 +871,7 @@ nombre esta en minúscula al contrario de \texttt{T} que representa el valor
 
 \begin{tradnote} Es importante mencionar, aunque se verá más adelante, que
 estas funciones no se restringen solo a las matrices sino que aplican a
-múltiples estructuras similares a estas.\end{tradnote} \newpage
+múltiples estructuras similares a estas.\end{tradnote}
 
 \begin{lstlisting}[language=R]
 > x <- matrix(1:12,nrow=3,byrow=T)
@@ -918,7 +915,9 @@ C    9   10   11   12
 
 Volveremos a las operaciones tabulares en la Sección \ref{tables}.
 
-\subsection{Factores}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Factores}\label{factors}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Es habitual en los datos estadísticos tener variables categóricas, que indican
 algún tipo de subdivisión, como ser clase social, diagnóstico primario, estadio
@@ -1216,7 +1215,7 @@ con un valor desconocido es otro valor desconocido.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Ya hemos visto que podemos extraer variables de un \texttt{data.frame},
-ingresando, por ejemplo, \texttt{d\$intake.post}. De cualquier forma, es
+por ejemplo: \texttt{d\$intake.post}. De cualquier forma, es
 posible también usar una notación que aprovecha la estructura matricial del
 \texttt{data.frame}:
 
@@ -1496,7 +1495,7 @@ de estos.
 
 Lo que ocurrió aquí es que hemos ordenado \texttt{intake\$post}, mientras que
 \texttt{intake\$pre} fue ordenada también pero según el orden de los valores de
-\texttt{intake\$post}. Es posible ordenar directamente el data frame
+\texttt{intake\$post}. Es posible ordenar directamente el \textit{data frame}
 \texttt{intake}
 
 \begin{lstlisting}[language=R]

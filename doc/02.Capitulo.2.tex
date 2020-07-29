@@ -117,7 +117,7 @@ dir} del usuario y en la versión de línea de comandos es la carpeta desde dón
 se ha ejecutado \textbf{R}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Scripting}
+\subsection{Scripting}\label{Scripting}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Más allá de un cierto nivel de complejidad, seguramente no querrá trabajar con
@@ -714,7 +714,6 @@ recoge cualquier parámetro  y lo pasa a las dos llamadas a la función
 Se puede aprender más sobre programación en \textbf{R} estudiando las funciones
 incorporadas, empezando por las sencillas como \texttt{log10} o
 \texttt{weighted.mean}.
-\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Control de flujo} \label{flowcontrol}
@@ -834,16 +833,198 @@ invocará \texttt{print.default}. Para ver todos los métodos disponibles para
 \textbf{R} 2.6.2, demasiados para mostrarlos aquí)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data entry}
+\section{Entrada de datos}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Para ingresar datos mediante \texttt{c(...)}, estos no deben ser demasiado
+grandes ya que resultaría impracticable cargarlos de esta forma. La mayoría de
+los ejemplos de este libro utilizan conjuntos de datos incluidos en el paquete
+\texttt{ISwR}, puesto a su disposición por la biblioteca (\texttt{ISwR}). Sin
+embargo, tan pronto como usted desee aplicar los métodos a sus propios datos,
+tendrá que ocuparse de los formatos de los archivos de datos y de su
+especificación. En esta sección discutiremos cómo leer los archivos de datos y
+cómo usar el módulo de edición de datos en \textbf{R}. El texto tiene cierto
+sesgo hacia los sistemas Windows, principalmente debido a algunas cuestiones
+especiales que deben ser mencionadas para esa plataforma
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Leyendo desde un archivo de texto} \label{readtextfile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+La forma más conveniente de leer datos en R es a través de la función
+\texttt{read.table}. Requiere que los datos estén en "formato ASCII"; es decir,
+un "archivo plano" como el que se crea con el NotePad de Windows o cualquier
+otro editor de texto plano. El resultado de \texttt{read.table} es un "data
+frame", y se espera encontrar los datos de forma tal que cada línea del archivo
+contenga todos los datos de un sujeto (u observación) en un orden específico,
+separados por espacios en blanco u, opcionalmente, algún otro separador. La
+primera línea del archivo puede contener un encabezado con los nombres de las
+variables, una práctica muy recomendada.
+
+La tabla 11.6 de Altman (1991) contiene un ejemplo sobre la velocidad de
+acortamiento de la circunferencia ventricular frente a la glucosa en sangre en
+ayunas por Thuesen et Al. Utilizamos esos datos para ilustrar el subconjunto y
+los utilizamos de nuevo en el capítulo sobre la correlación y la regresión.
+Están entre los datos incorporados conjuntos en el paquete \texttt{ISwR} y
+disponibles como el marco de datos \texttt{thuesen}, pero el punto aquí es
+mostrar cómo leerlos desde un archivo de texto simple.
+
+\begin{lstlisting}[language=R]
+blood.glucose short.velocity
+15.3          1.76
+10.8          1.34
+8.1           1.27
+19.5          1.47
+7.2           1.27
+5.3           1.49
+9.3           1.31
+11.1          1.09
+7.5           1.18
+12.2          1.22
+6.7           1.25
+5.2           1.19
+19.0          1.95
+15.1          1.28
+6.7           1.52
+8.6           NA
+4.2           1.12
+10.3          1.37
+12.5          1.19
+16.1          1.05
+13.3          1.32
+4.9           1.03
+8.8           1.12
+9.5           1.70
+\end{lstlisting}
+
+Para introducir los datos en el archivo, se puede iniciar el NotePad de Windows
+o cualquier otro editor de texto plano, como los que se comentan en la
+Sección \ref{Scripting}. Los usuarios de Unix/Linux deberían usar sólo un editor
+estándar, como \texttt{emacs} o \texttt{vi}. Si es necesario, puede incluso
+utilizar un programa de procesamiento de textos con un poco de cuidado.
+
+Simplemente debe escribir los datos como se muestra. Observe que las columnas
+están separadas por un número arbitrario de espacios en blanco y que \texttt{NA}
+representa un valor faltante.
+
+Al final, debería guardar los datos en un archivo de texto. Tenga en cuenta que
+los procesadores de texto requieren acciones especiales para poder guardarlos
+como texto. Su formato de guardado normal podría llegar a ser difícil de leer en
+otros programas.
+
+Asumiendo además que el archivo está en la carpeta \texttt{ISwR} de la unidad
+\texttt{N:}, el los datos pueden ser leídos mediante:
+
+\begin{lstlisting}[language=R]
+> thuesen2 <- read.table("N:/ISwR/thuesen.txt",header=T)
+\end{lstlisting}
+
+Observe que \texttt{header=T} especifica que la primera línea es un encabezado que
+contiene los nombres de las variables dentro del archivo. También note que
+se usan barras inclinadas (/), no barras invertidas (\textbackslash), en el nombre del
+archivo, incluso en un sistema Windows.
+
+La razón para evitar las barras invertidas en los nombres de archivos de
+Windows, es que el símbolo se utiliza como un carácter de escape (véase la
+Sección \ref{encomillado}) y, por lo tanto, necesita duplicarlo. Podría haber
+usado:
+
+\begin{lstlisting}[language=R]
+> thuesen2 <- read.table("N:\\ISwR\\thuesen.txt",header=T)
+\end{lstlisting}
+
+El resultado es un \textit{data frame}, que se asigna a la variable
+\texttt{thuesen2} y tiene el siguiente aspecto:
+
+\begin{lstlisting}[language=R]
+> thuesen2
+   blood.glucose short.velocity
+1           15.3           1.76
+2           10.8           1.34
+3            8.1           1.27
+4           19.5           1.47
+5            7.2           1.27
+6            5.3           1.49
+7            9.3           1.31
+8           11.1           1.09
+9            7.5           1.18
+10          12.2           1.22
+11           6.7           1.25
+12           5.2           1.19
+13          19.0           1.95
+14          15.1           1.28
+15           6.7           1.52
+16           8.6             NA
+17           4.2           1.12
+18          10.3           1.37
+19          12.5           1.19
+20          16.1           1.05
+21          13.3           1.32
+22           4.9           1.03
+23           8.8           1.12
+24           9.5           1.70
+\end{lstlisting}
+
+Para leer las variables como factores (véase la sección \ref{factors}), la forma más
+fácil puede ser codificarlas mediante una representación textual. La función
+\texttt{read.table} detecta automáticamente si un vector es de texto o numérico y lo
+convierte en un factor en el primer caso (pero no intenta reconocer los factores
+codificados en forma numérica).Por ejemplo, el conjunto de datos incorporados de
+\texttt{secretin} se lee de un archivo que comienza así:
+
+\begin{lstlisting}[language=R]
+   gluc person time repl time20plus time.comb
+1    92      A  pre    a        pre       pre
+2    93      A  pre    b        pre       pre
+3    84      A   20    a        20+        20
+4    88      A   20    b        20+        20
+5    88      A   30    a        20+       30+
+6    90      A   30    b        20+       30+
+7    86      A   60    a        20+       30+
+8    89      A   60    b        20+       30+
+9    87      A   90    a        20+       30+
+10   90      A   90    b        20+       30+
+11   85      B  pre    a        pre       pre
+12   85      B  pre    b        pre       pre
+13   74      B   20    a        20+        20
+...
+\end{lstlisting}
+
+Este archivo puede ser leído directamente por \texttt{read.table} sin más argumentos que
+el nombre del archivo. Reconocerá el caso en que la primera línea sea un
+elemento más corto que el resto e interpretará que la disposición implica que la
+primera línea contiene un encabezamiento y el primer valor de todas las líneas
+subsiguientes es una etiqueta de fila, es decir, exactamente la disposición
+generada al imprimir un \textit{data frame}.
+
+La lectura de factores como este puede ser conveniente, pero hay un
+problema: el orden de los niveles es alfabético, así que por ejemplo:
+
+\begin{lstlisting}[language=R]
+> levels(secretin$time)
+[1] "20" "30" "60" "90" "pre"
+\end{lstlisting}
+
+Si esto no es lo que quiere, entonces puede que tenga que manipular los niveles
+de factor; véase la sección \ref{maipulate levels}.
+
+Una nota técnica: Los archivos mencionados anteriormente están contenidos en el
+paquete \texttt{ISwR} en el subdirectorio \texttt{rawdata}. La ubicación exacta
+del archivo en su sistema dependerá de dónde se instaló el paquete
+\texttt{ISwR}. Puedes averiguarlo de la siguiente manera:
+
+\begin{lstlisting}[language=R]
+> system.file("rawdata", "thuesen.txt", package="ISwR")
+[1] "/home/pd/Rlibrary/ISwR/rawdata/thuesen.txt"
+\end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Further details on read.table}
+\subsection{Más detalles sobre \texttt{read.table}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+La función \texttt{read.table} es una herramienta muy flexible que se controla
+con muchas opciones. No intentaremos hacer una descripción completa aquí, pero
+sí dar una indicación de lo que se puede hacer con ella.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The data editor}

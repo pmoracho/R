@@ -1,11 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Introducción a las estadísticas con R
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\documentclass[spanish]{extbook}
+\documentclass[a5paper,11pt,spanish,twoside,onecolumn,openany,extrafontsizes,final]{extbook}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-%\usepackage[a4paper,showframe]{geometry}
 \usepackage[a4paper]{geometry}
 \usepackage{color}
 \usepackage{amsmath}
@@ -19,17 +17,38 @@
 \usepackage[capitalise]{cleveref}
 \usepackage{bookmark}
 \usepackage[spanish]{babel}
-\usepackage{times}
 \usepackage{color}
 \usepackage[spanish]{babel}
-\geometry{marginparwidth=0.5cm,a4paper,verbose,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1cm,headheight=1cm,headsep=1cm,footskip=1cm}
 \usepackage[strict]{changepage}
-
+% \usepackage{layout}
 \usepackage{framed}
+
+
+% \usepackage{dejavu}
+\usepackage[osf]{Alegreya,AlegreyaSans}
 
 % environment derived from framed.sty: see leftbar environment definition
 \definecolor{formalshade}{rgb}{0.95,0.95,1}
 \definecolor{darkblue}{rgb}{0.0, 0.0, 0.55}
+\geometry{marginparwidth=0.5cm,
+          a4paper,
+          verbose,
+          voffset=1cm,
+          tmargin=2cm,
+          bmargin=4cm,
+          lmargin=3.3cm,
+          rmargin=2cm,
+          headheight=1cm,
+          headsep=1cm,
+          footskip=2cm}
+
+\usepackage{fancyhdr} % Required for modifying headers and footers
+\fancyhead[L]{\textsf{\rightmark}} % Top left header
+\fancyhead[R]{\textsf{\leftmark}} % Top right header
+\renewcommand{\headrulewidth}{1.4pt} % Rule under the header
+\fancyfoot[C]{\textbf{\textsf{\thepage}}} % Bottom center footer
+\renewcommand{\footrulewidth}{1.4pt} % Rule under the footer
+\pagestyle{fancy} % Use the custom headers and footers throughout the document
 
 \newenvironment{tradnote}{%
   \def\FrameCommand{%
@@ -37,18 +56,17 @@
     {\color{darkblue}\vrule width 2pt}%
     {\color{formalshade}\vrule width 4pt}%
     \colorbox{formalshade}%
-  }%
+  }\par\nopagebreak
   \vspace{12pt}
-  \MakeFramed{\advance\hsize-\width\FrameRestore}%
+  \MakeFramed{\advance\hsize-\width\FrameRestore}
   \noindent\hspace{-4.55pt}% disable indenting first paragraph
   \begin{adjustwidth}{}{7pt}%
   \vspace{1pt}%
-  \textbf{Nota del Traductor:\\}%
+  \textbf{Nota de la Traducción:}
 }
-{%
-  \vspace{6pt}\end{adjustwidth}\endMakeFramed%
+{
+  \vspace{6pt}\end{adjustwidth}\endMakeFramed
 }
-
 
 \definecolor{gray97}{gray}{.97}
 \definecolor{gray75}{gray}{.75}
@@ -112,6 +130,7 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Estilo del código
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,12 +156,14 @@
 % Cuerpo principal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{Introducción a las estadísticas con R}
-\date{2018-01-20}
+\date{\today}
 \author{Peter Daalgard\\
     \small{Traducido al español por Patricio Moracho}
 }
-\begin{document}
 
+
+\begin{document}
+% \layout
 \maketitle
 \include{00.Prefacio}
 \cleardoublepage
@@ -154,5 +175,5 @@
 \include{03.Capitulo.3}
 \include{04.Capitulo.4}
 \include{05.Capitulo.5}
-
+\include{10.Capitulo.10}
 \end{document}
