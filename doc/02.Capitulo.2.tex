@@ -357,8 +357,8 @@ aunque exista una función del sistema con el mismo nombre.
 
 Puede eliminar un \texttt{data.frame} de la ruta de búsqueda con
 \texttt{detach}. Si no se dan argumentos, el \texttt{data.frame} en la posición
-2 se elimina, que es generalmente lo que se desea. \texttt{.GlobalEnv} y \texttt{package:base} no
-se pueden desadjuntar (\texttt{detach}) del entorno.
+2 se elimina, que es generalmente lo que se desea. \texttt{.GlobalEnv} y
+\texttt{package:base} no se pueden desadjuntar (\texttt{detach}) del entorno.
 
 \begin{lstlisting}[language=R]
 > detach()
@@ -1008,6 +1008,13 @@ problema: el orden de los niveles es alfabético, así que por ejemplo:
 Si esto no es lo que quiere, entonces puede que tenga que manipular los niveles
 de factor; véase la sección \ref{maipulate levels}.
 
+\begin{tradnote}En la versión 4.0.0 se implementó un cambio muy significativo
+con respecto de los factores: a partir de esta versión las funciones que
+interpretan las cadenas com factores, tal como lo hace \texttt{readtable} dejan
+de hacerlo, y se implementa por defecto la opción \texttt{stringsAsFactors =
+FALSE}.
+\end{tradnote}
+
 Una nota técnica: Los archivos mencionados anteriormente están contenidos en el
 paquete \texttt{ISwR} en el subdirectorio \texttt{rawdata}. La ubicación exacta
 del archivo en su sistema dependerá de dónde se instaló el paquete
@@ -1026,14 +1033,195 @@ La función \texttt{read.table} es una herramienta muy flexible que se controla
 con muchas opciones. No intentaremos hacer una descripción completa aquí, pero
 sí dar una indicación de lo que se puede hacer con ella.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The data editor}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textit{Detalles del formato del archivo}
+
+Ya hemos visto el uso de \texttt{header=T}. Hay muchas otras opciones que
+controlan el formato detallado del archivo de entrada:
+
+\begin{itemize}
+
+\item
+\textbf{Separador de campo.} Esto se puede especificar usando el parámetro
+\texttt{sep}. Tenga en cuenta que cuando se usa esto, como en oposición al uso
+predeterminado de espacios en blanco, debe haber exactamente un separador entre
+todos los campos de datos. Dos separadores consecutivos implicarán que hay un
+valor perdido en el medio. Por el contrario, es necesario usar códigos
+específicos para representar valores perdidos en el formato predeterminado y
+también para usar alguna forma de citado de cadenas que contienen espacios
+incrustados.
+
+\item
+\textbf{Cadenas NA.} Puede especificar qué cadenas del archivo representan
+valores perdidos por medio de \texttt{na.strings}. Puede haber varias cadenas
+diferentes, aunque no cadenas diferentes para diferentes columnas. Para imprimir
+archivos del programa SAS, debería usar  \texttt{na.strings = "."}.
+
+\item
+\textbf{Citas y comentarios.} Por defecto, las comillas de estilo \textbf{R} se
+pueden usar para delimitar las cadenas y partes del archivo que siguen al
+carácter de comentario \texttt{\#} se ignoran. Estas características se pueden
+modificar o eliminar a través de los parámetros \texttt{quote} y
+\texttt{comment.char}
+
+\item
+\textbf{Número de columnas desigual.} Normalmente se considera un error si todas
+las líneas no contienen la misma cantidad de columnas (la primera línea puede
+tener una columna menos, como vió antes con los datos \texttt{secretin}). Los
+parámetros \texttt{fill} y \texttt{flush} puede usarse en el caso que la líneas
+varíen la cantidad de columnas.
+
+\end{itemize}
+
+\textit{Tipos de archivo delimitados}
+
+Aplicaciones como las hojas de cálculo y bases de datos, producen archivos de
+texto en formatos que requieren múltiples opciones para ajustar. Para tal fin,
+existen variantes "prearmadas" de \texttt{read.table}. Dos de estas, están
+destinadas a manejar archivos CSV y se laman \texttt{read.csv} y
+\texttt{read.csv2}. La primer variante supone que los campos están separados por
+una coma, y la última, que están separados por punto y coma pero usan una coma
+como punto decimal (este formato es a menudo generado en regiones europeas o
+latinas). Ambas variantes tienen \texttt{header = T} por defecto. Otras
+variantes son \texttt{read.delim} y \texttt{read.delim2} para leer archivos
+delimitados (por defecto delimitados por tabuladores).
+
+\textit{Conversión de entrada}
+
+Puede ser conveniente anular los mecanismos de conversión predeterminados de
+\texttt{read.table}. Por defecto, la entrada no numérica se convierte en
+factores, pero no siempre esto tiene sentido. Por ejemplo, los nombres y las
+direcciones no deberían convertirse. Esto se puede modificarse para todas las
+columnas de cadena de caracteres mediante el parámetro
+\texttt{stringsAsFactors} o solo para algunas en particular, mediante
+\texttt{as.is}.
+
+la conversión automática es a menudo conveniente, pero es ineficiente en cuanto
+a tiempos de proces y almacenamiento; para leer una columna numérica
+\texttt{read.table} primero la lee como si fuera una cadena de caracteres,
+comprueba si todos los elementos se pueden convertir a un  número y solo
+entonces, realiza la conversión. El parámetro \texttt{colClasses} le permite
+omitir este mecanismo, especificando de forma explícita, qué columnas son, de
+qué clase (Las clases estándar \texttt{''character''}, \texttt{''numeric''},
+etc., reciben un trato especial). También puede ignorar columnas al especificar
+\texttt{''NULL''} como la clase
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Interfacing to other programs}
+\subsection{El editor de datos}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\texttt{R} le permite editar los \textit{data frames} utilizando una interfaz
+similar a una hoja de cálculo. La interfaz es un poco tosca pero bastante útil
+para pequeños conjuntos de datos.
+
+Para editar un \textit{data frame}, hay que usar la función \texttt{edit}:
+
+\begin{lstlisting}[language=R]
+> aq <- edit(airquality)
+\end{lstlisting}
+
+
+Esto muestra un editor similar a una hoja de cálculo con una columna para cada
+variable en el \textit{data frame}. El conjunto de datos \texttt{airquality}
+está integrado en R; revise \texttt{help(airquality)} por estudiar su contenido.
+Dentro del editor, puede moverse con el mouse o las teclas de cursor y editar la
+celda actual ingresando datos en ella. El tipo de variable puede modificarse
+entre real (numérico) y carácter (factor) haciendo clic en la columna
+encabezado, y el nombre de la variable se puede cambiar de manera similar. Tenga
+en cuenta que (al menos hasta la versió 2.6.2)  ninguna manera para eliminar
+filas y columnas y que los nuevos datos pueden ser ingresados solo al final.
+
+Cuando cierra el editor, el \textit{data frame} editado se asigna a la variable
+\texttt{aq}. Los datos originales, el \textit{data frame} \texttt{airquality},
+permanecerán intactos. Si no le preocupa, puede sobre escribir el \textit{data
+frame} original:
+
+\begin{lstlisting}[language=R]
+> fix(aq)
+\end{lstlisting}
+
+Lo que es equivalente a
+
+\begin{lstlisting}[language=R]
+> aq <- edit(aq)
+\end{lstlisting}
+
+Para ingresar datos en un \textit{data frame} en blanco:
+
+\begin{lstlisting}[language=R]
+> dd <- data.frame()
+> fix(dd)
+\end{lstlisting}
+
+Una alternativa sería \texttt{dd <- edit(data.frame())}, que funciona bien
+excepto que los principiantes tienden a volver a ejecutar el comando cuando
+necesitan editar \texttt{dd} de nuevo, lo que por supuesto, destruye todos los
+datos. En cualquier caso, es necesario comenzar con un \textit{data frame} vacío
+ya que cuando a \texttt{edit} se lo invoca in prámetros, se sume que lo que se
+busca es editar un función nueva, por lo se inicia un ventana de edición de
+texto.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Interfaz con otros programas}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+En algún momento neceitará mover datos entre \textbf{R} y otros paquetes
+estadísticos u hojas de cálculo Un enfoque sencillo y seguro, es solicitar que
+el paquete en cuestión exporte los datos como un archivo de texto de algún tipo
+y usar \texttt{read.table}, \texttt{read.csv}, \texttt{read.csv2},
+\texttt{read.delim} o \texttt{read.delim2}, como se describió anteriormente.
+
+El paquete \texttt{foreign}, es uno de esos, que podríamos etiquetar como
+"recomendado", disponible en las distribuciones binarias de \textbf{R}. Contiene
+rutinas para leer archivos en diferentes formatos, incluye aquellos como SPSS
+(formato \texttt{.sav}), SAS (librerías de exportación), Epi-Info
+(\texttt{.rec}), Stata, Systat, Minitb, y alguna de las versiones de S-PLUS de
+los archivos de volcado.
+
+Los usuarios de Unix/Linux a veces se encuentran con datos escritos en máquinas
+con Windows. El paquete \texttt{foreign} funcionará allí también para los
+formatos que soporta. Note que los datos normales de SAS no están entre los
+formatos soportados. Estos tienen que ser convertidos a librerías de exportación
+en el sistema origen. Los datos que han sido introducidos en hojas de cálculo de
+Microsoft Excel se extraen más convenientemente usando una aplicación compatible
+como OOo (OpenOffice.org).
+
+
+Una técnica conveniente es leer desde el portapapeles del sistema. Digamos,
+resaltar una región rectangular eden una hoja de cálculo, presionar Ctrl-C (si
+está en Windows), y dentro de R usar:
+
+\begin{lstlisting}[language=R]
+read.table("clipboard", header=T)
+\end{lstlisting}
+
+Aunque esto requiere tener un poco de cuidado, ya que puede resultar en una
+pérdida de precisión debido a que sólo se transfieren los datos tal como
+aparecen en la pantalla. Esto es mayormente un problema si tienes datos con
+muchos dígitos significativos.
+
+Para los datos almacenados en las bases de datos, existen varios paquetes de
+interfaz en CRAN. En particular para Windows y otras bases de datos en
+Unix, es el paquete RODBC, porque puede configurar conexiones ODBC (``Open
+Database Connectivity'') con datos almacenados por aplicaciones comunes,
+incluyendo Excel y Access. Algunas bases de datos Unix (por ejemplo, PostgreSQL)
+también permiten conexiones ODBC.
+
+Para obtener información actualizada sobre estos temas, consulte el manual
+``R Data Import/Export'' que viene con el sistema.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicios}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+2.1 Describa cómo insertar un valor entre dos elementos de un vector en una determinada
+posición usando la función \texttt{append} (use el sistema de ayuda para averiguarlo).
+Sin usr \texttt{append}, ¿cómo lo haría?
+
+2.2 Escriba el conjunto de datos \texttt{thuessen} a un archivo de texto
+separado por tabulaciones mediante la función \texttt{write.table}. Visualícelo con un editor de
+texto (según su sistema). Modifique el valor \texttt{NA} por \texttt{.} (punto)
+y lea el archivo modificado nuevamente en \textbf(R) con la función apropiada.
+Intente también importar los datos a otras aplicaciones de su elección y
+exportándolos a un nuevo archivo después de editarlos. Puede que tenga que
+eliminar los nombres de fila para hacer que esto funcione.
