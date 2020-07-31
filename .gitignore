@@ -20,3 +20,4 @@
 /.venv
 /.Rprofile
 .httr-oauth
+doc/*.aux

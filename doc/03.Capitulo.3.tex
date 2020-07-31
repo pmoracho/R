@@ -103,6 +103,8 @@ cupón ganador de la lotería, sería:
 [1] 1.519738e-06
 \end{lstlisting}
 
+\newpage
+
 Hay otra forma de llegar al mismo resultado. Note que como el conjunto real de
 números es irrelevante, todos los conjuntos de cinco números deben tener la
 misma probabilidad. Así que todo lo que tenemos que hacer es calcular el número
@@ -117,6 +119,16 @@ de maneras de elegir 5 números de un total de 40. Esto se puede definir como:
 \right) = \frac{40!}{5!35!} = 658008
 \end{gather*}
 
+\begin{tradnote}
+    Hay 658008 posibles combinaciones de 5 numéros, la posibilidad de elegir la
+    combinación ganadora, es obviamente:
+
+    \begin{gather*}
+    \frac{1}{658008} = 1.519738e-06
+    \end{gather*}
+
+\end{tradnote}
+
 En \textbf{R}, se puede utilizar la función \texttt{choose} para calcular este
 número, y por lo tanto la probabilidad es:
 
@@ -129,26 +141,99 @@ número, y por lo tanto la probabilidad es:
 \section{Distribuciones discretas}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Al examinar las réplicas independientes de un experimento binario, normalmente
+Al examinar las repeticiones independientes de un experimento binario, normalmente
 no nos interesaría saber si cada caso es un éxito o un fracaso, sino más bien el
 número total de éxitos (o fracasos). Obviamente, este número es aleatorio ya que
-depende de la salida aleatoria individual, y por lo tanto se le llama variable
-aleatoria. En este caso, es una \textit{variable aleatoria} de valor discreto
-que puede tomar valores 0, 1, .... \textit{n}, donde \textit{n} es el número de
-réplicas. Las variables aleatorias continuas se verán más tarde.
-
-Una variable aleatoria \textit{X} tiene una distribución de probabilidad que puede describirse utilizando
-probabilidades de puntos f ( x ) = P ( X = x ) o la distribución acumulativa
-función F ( x ) = P ( X <= x ) . En el caso que nos ocupa, la distribución puede ser
-...resultó tener las probabilidades de los puntos.
+depende de los resultados aleatorios individuales, y por lo tanto se le llama
+\textit{variable aleatoria}. En este caso, es una \textit{variable
+aleatoria} de valor discreto que puede tomar valores 0, 1, .... \textit{n},
+donde \textit{n} es el número de repeticiones. Las variables aleatorias continuas se
+verán más tarde.
 
 
-A random variable X has a probability distribution that can be described using
-point probabilities f ( x ) = P ( X = x ) or the cumulative distribution
-function F ( x ) = P ( X <= x ) . In the case at hand, the distribution can be
-worked out as having the point probabilities.
+Una variable aleatoria \textit{X} tiene una \textit{distribución de
+probabilidad} que puede describirse utilizando \textit{probabilidades puntuales}
+\textit{f(x) = P(X = x)}  o la \textit{función de distribución acumulativa F(x)
+= P(X <= x)}. En el caso que nos ocupa, la distribución puede ser elaborada
+como si tuviera las probabilidades puntuales
 
-\section{Continuous distributions}
+\begingroup
+\Large
+\begin{gather*}
+    f(x) = \binom{n}{x} p^{x}(1-p)^{n-x}
+\end{gather*}
+\endgroup
+
+Esto se conoce como \textit{distribución binomial}, y $\binom{n}{x}$ se los
+llama \textit{coeficientes binomiales}. El parámetro \textit{p} es la
+probabilidad de un resultado exitoso en una prueba individual. Una gráfica de
+las probabilidades puntuales de la distribución binomial aparece más adelante en
+la Figura 3.2.
+
+Retrasamos la descripción de las funciones de \textbf{R} relacionadas con la
+distribución binomial hasta que hayamos discutido distribuciones continuas, para
+que podamos presentar las convenciones de forma manera unificada
+
+Muchas otras distribuciones pueden derivarse de los modelos de probabilidad
+simple. Por ejemplo, la \textit{distribución geométrica} es similar al binomial
+pero registra el número de fracasos que ocurren antes del primer éxito
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Distribuciones continuas}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Algunos datos surgen de mediciones en una escala esencialmente continua, por
+ejemplo: temperatura, concentraciones, etc. En la práctica, se
+registrarán con una precisión finita, pero es útil ignorar esto en el modelado.
+Estas mediciones generalmente tendrán un componente de variación aleatoria, lo
+que las hace no perfectamente reproducibles. Sin embargo, estas
+fluctuaciones aleatorias tenderán a seguir ciertos patrones; normalmente se agruparán en
+torno a un valor central, las desviaciones grandes serán más raras que las más
+pequeñas.
+
+
+Para modelar datos continuos, necesitamos definir variables aleatorias cuyo
+valor pueda ser cualquier número real. Porque hay infinitos números
+infinitamente cerca, la probabilidad de cualquier valor particular será cero,
+por lo que no existe una probabilidad puntual como ocurre con los valores
+aleatorios discretos. En cambio, tenemos el concepto de \textit{densidad}. Esta
+es la probabilidad infinitesimal de acertar una pequeña región alrededor de
+textit{x} dividida por el tamaño de la región. La función de la distribución acumulativa
+se puede definir como antes, y tenemos la relación
+
+\begingroup
+\Large
+\begin{gather*}
+     f(x) =\int_{x}^{\infty}f(x)dx
+\end{gather*}
+\endgroup
+
+Hay una serie de distribuciones estándar que surgen en la teoría estadística y
+están disponibles en R. Tiene poco sentido describirlos en detalle  aquí excepto
+por un par de ejemplos.
+
+La \textit{distribución uniforme} tiene una densidad constante en un intervalo
+especificado. (por defecto [0, 1]).
+
+La \textit{distribución normal}  (también conocida como \textit{gaussiana}) tiene
+densidad
+
+\begingroup
+\Large
+\begin{gather*}
+    f(x) = -\frac{1}{\sqrt{2\pi}\sigma}exp\left(-\frac{(x-\mu )^2}{2\sigma^2}\right)
+\end{gather*}
+\endgroup
+
+que depende de su media $\sigma$ y la desviación estándar $\mu$. La distribución
+normal tiene un forma característica de campana (Figura 3.1), y modificar
+$\sigma$ y $\mu$ simplemente traslada y Amplía la distribución. Es un bloque de
+construcción estándar en modelos estadísticos, donde se usa comúnmente para
+describir la variación del error. También aparece como una distribución
+aproximada en varios contextos; por ejemplo, la distribución binomial para
+muestras de gran tamaño puede aproximarse bien mediante por una distribución
+normal adecuadamente escalada.
+
 \section{The built-in distributions in R}
 \subsection{Densities}
 \subsection{Cumulative distribution functions}
