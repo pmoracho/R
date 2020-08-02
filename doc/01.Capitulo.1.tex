@@ -379,10 +379,16 @@ hace mediante:
 \end{lstlisting}
 
 \begin{figure}[H]
-  \includegraphics[width=\linewidth]{fig-2.png}
+  \includegraphics[width=\linewidth]{img/fig-2.pdf}
   \caption{Un simple gráfico x-y}
-  \label{fig:fig-2}
+  \label{fig-2}
 \end{figure}
+
+% pdf('doc/img/fig-2.pdf', height = 5, width = 7)
+% weight <- c(60,72,57,90,95,72)
+% height <- c(1.75,1.80,1.65,1.90,1.74,1.91)
+% plot(height,weight)
+% dev.off()
 
 Puede modificar el grafico de múltiples formas. Para ello, hay una enorme
 cantidad de parámetros que se pueden establecer. Como ejemplo, intentemos
@@ -393,7 +399,7 @@ cambiar el símbolo para gráficar cada punto usando la palabra clave
 > plot(height, weight, pch=2)
 \end{lstlisting}
 
-Esto da la gráfica en la Figura \ref{fig:fig-2}, con los puntos marcados ahora
+Esto da la gráfica en la Figura \ref{fig-2}, con los puntos marcados ahora
 con pequeños triángulos.
 
 La idea detrás del cálculo del IMC es que este valor debe ser independiente de
@@ -408,7 +414,7 @@ de 22.5 de la siguiente forma:
 > lines(hh, 22.5 * hh^2)
 \end{lstlisting}
 
-Lo podremos verificar en la Figura \ref{fig:fig-4}. La función \texttt{lines}
+Lo podremos verificar en la Figura \ref{fig-4}. La función \texttt{lines}
 sumará los valores \texttt{(x, y))} para terminar generando una recta en el
 gráfico actual.
 
@@ -446,17 +452,29 @@ pero a veces ese valor es ``invisible''  y no se imprime valor alguno en la
 consola.
 
 \begin{figure}[H]
-    \includegraphics[width=\linewidth]{fig-3.png}
+    \includegraphics[width=\linewidth]{img/fig-3.pdf}
     \caption{Gráfico usando \texttt{pch=2}}
     \label{fig-3}
  \end{figure}
 
+% pdf('doc/img/fig-3.pdf', height = 5, width = 7.5)
+% weight <- c(60,72,57,90,95,72)
+% height <- c(1.75,1.80,1.65,1.90,1.74,1.91)
+% plot(height,weight,pch=2)
+% dev.off()
+
  \begin{figure}[H]
-    \includegraphics[width=\linewidth]{fig-4.png}
+    \includegraphics[width=\linewidth]{img/fig-4.pdf}
 	\caption{Sobreimponiendo una curva de referencia, usando \texttt{lines(...)}}
     \label{fig-4}
  \end{figure}
 
+%  pdf('doc/img/fig-4.pdf', height = 5, width = 7.5)
+%  weight <- c(60,72,57,90,95,72)
+%  height <- c(1.75,1.80,1.65,1.90,1.74,1.91)
+%  plot(height,weight,pch=2) +
+%    lines(c(1.65, 1.9), c(62, 81))
+%  dev.off()
 
 Las expresiones suelen incluir referencias a variables, operadores como
 \texttt{+} y llamadas de función, así como algunos otros elementos en los que
@@ -472,7 +490,7 @@ los que se pretende trabajar. Por lo tanto, las secciones siguientes alternan
 entre la introducción de nuevos objetos y de nuevos elementos lingüísticos.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Funciones y parámetros}
+\subsection{Funciones y parámetros}\label{funparams}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 En este punto, ya tenemos una idea de la forma en que funciona \textbf{R}, y ya
@@ -752,6 +770,7 @@ restrictivo:
 Lo que ocurrió es, que los valores lógicos se convierten a valores \texttt{0/1}
 o \texttt{"FALSE/TRUE"} y los números a una representación de tipo cadena.
 
+\hypertarget{seq}
 La segunda función, \texttt{seq}("secuencia"), se usa para generar series de
 números equidistantes. Al escribir esto:
 

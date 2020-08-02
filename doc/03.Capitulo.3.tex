@@ -204,7 +204,7 @@ se puede definir como antes, y tenemos la relación
 \begingroup
 \Large
 \begin{gather*}
-     f(x) =\int_{x}^{\infty}f(x)dx
+    f(x) =\int_{x}^{\infty}f(x)dx
 \end{gather*}
 \endgroup
 
@@ -234,10 +234,254 @@ aproximada en varios contextos; por ejemplo, la distribución binomial para
 muestras de gran tamaño puede aproximarse bien mediante por una distribución
 normal adecuadamente escalada.
 
-\section{The built-in distributions in R}
-\subsection{Densities}
-\subsection{Cumulative distribution functions}
-\subsection{Quantiles}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Distribuciones incorporadas en \textbf{R}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Las distribuciones estándar que aparecen en relación con la construcción de
+modelos y Las pruebas estadísticas se han incorporado a \textbf{R} y, por lo
+tanto, puede reemplazar por completo tablas estadísticas tradicionales. Aquí
+solo miramos la distribución normal y la distribución binomial, pero otras
+distribuciones siguen exactamente el mismo patrón
+
+Se pueden calcular cuatro elementos fundamentales para una distribución
+estadística:
+
+
+\begin{itemize}
+
+    \item
+    Densidad o probabilidad puntual
+
+    \item
+    probabilidad acumulada, función de distribución
+
+    \item
+    Cuantiles
+
+    \item
+    Numeros pseudo-aleatorios
+
+
+\end{itemize}
+
+Para todas las distribuciones implementadas en \textbf{R}, existe una función
+para cada uno de los cuatro elementos enumerados anteriormente. Por ejemplo,
+para la distribución normal, estas son \texttt{dnorm}, \texttt{pnorm},
+\texttt{qnorm} y \texttt{rnorm} (\textit{d}ensidad, \textit{p}robabilidad,
+\textit{q}uantil y \textit{r}random, respectivamente).
+
+\subsection{Densidades}
+
+La densidad para una distribución continua es una medida de la relativa
+probabilidad de ``obtener un valor cercano a x''. La probabilidad de obtener un
+valor en un intervalo particular es el área debajo de la parte correspondiente
+de la curva.
+
+\newpage
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{fig-7.pdf}
+    \caption{Densidad de la distribución normal}
+    \label{fig:fig-7}
+\end{figure}
+
+% pdf('doc/fig-7.pdf', height = 6, width = 7)
+% x <- seq(-4,4,0.1)
+% plot(x,dnorm(x),type="l")
+% dev.off()
+
+La función de densidad es probablemente uno de los cuatro tipos de función que
+menos e usa en la práctica, pero si, por ejemplo, se desea dibujar la curva de
+campana bien conocida de la distribución normal, entonces se puede hacer así:
+
+\begin{lstlisting}[language=R]
+> x <- seq(-4,4,0.1)
+> plot(x,dnorm(x),type="l")
+\end{lstlisting}
+
+(note que es la letra \texttt{'l'} y no el digito \texttt{'1'})
+
+La función \texttt{seq} (\hyperlink{seq}{ver}) se usa para generar valores equidistantes,
+aquí de -4 a 4 en pasos de 0.1; es decir, (-4.0, -3.9, -3.8, ... , 3.9, 4.0). los
+useof \texttt{type = "l"} como argumento para \texttt{plot} hace que la función
+dibuje líneas entre puntos en lugar de trazar los puntos en sí
+
+Una forma alternativa de crear la gráfica es usar \texttt{curve} de la
+siguiente forma:
+
+\begin{lstlisting}[language=R]
+> curve(dnorm(x), from=-4, to=4)
+\end{lstlisting}
+
+Esta es a menudo una forma más conveniente de construir los gráficos, pero
+requiere que los valores de \textit{y} se pueden expresar como una función de
+\textit{x}.
+
+Para distribuciones discretas, donde las variables solo pueden tomar valores
+distintos, Es preferible dibujar un diagrama tipo histograma, aquí para una
+distribución binomial con \textit{n} = 50 y \textit{p} = 0,33 (figura
+\ref{fig-8})
+
+\begin{lstlisting}[language=R]
+x <- 0:50
+plot(x,dbinom(x,size=50,prob=.33),type="h")
+\end{lstlisting}
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{img/fig-8.pdf}
+    \caption{Probabilidades puntuales en binom(50, 0.33)}
+    \label{fig-8}
+\end{figure}
+
+Tenga en cuenta que esta vez hay tres parámetros en la "función d". Además de
+\textit{x}, debemos especificar el número de intentos \textit{y} y la
+probabilidad \textit{p}. La distribución dibujada, corresponde, por ejemplo, al
+número de cincos o seis en 50 tiradas de un dado simétrico. En realidad,
+\texttt{dnorm} también toma más de un parámetro, a saber, la media y la
+desviación estándar, pero tienen valores predeterminados de 0 y 1,
+respectivamente, ya que lo más frecuente es pedir una distribución normal
+estándar.
+
+La expresión \texttt{0:50} es una forma abreviada de \texttt{seq(0, 50, 1)}, es
+decir, un vector de número de 0 a 50 (ver \hyperlink{seq}{\texttt{seq}}). Con
+\texttt{type  = "h"} indicamos una gráfica tipo histograma.
+
+
+\subsection{Funciones de distribución acumulativa}
+
+La función de distribución acumulativa describe la probabilidad de "acertar"
+\textit{x} o menos en una distribución dada. Las funciones \textbf{R}
+correspondientes comienzan con una 'p' (de probabilidad) por convención.
+
+Del mismo modo que se puede trazar densidades, por supuesto, también se puede
+dibujar funciones de distribución, pero eso generalmente no es muy informativo.
+A menudo, se desean números reales. Digamos que se sabe que alguna medida
+bioquímica en individuos sanos está bien descripta por una distribución normal.
+con una media de 132 y una desviación estándar de 13. Entonces, si un paciente
+tiene un valor de 160, hay
+
+
+\begin{lstlisting}[language=R]
+1 - pnorm(160, mean = 132, sd = 13)
+[1] 0.01562612
+\end{lstlisting}
+
+es decir, que solo alrededor del 1.5\% de la población en general, tiene ese
+valor o más. La función \texttt{pnorm} devuelve la probabilidad de obtener un
+valor más pequeño que el primer parámetro en una distribución normal con la
+media y la desviación estándar dadas.
+
+Otra aplicación típica es aquella que se relaciona con la pruebas estadísticas.
+Considere una prueba sencilla: veinte pacientes reciben dos tratamientos cada
+uno (a ciegas y en orden aleatorio) y luego se preguntó si el tratamiento A o B
+funcionó mejor. Resultó que a 16 pacientes les gustó más el A. La pregunta es
+entonces si esto puede tomarse como evidencia suficiente de que A en realidad es
+mejor tratamiento o si en realidad, el resultado podría haber ocurrido por
+simple casualidad incluso si Los tratamientos fueron igualmente buenos. Si no
+hubiera diferencia entre los dos tratamientos, entonces esperaríamos el número
+de personas que favorecen el tratamiento A estar distribuido binomialmente con
+\textit{p} = 0.5 y \textit{n} = 20. ¿Que tan (im)probable sería entonces obtener
+lo que hemos observado? Como en la distribución normal, necesitamos una
+probabilidad de cola, y la suposición inmediata podría ser mirar:
+
+
+\begin{lstlisting}[language=R]
+    1 - pbinom(16, size = 20, prob = .5)
+    [1] 0.9987116
+\end{lstlisting}
+
+y restarlo de 1 para obtener la cola superior, ¡pero esto sería un error! Lo qué
+necesitamos es la probabilidad \textit{del valor observado o uno más extremo}, y
+\texttt{pbinom} nos está dando la probabilidad de 16 o menos. Necesitamos usar
+"15 o menos" en su lugar
+
+\begin{lstlisting}[language=R]
+    > 1-pbinom(15, size = 20, prob =.5)
+    [1] 0.005908966
+\end{lstlisting}
+
+Si buscamos prueba de dos colas porque no se tiene una idea previa sobre qué
+tratamiento es mejor, entonces se deberá agregar la probabilidad de obtener
+resultados igualmente extremos en la dirección opuesta. En el caso presente,
+esto significa la probabilidad de que 4 o menos personas prefieran el tratamiento A, lo
+que da una probabilidad debajo
+
+\begin{lstlisting}[language=R]
+    > 1 - pbinom(15, 20, .5) + pbinom(4, 20, .5)
+    [1] 0.01181793
+\end{lstlisting}
+
+(que obviamente es exactamente el doble de la probabilidad de una sola cola).
+
+Como se puede ver en el último comando, no es estrictamente necesario utilizar
+el las palabras claves \textit{size} y \textit{prob} siempre que los parámetros
+se den en orden (correspondencia posicional; ver \ref{funparams}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Cuantiles}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+La función cuantil es la inversa de la función de distribución acumulativa. El
+\textit{p}-cuantil es el valor con la propiedad de que hay una probabilidad
+\textit{p} de obtener un valor menor o igual a él. La mediana es, por
+definición, el cuantil del 50 \%.
+
+Algunos detalles sobre la definición en el caso de una distribución discontinua
+se pasan por alto aquí. Puedes deducir fácilmente el comportamiento
+experimentando con las funciones \textbf{R}.
+
+Las tablas de distribuciones estadísticas casi siempre se dan en términos de
+cuantiles. Para un conjunto fijo de probabilidades, la tabla muestra el límite que un
+prueba estadística debe cruzar para ser considerada significativa a ese nivel.
+Esto es puramente por razones operativas; es casi superfluo cuando tienes
+La opción de calcular \textit{p} exactamente.
+
+Los cuantiles teóricos se usan comúnmente para el cálculo de los intervalos de
+confianza y para cálculos de potencia en relación con el diseño y dimensionado
+de experimentos (ver Capítulo \ref{power_lenght}. Un simple ejemplo de un
+intervalo de confianza puede ver aquí (ver también el Capítulo
+\ref{datosavanzados})
+
+Si tenemos un número \textit{n} de observaciones normalmente distribuidas con la
+misma media $\mu$ y una desviación estándar $\sigma$, es sabido que el promedio
+$\bar{x}$ está normalmente distribuido alrededor de $\mu$ con una desviación
+estándar $\sigma/\sqrt{n}$. Un intervalode confianza del 95 \% para  $\mu$ puede
+obtenerse así:
+
+\begingroup
+\Large
+\begin{gather*}
+    \bar{x} + \sigma/\sqrt{n}\times N _{0.025} \leq \mu \leq \bar{x} +\sigma / \sqrt{n} \times N _{0.975}
+\end{gather*}
+\endgroup
+
+dónde $N _{0.025}$ es el cuantil 2.5\% en la distribución normal. Si $\sigma =
+12$ y hemos medido $n = 5$ personas y encontrado un promedio de $\bar{x} = 83$,
+entonces, podemos calcular las cantidades relevantes como (``sem'' significa
+\textit{error estándar de la media})
+
+\begin{lstlisting}[language=R]
+    > xbar <- 83
+    > sigma <- 12
+    > n <- 5
+    > sem <- sigma/sqrt(n)
+    > sem[1] 5.366563
+    > xbar + sem * qnorm(0.025)
+    [1] 72.48173
+    > xbar + sem * qnorm(0.975)
+    [1] 93.51827
+\end{lstlisting}
+
+y así, encontrar un intervalo de confianza del 95\% para $\mu$ que vaya de 72.48
+a 93.52. (Observe que esto se basa en el supuesto de que se conoce $\sigma$.
+Esto es a veces razonable en aplicaciones de control de procesos. El caso más
+común de estimar $\sigma$ de los datos conduce a intervalos en la distribución
+\textit{t} y es discutido en el Capítulo \ref{datosavanzados})
+
+
+
 \subsection{Random numbers}
 \section{Ejercicios}
 \newpage
+

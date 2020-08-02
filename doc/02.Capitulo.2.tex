@@ -499,7 +499,7 @@ gráfico y un subtitulo en la parte inferior, en la llamada al gráfico.
 \begin{lstlisting}[language=R]
 > x <- runif(50,0,2)
 > y <- runif(50,0,2)
-> xplot(x, y, main="Main title", sub="subtitle", xlab="x-label", ylab="y-label")
+> plot(x, y, main="Main title", sub="subtitle", xlab="x-label", ylab="y-label")
 \end{lstlisting}
 
 Dentro de la región de graficación, puede colocar puntos y líneas que se especifican
@@ -554,10 +554,20 @@ suprime los ejes y el rectángulo alrededor del gráfico, y las etiquetas de
 título \textit{x} e \textit{y} se establecen en cadenas vacías.
 
 \begin{figure}[H]
-  \includegraphics[width=\linewidth]{fig-5.png}
+  \includegraphics[width=\linewidth]{img/fig-5.pdf}
   \caption{La disposición de una gráfica estándar.}
   \label{fig-5}
 \end{figure}
+
+% pdf('doc/img/fig-5.pdf', height = 5, width = 7.5)
+% x <- runif(50,0,2)
+% y <- runif(50,0,2)
+% plot(x, y, main="Main title", sub="subtitle", xlab="x-label", ylab="y-label")
+% text(0.6,0.6,"text at (0.6,0.6)")
+% abline(h=.6,v=.6)
+% for (side in 1:4) mtext(-1:4,side=side,at=.7,line=-1:4)
+% mtext(paste("side",1:4), side=1:4, line=-1,font=2)
+% dev.off()
 
 Sin embargo, el hecho de que no se trace ningún gráfico no significa que no haya
 pasado nada. El comando configura la región de trazado y los sistemas de
@@ -662,14 +672,20 @@ curve(dnorm(x), add=T)
 \end{lstlisting}
 
 \begin{figure}[H]
-  \includegraphics[width=\linewidth]{fig-6.png}
+  \includegraphics[width=\linewidth]{img/fig-6.pdf}
   \caption{Histograma con densidad normal superpuesta.}
   \label{fig:fig-6}
 \end{figure}
 
-Cuando invocamos \texttt{hist} con \texttt{plot=F}, no trazará ningún gráfico,
-pero retornará una estructura que contiene las alturas de las barras en la
-escala de densidad. Esto y el hecho de que el máximo de \texttt{dnorm(x)} sea
+% pdf('doc/img/fig-6.pdf', height = 5, width = 7.5)
+% x <- rnorm(100)
+% hist(x,freq=F)
+% curve(dnorm(x),add=T)
+% dev.off()
+
+Cuando invocamos \texttt{hist} con \texttt{plot=F}, no se trazará ningún
+gráfico, pero retornará una estructura que contiene las alturas de las barras en
+la escala de densidad. Esto y el hecho de que el máximo de \texttt{dnorm(x)} sea
 \texttt{dnorm(0)} nos permite calificar un rango que cubre tanto las barras como
 la densidad normal. El cero en el rango de llamada asegura que la parte inferior
 de las barras también estará dentro del rango.  El rango de valores de
@@ -680,14 +696,14 @@ de las barras también estará dentro del rango.  El rango de valores de
 \section{Programando en \textbf{R}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Es posible escribir nuestras propias funciones \textbf{R}. De hecho, esto es un
-gran atractivo para trabajar con el sistema a largo plazo. Este libro evita en
-gran medida este tema a favor de cubrir un conjunto más amplio de
+Es posible escribir nuestras propias funciones en \textbf{R}. De hecho, esto es
+un gran atractivo para trabajar con el sistema a largo plazo. Este libro evita
+en gran medida este tema a favor de cubrir un conjunto más amplio de
 procedimientos estadísticos básicos que pueden ejecutarse desde la línea de
 comandos. Sin embargo, para darle una idea de lo que se puede hacer, considere
 la siguiente función, que contiene el código del ejemplo de la Sección
-\ref{combigraf} para que pueda decir simplemente
-\texttt{hist.with.normal(rnorm(200))}. Se ha ampliado ligeramente, de modo que
+\ref{combigraf} escrita para que pueda decir invocarla sencillamente así:
+ \texttt{hist.with.normal(rnorm(200))}. Se ha ampliado ligeramente, de modo que
 ahora utiliza la media empírica y la desviación estándar de los datos en lugar
 de sólo 0 y 1.
 
