@@ -1,0 +1,75 @@
+---
+title: "Prueba de Xgboost"
+author: "Patricio Moracho"
+date: "30/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(kableExtra)
+knitr::opts_chunk$set(echo = TRUE)
+window <- 480
+```
+
+## Prediciendo valores del Bitcoin mediante Xgboost
+
+
+### Cargamos las librerias necesarias
+
+```{r libraries, message=FALSE, warning=FALSE}
+library("tidyverse")
+library("ggelegant")
+library("xgboost")
+library("zoo")
+```
+
+### Leemos datos desde la url
+
+```{r load-data, message=FALSE, warning=FALSE}
+url <- "https://raw.githubusercontent.com/martingaudio94/BTC_predicciones/master/Bittrex_BTCUSD_1h_modified_1.csv"
+df <- read_csv(url)
+```
+
+Ejemplo de los datos leídos:
+
+```{r mostrar-datos1}
+df %>%
+  head() %>% 
+  kbl() %>%
+  kable_styling()
+```
+
+
+### Agregamos rolling mean y sd
+
+Agregamos dos columnas nuevas, para indicar la media y la desviación estándar en una ventana de tiempo de `r window` horas, es decir `r window/24` días. Se elimina las primera filas que no acumulan estos estadísticos, Eliminamos también columnas innecesarias.
+
+```{r preprocess, fig.align="center"}
+df %>% 
+  select(Date, Close) %>% 
+  mutate(Close_mean = rollmean(x = Close, window, align = "right", fill = NA),
+         Close_sd = rollapply(data = Close, width = window, align = "right", fill = NA, FUN = sd)) %>% 
+  filter(!is.na(Close_mean)) -> new_df
+```
+
+Ejemplo de los datos:
+
+```{r mostrar-datos2}
+new_df %>%
+  head %>% 
+  kbl() %>%
+  kable_styling()
+```
+
+### Gráfica
+
+```{r plot1, fig.width=10}
+new_df %>% 
+  ggplot() + 
+  geom_line(mapping = aes(x = Date, y = Close)) +
+  theme_elegante_std(base_family = "Assistant")
+```
+
+### Preparamos datos (train/test)
+
+

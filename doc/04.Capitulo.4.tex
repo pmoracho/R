@@ -1,9 +1,87 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Descriptive statistics and graphics}
+\chapter{Estadística descriptiva y gráficos}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Resumen estadístico para un solo grupo} \label{resestad}
+
+Antes de entrar en el análisis y modelado estadístico real de un conjunto de
+datos, a menudo es útil hacer algunas caracterizaciones simples de los datos en
+términos de estadísticas y gráficos resumidos.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Resumen estadístico para un grupo} \label{resestad}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Es fácil calcular estadísticas de resumen simples con \textbf{R}. A continuación se
+explica cómo calcular la media, la desviación estándar, la varianza y la
+mediana.
+
+\begin{lstlisting}[language=R]
+    > x <- rnorm(50)
+    > mean(x)
+    [1] 0.1896194
+    > sd(x)
+    [1] 1.089223
+    > var(x)
+    [1] 1.186406
+    > median(x)
+    [1] 0.3191134
+\end{lstlisting}
+
+Observe que el ejemplo comienza con la generación de un vector \texttt{x} con 50
+observaciones distribuidas normalmente. Se utiliza en varios ejemplos a lo largo
+de esta sección. Al reproducir los ejemplos, no va a obtener exactamente los
+mismos resultados ya que sus números aleatorios serán diferentes.
+
+Los cuantiles empíricos se pueden obtener con la función \texttt{quantile} de
+esta manera:
+
+\begin{lstlisting}[language=R]
+    > quantile(x)
+    0%        25%        50%        75%       100%
+    -2.4454931 -0.4995763  0.3191134  0.8295342  2.3352865
+\end{lstlisting}
+
+Como puede se puede observar, por defecto obtenemos el mínimo, el máximo y los
+tres cuartiles: los \textit{cuartiles} 0.25, 0.50 y 0.75 llamados así porque
+corresponden a un división en cuatro partes. Del mismo modo, tenemos los
+\textit{deciles} de 0,1, 0,2,. . . , 0,9, \textit{centiles} o
+\textit{percentiles}. La diferencia entre el primer y tercer cuartil es llamado
+rango intercuartílico (IQR) y a veces se utiliza como una alternativa sólida a
+la desviación estándar.
+
+También es posible obtener otros cuantiles; esto se hace agregando un argumento
+que contiene los puntos porcentuales deseados. Esto, por ejemplo, es cómo
+hacemos para obtener los deciles:
+
+
+\begin{lstlisting}[language=R]
+    > pvec
+    [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
+    > quantile(x, pvec)
+    0%        10%        20%        30%        40%        50%        60%
+    -2.4454931 -1.3395813 -0.7258860 -0.4121909  0.0182647  0.3191134  0.6880762
+    70%        80%        90%       100%
+    0.7846998  0.9057485  1.6282719  2.3352865
+\end{lstlisting}
+
+
+
+
 \section{Graphical display of distributions}
+\subsection{Histograms}
+\subsection{Empirical cumulative distribution}
+\subsection{Q–Q plots}\label{qqplots}
+\subsection{Boxplots}
+\section{Summary statistics by groups}
 \section{Graphics for grouped data}
+\subsection{Histograms}
+\subsection{Parallel boxplots}
+\subsection{Stripcharts}
 \section{Tables} \label{tables}
+\subsection{Generating tables}
+\subsection{Marginal tables and relative frequency}
 \section{Graphical display of tables}
+\subsection{Barplots}
+\subsection{Dotcharts}
+\subsection{Piecharts}
+\section{Exercises}
 

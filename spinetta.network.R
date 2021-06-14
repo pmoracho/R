@@ -4,7 +4,7 @@ library("tidyverse")
 library("xlsx")
 library("ggraph")
 
-grupos <- read.xlsx("spinetta.data.xlsx", sheetName = "grupos", encoding="UTF-8")
+        grupos <- read.xlsx("spinetta.data.xlsx", sheetName = "grupos", encoding="UTF-8")
 grupos_versiones <- read.xlsx("spinetta.data.xlsx", sheetName = "grupos_versiones", encoding="UTF-8")
 personas <- read.xlsx("spinetta.data.xlsx", sheetName = "personas", encoding="UTF-8")
 personas_grupos_versiones <- read.xlsx("spinetta.data.xlsx", sheetName = "personas_grupos_versiones", encoding="UTF-8")

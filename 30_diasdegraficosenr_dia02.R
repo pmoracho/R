@@ -25,17 +25,20 @@ last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
 covid.data %>% 
   filter(osm_admin_level_4 %in% c('CABA', 'Buenos Aires')) %>% 
   mutate(fecha = as.Date(fecha, "%d/%m/%Y")) %>% 
-  select(dia=dia_inicio, distrito=osm_admin_level_4, cantidad=nue_casosconf_diff) %>% 
-  ggplot(mapping=aes(x=dia, color=distrito, y=cantidad)) +
-    geom_line() +
-    geom_point() +
-    geom_smooth(method = 'loess',
-                formula = 'y ~ x', alpha = 0.2, size = 1, span = .3, se=FALSE) + 
-    labs(title = paste("COVID-19 en Argentina"), 
-       subtitle = paste0("Variación de los casos diarios en CABA y Buenos Aires por día (al: ", last_date, ")") , 
-       caption = "Fuente: https://github.com/SistemasMapache/Covid19arData", 
-       y = "Casos", 
-       x = "Número de días desde el 1er caso"
+  select(dia=dia_inicio, fecha, distrito=osm_admin_level_4, cantidad=nue_casosconf_diff) -> plot_data
+  
+
+plot_data %>% 
+  ggplot(mapping=aes(x=fecha, color=distrito, y=cantidad)) +
+  geom_line() +
+  geom_point() +
+  geom_smooth(method = 'loess',
+              formula = 'y ~ x', alpha = 0.2, size = 1, span = .3, se=FALSE) + 
+  labs(title = paste("COVID-19 en Argentina"), 
+     subtitle = paste0("Variación de los casos diarios en CABA y Buenos Aires por día (al: ", last_date, ")") , 
+     caption = "Fuente: https://github.com/SistemasMapache/Covid19arData", 
+     y = "Casos", 
+     x = "Número de días desde el 1er caso"
   ) +
   scale_color_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
   theme_elegante_std(base_family = "Ralleway") 

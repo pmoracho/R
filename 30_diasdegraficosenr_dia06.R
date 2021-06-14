@@ -16,22 +16,26 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   theme_elegante_std <- function(base_family) {}
 }
 
-covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+# Para descarga de los datos actualizados
+# covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+# saveRDS(covid.data, './data/covid.casos.arg.Rda') 
+covid.data <- readRDS('./data/covid.casos.arg.Rda')
 
 last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
 break_porc <- .95
 covid.data %>% 
   select(distrito=osm_admin_level_4, casos=nue_casosconf_diff) %>% 
   group_by(distrito) %>% 
-  summarise(casos=sum(casos)) %>% 
-  mutate(porc = casos / sum(casos)) %>%
+  summarise(casos=sum(casos, na.rm = TRUE)) %>% 
   ungroup() %>% 
+  mutate(porc = casos / sum(casos)) %>%
   arrange(-porc) %>% 
   mutate(cporc = cumsum(porc),
          distrito = ifelse(cporc < break_porc, distrito, 'Resto')) %>% 
   group_by(distrito) %>% 
   summarise(casos = sum(casos),
-            porc = sum(round(porc*100,2))) -> data
+            porc = sum(round(porc*100,2))) %>% 
+  arrange(-porc) -> data
 
 data$porc[data$distrito == 'Resto'] <- 100 - sum(data$porc[data$distrito != 'Resto'])
 data %>% 
@@ -41,17 +45,13 @@ data %>%
 
 mac_perc <- sum(data$porc[data$distrito != 'Resto'])
 data$distrito <- with(data, reorder(distrito, porc))
+
+fct_reorder(data$distrito, data$porc)
+
 data %>% 
   ggplot(aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=distrito)) +
   geom_rect(color="white") +
-  geom_label_repel(mapping = aes(x=3.5, y=ymin + (ymax - ymin)/2,
-                                 colour =  ifelse(porc > 10, 2, 1),
-                                 label = paste0(distrito, ": ", format(porc, digits=2, trim=FALSE), "%\nCasos:", 
-                                                format(casos, big.mark = ",", trim=FALSE))),
-                   family = "Ralleway", 
-                   nudge_y = 1,
-                   nudge_x = 1) +
-  coord_polar(theta="y") + # Try to remove that to understand how the chart is built initially
+  coord_polar(theta="y") +
   xlim(c(2, 4)) +
   labs(title = paste("COVID-19 en Argentina"), 
        subtitle = paste0("Distribución del ", mac_perc , "% de los casos por distrito\n (Datos al: ", last_date, ")") , 
@@ -65,4 +65,12 @@ data %>%
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank(),
         legend.position = "none") +
-  scale_fill_brewer(palette = "Blues")
+  geom_label_repel(mapping = aes(x=3.5, y=ymin + (ymax - ymin)/2,
+                               #colour =  "white",
+                               label = paste0(distrito, ": ", format(porc, digits=2, trim=FALSE), "%\nCasos:", 
+                                              format(casos, big.mark = ",", trim=FALSE))),
+                 family = "Ralleway", 
+                 nudge_y = 1,
+                 nudge_x = 1) +
+  scale_fill_viridis_d()
+

@@ -44,8 +44,10 @@ covid.data %>%
             ) %>% 
   mutate(pais = ifelse(countriesAndTerritories == 'United_States_of_America', 'EEUU', countriesAndTerritories)) %>% 
   select(pais, casos, fallecidos, HDI = value) %>% 
-  mutate(pais_etiquetado = ifelse(pais %in% paises_de_interes, paste0(pais, " (casos: ", format(casos, digits=0, big.mark = ',', trim=TRUE), " hdi: ", HDI, ")"), NA)) %>% 
-  ggplot(aes(x=HDI, y=casos)) +
+  mutate(pais_etiquetado = ifelse(pais %in% paises_de_interes, paste0(pais, " (casos: ", format(casos, digits=0, big.mark = ',', trim=TRUE), " hdi: ", HDI, ")"), NA)) -> plot_data
+
+plot_data %>% 
+    ggplot(aes(x=HDI, y=casos)) +
     geom_point(color = "#67a9cf", alpha=.5, size=3) +
     geom_smooth(method = 'lm',formula='y ~ x', se=FALSE, color="#ef8a62") +
     geom_label_repel(mapping = aes(label = pais_etiquetado),

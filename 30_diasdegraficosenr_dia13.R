@@ -25,10 +25,11 @@ presidencias <- data.frame(fecha = as.Date(c('2019-12-10', '2015-12-10')), presi
 dolar = readRDS('./data/dolar.Rda')
 
 dolar$indice_tiempo = as.Date(dolar$indice_tiempo, format = "%Y-%m-%d")
+
 dolar %>% 
   ggplot(mapping = aes(x=indice_tiempo, y=tipo_cambio_bna_vendedor)) + 
   geom_line(size = 1, color="#67a9cf") +
-  geom_vline(data = precidencias,
+  geom_vline(data = presidencias,
              mapping = aes(xintercept=fecha),
              color = "#ef8a62",
              linetype="dashed") +
@@ -53,3 +54,4 @@ dolar %>%
   ) +
   scale_x_date(date_breaks = "12 month", date_labels="%Y-%m") +
   theme_elegante_std(base_family = "Ralleway") 
+

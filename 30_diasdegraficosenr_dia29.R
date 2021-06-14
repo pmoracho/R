@@ -25,7 +25,7 @@ covid.data %>%
          pais = countriesAndTerritories) %>% 
   filter(continentExp %in% c('America')) %>% 
   # filter(pais %in% c('Argentina', 'Brazil', 'Chile', 'Paraguay', 'Uruguay', 'Colombia', 'Bolivia', 'Ecuador', 'Peru', 'Venezuela', 'México')) %>% 
-  group_by(pais, popData2018) %>% 
+  group_by(pais, popData2019) %>% 
   summarise(casos = sum(cases), fallecidos = sum(deaths)) %>% 
   arrange(-casos) %>% 
   head(10) %>% 

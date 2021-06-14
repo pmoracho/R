@@ -27,7 +27,9 @@ covid.data %>%
   summarize(casos = sum(cases), fallecidos = sum(deaths)) %>% 
   ungroup() %>% 
   select(pais = countriesAndTerritories, casos, fallecidos) %>% 
-  gather(referencia, cantidad, -pais) %>% 
+  gather(referencia, cantidad, -pais) -> plot_data
+
+plot_data %>% 
   ggplot(aes(x=pais, fill=referencia, y=cantidad)) +
     geom_col(position=position_dodge(width=1)) +
     geom_text(aes(label = format(cantidad, digits=0, big.mark = ',')),  vjust = .6, hjust=1.1,

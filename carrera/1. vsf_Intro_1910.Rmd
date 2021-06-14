@@ -1,0 +1,319 @@
+---
+title: "I. Introducción a R"
+author: ""
+date: "Abril 2020"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+mainfont: Times New Roman
+header-includes:
+- \usepackage{titling}
+- \pretitle{\begin{flushleft}\huge\bfseries}
+- \posttitle{\end{flushleft}}
+- \preauthor{\begin{flushleft}\Large}
+- \postauthor{\end{flushleft}}
+- \predate{\begin{flushleft}\large}
+- \postdate{\end{flushleft}}
+fontsize: 12pt
+urlcolor: blue
+linestretch: 1.15
+---
+\hyphenpenalty=10000
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Presentación
+
+**R** es un lenguaje de programación orientado al análisis estadístico. Eso significa que a través de instrucciones y algoritmos, **R** nos permite crear programas para manipular datos, generar gráficos y visualizaciones y realizar inferencia estadística. Con **R** podemos también llevar a cabo análisis econométrico e implementar algoritmos de aprendizaje automático, entre otras cosas.  
+
+La funcionalidad de este lenguaje se da a través de los llamados **"paquetes"** o **"librerías"**. **R** cuenta con una [**librería "base"**](https://stat.ethz.ch/R-manual/R-devel/library/base/html/00Index.html), y un número creciente de [**librerías "adicionales"**](https://cran.r-project.org/web/packages/available_packages_by_name.html). Las librerías suelen ser proyectos colaborativos y se consideran como la "unidad fundamental de código que se puede compartir". Un paquete agrupa código, datos, documentación y pruebas y facilita las tareas que podrían desarrollarse con las funciones base del lenguaje. Las librerías se ponen a disposición de la comunidad a través de servidores centrales como [The Comprehensive R Archive Network o **CRAN**](https://cran.r-project.org/) aunque pueden ser compartidas a través de repositorios como [**Github**](https://github.com/) o [**Bioconductor**](https://www.bioconductor.org/).
+
+**R** es un lenguaje orientado a objetos pero también un lenguaje funcional. John Chambers, uno de los miembros clave en la creación de **R**, lo plantea de esta forma:
+
+> _"Todo lo que existe es un objeto. Todo lo que sucede es una llamada a una función"._
+
+Lo anterior significa, en términos generales, que las variables, datos, resultados, etc., que guardamos en la memoria de nuestras computadoras se convierten en objetos con nombres específicos. Sin embargo, para modificar o manipular los objetos, recurrimos a funciones. Aunque la comprensión de estos paradigmas escapa de los alcances de este curso, es importante tener en mente esta distinción general entre objetos y funciones.
+
+## 1. Ejecución de código
+
+Ya sea que trabajemos con **R** o **RStudio**, el código suele generarse y guardarse en "scripts". En el primer caso, al abrir un nuevo script nos aparecerá un editor de texto. En el segundo, se desplegará una pestaña dentro de la ventana principal de trabajo ubicada en la parte superior izquierda de nuestra pantalla. Cuando "corremos" o ejecutamos un código, el resultado se mostrará en la consola, que por default se encuentra en la parte superior izquierda en **R** y en la parte inferior izquierda en **RStudio**.
+
+\newpage
+
+Un código puede ejecutarse por línea, por dos o más líneas o por completo. 
+
+1. En **R**:
+  + Para correr una línea, nos posicionamos al final del código y presionamos `Ctrl+R`
+  + Para ejecutar dos líneas o más, seleccionamos el segmento de código y presionamos `Ctrl+R`
+  + Para correr todo un script, presionamos `Ctrl+A` y posteriormente `Ctrl+R`
+
+2. En **RStudio**: 
+  + Para correr una línea, nos posicionamos al final del código y presionamos `Run` (parte superior derecha de la ventana del script)
+  + Para ejecutar dos líneas o más, seleccionamos el segmento de código y presionamos `Run`
+  + Para correr todo un script, hacemos clic derecho, `Select All` y posteriormente `Run`
+
+**Ejercicio:** Copiar y ejecutar el siguiente código. ¿Cuáles son los resultados?
+```{r eval=FALSE}
+Este es un segmento de código
+print("¡Hola, mundo!")
+2+2
+mean(1:10)
+```
+
+En **R**, el código se comenta con el signo **#**. Esto significa que nada después de él se evaluará (se ejecutará). ¿Qué resultados arrojan las siguientes líneas de código cuando son ejecutadas?
+
+```{r eval=FALSE}
+# mean(1:10)
+mean(1:10) # La función mean() calcula la media
+```
+
+**Se considera una buena práctica iniciar los scripts con la configuración del directorio de trabajo y las librerías que se emplearán en la sesión. También es recomendable incluir comentarios con el fin de recordar para qué sirven determinadas instrucciones y cómo llegamos a cierto resultado. Las actividades que realizamos con datos e información suelen ser similares entre diferentes proyectos por lo que comentar nos permite "reciclar" nuestros scripts con mayor facilidad.**
+
+## 2. Acceder a la documentación 
+
+En **R** y **RStudio** existen al menos dos formas de obtener información sobre funciones. La primera es con `?` y la segunda con `??` más un criterio de búsqueda. La primera rastrea términos exactos y la segunda trabaja con coincidencias aproximadas por lo que nos permite acceder a la información sobre funciones de librerías que no tenemos instaladas. En **RStudio** contamos además con el atajo `<F1>` que podemos activar tras teclear el nombre de alguna función reconocida como válida.  
+
+```{r eval=FALSE}
+# Buscar información para la función filter()
+?filter    
+??filter
+
+# Buscar información para la función mean()
+?mean
+??mean
+```
+
+Para acceder a información relativa a paquetes o librerías, tenemos `package?nombre_paquete`, `help(package="nombre_paquete")` y `??nombre_paquete`. El tipo de documentación al que accesan esos comandos no se encuentra estandarizada por lo que cada opción mostrará resultados diferentes para cada librería y entre distintas librerías. Accedamos, por ejemplo, a la información de dos de las librerías más importantes en **R**: `tidyverse` y `data.table`:
+
+```{r eval=FALSE}
+# Documentación para tidyverse
+package?tidyverse
+help(package="tidyverse")
+??tidyverse 
+
+# Documentación para data.table
+package?tidyverse
+help(package="tidyverse")
+??tidyverse 
+```
+
+_Nota: Mientras que en **R** se abrirá un navegador, en **RStudio** la documentación aparece en la ventana inferior derecha._
+
+
+## 3. Instalación, carga y actualización de librerías
+
+Las funciones para instalar y cargar librerías en nuestro entorno de trabajo (es decir, en nuestra sesión actual) son **`install.packages()`** y **`library()`**. Con la primera podemos descargar librerías de forma individual o múltiple:
+
+```{r eval=FALSE}
+# Para descargar librerías individualmente
+install.packages("libreria")
+
+# Para descargar múltiples librerías
+install.packages(c("libreria_uno", "libreria_dos", "libreria_tres"))
+```
+
+Por su parte, la carga de librerías solo puede hacerse una a una. Sin embargo, la librería **`pacman`** cuenta con **`p_load()`**, una función pensada en esa necesidad:
+
+```{r eval=FALSE}
+# Para cargar librerías individualmente
+library("libreria")
+
+# Para cargar múltiples librerías con pacman
+# Descargamos la librería
+install.packages("pacman")
+# Cargamos la librería en nuestro entorno de trabajo
+library("pacman")
+# Utilizamos la función p_load()
+p_load(libreria_uno, libreria_dos, libreria_n)
+```
+
+La actualización de **R** se hace a través de la función **`updateR()`** de la librería **`installr`**:
+```{r eval=FALSE}
+# Uso de installr para actualizar nuestra versión de R
+install.packages("installr")
+library("installr")
+updateR()
+```
+Si contamos con la versión más reciente, en consola se mostrará el mensaje `[1] FALSE`. En caso contrario, el sistema nos indicará la existencia de una nueva versión y nos guiará en el proceso de instalación.
+
+En el caso de las librerías, la actualización no se realiza de forma automática cuando cambiamos de versión de **R** sino que es un proceso llevado a cabo por el usuario. Eso significa que **no siempre es necesario actualizar las librerías si instalamos la versión más reciente de R** a menos que que el paquete tenga nuevas funcionalidades (o se deprecien funcionalidades actuales), dependa de una versión más nueva o sea recomendado por los autores de las librerías. Esto supone que debemos verificar que la actualización de librerías no se encuentre en conflicto con la estructura de nuestros códigos y scripts. Cuando ello ocurre, (por ejemplo, cuando una función cambia de nombre o es depreciada en favor de otra), será necesario realizar las modificaciones pertinentes. 
+
+Para actualizar las librerías, podemos revisar primero cuáles son las que tienen actualizaciones disponibles con **`old.packages()`** y obtener las versiones recientes con **`update.packages()`**. 
+
+```{r eval=FALSE}
+# Librerías actualizables en formato data.frame
+View(old.packages())
+
+# Para actualizar las librerías
+# El argumento ask=FALSE suprime el cuadro de diálogo que solicita permisos
+update.packages(ask=FALSE)
+```
+
+### 3.1 Notas importantes sobre librerías
+
+1. Las librerías instaladas vía `install.packages()` **sólo se descargan una vez** pero para llevarlas a nuestro espacio de trabajo es necesario hacerlo a través de `library()`. Por ello, si trabajamos en un script se considera una buena práctica agregar el signo **#** tras descargar una librería. De esa forma evitamos que se realice nuevamente el proceso de instalación. Ejecutemos el siguiente código desde un script:
+
+```{r eval=FALSE}
+# Instalemos las librerías tidyverse y data.table
+install.packages(c("tidyverse", "data.table"))
+
+# La primera sentencia nos mostrará "TRUE" y la segunda "FALSE"
+is.element(c("tidyverse","data.table"), installed.packages())	
+is.element(c("tidyverse","data.table"), loadedNamespaces())	
+```
+
+2. **En `R` distintas librerías suelen tener funciones con un mismo nombre**. Cuando cargamos paquetes que se encuentran en ese supuesto, recibimos advertencias en la consola y se "enmascaran" (ocultan) las funciones cargadas previamente y **R** prioriza la más reciente. Por ejemplo, cuando cargamos `tidyverse` se podría observar una lista como la siguiente:
+
+``` {r eval=FALSE}
+library(tidyverse)
+-- Conflicts --------------------------------------- tidyverse_conflicts()
+x tidyr::expand() masks Matrix::expand()
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()
+x tidyr::pack()   masks Matrix::pack()
+x tidyr::unpack() masks Matrix::unpack()
+```
+
+3. Para evitar posibles resultados no deseados al aplicar una función que se encuentra "enmascarada", lo correcto es usar el esquema `libreria::funcion`. Por ejemplo, si queremos usar la función `lag()` de la librería `stats`, la llamamos como `stats::lag()`. En cambio, si nos interesa esa misma función pero de `dplyr`, lo correcto es emplear `dplyr::lag()`. **Es importante estar atentos a los mensajes que se despliegan en consola cuando cargamos librerías.**
+
+## 4. Directorio de trabajo, rutas relativas y rutas absolutas
+
+El directorio de trabajo (_"working directory"_) es el lugar dentro de nuestra computadora donde se guardan por defecto los archivos (bases de datos y scripts, por ejemplo) que generamos en **R**. Para conocer la ubicación de este directorio, ingresamos el siguiente comando en nuestra consola:
+
+```{r eval=FALSE}
+getwd()
+```
+
+El directorio de trabajo establece un "punto inicial" y nos permite trabajar con **"rutas relativas"** (**_relative paths_**) respecto a esa ubicación. Para explicar este concepto crearemos primero una carpeta llamada **Curso R** en nuestro escritorio y dentro de ella las subcarpetas **bd** y  **scripts**
+
+A continuación, cambiaremos la ubicación de nuestro directorio de trabajo. Nos situamos dentro de **Curso R** y copiamos la ruta. Abrimos un nuevo script y pegamos la ruta en la función `setwd()` con lo que tendremos algo parecido a lo siguiente:
+
+```{r eval=FALSE}
+setwd("C:\Users\Alex\Desktop\Curso R")
+
+# Ojo: La ruta es distinta para cada usuario
+```
+
+Antes de ejecutar, cambiaremos la barra hacia atrás (_"backslash"_) **`\`** por la barra hacia adelante (_"forward slash"_) **`/`**. Esto se hace para efectos de simplicidad y de compatibilidad con otros entornos como Linux. El resultado será similar a este:
+
+```{r eval=FALSE}
+setwd("C:/Users/Alex/Desktop/Curso R")
+```
+
+Ejecutamos y verificamos que la ubicación de nuestro directorio ha cambiado:
+```{r eval=FALSE}
+getwd()
+```
+
+Ahora emplearemos la función `list.files()` y veremos que las carpetas que creamos previamente se encuentran en nuestro directorio:
+```{r eval=FALSE}
+list.files()
+```
+A continuación instalemos la librería `here` y llevémosla a nuestro entorno de trabajo. Recibiremos en consola un mensaje que nos indica cuál es la ubicación que define nuestro directorio de trabajo. 
+
+```{r eval=FALSE}
+install.packages(here)
+library(here)
+here() starts at C:/Users/Alex/Desktop/Curso R
+```
+
+La función que nos permite trabajar con rutas relativas es justamente `here()`. Supongamos que por la estructura de nuestro directorio de trabajo nuestra carpeta para alojar archivos con bases de datos es **bd**. Utilizando `here()` señalamos primero la carpeta y después el nombre del archivo que queremos guardar. Ejecutemos desde un script el código que aparece a continuación. De momento no nos preocupemos por entender todo lo que está sucediendo, lo importante es observar el resultado.
+
+```{r eval=FALSE}
+# Guardamos una base cualquiera usando here dentro de write.csv
+write.csv(mtcars, here("bd", "mc.csv"))
+# Verificamos que el archivo se encuentre en la carpeta indicada
+list.files(here("bd"))
+```
+
+Si quisiéramos cargar el archivo recién creado a nuestro entorno de trabajo, lo podemos hacer de la siguiente forma:
+```{r eval=FALSE}
+data <- read.csv(here("bd", "mc.csv"))
+```
+
+El uso de paths relativos con la librería `here` favorece el ahorro de código y reduce errores. En la forma convencional (con "rutas absolutas"), si quisiéramos ver si nuestro archivo `mc.csv` quedó guardado en la carpeta **bd** tendríamos que ejecutar:
+
+```{r eval=FALSE}
+list.files(path="C:/Users/Alex/Desktop/Curso R/bd")
+```
+
+Si llegáramos a cambiar el sitio de nuestro directorio de trabajo (es decir, que movamos todas las carpetas y su contenido), bastará utilizar `setwd()` para definir la nueva ubicación y nuestros paths relativos continuarán funcionando correctamente. Si nos valiéramos de los paths absolutos, podríamos cometer errores especificando las rutas. 
+
+Como advertencia, debe señalarse que `here()` funciona correctamente si se fija primero el directorio de trabajo y posteriormente se carga la librería. En otras palabras, la estructura inicial de nuestro script debería ser:
+
+```{r eval=FALSE}
+setwd("ruta_del_directorio")
+library(here)
+# Resto del script
+```
+
+## 5. La función ls()
+
+Es una función que nos devuelve la lista de objetos en un entorno especificado. Cuando se utiliza sin argumentos, la función regresa las bases de datos, variables y funciones definidas por el usuario. En **RStudio**, la pestaña **"Environment"**, situada en la parte superior derecha, muestra el listado de todos los objetos en el entorno global. Por su parte, la función `ls.str()` es una variación de `ls()` a la cual se le aplica la función `str()`. Con el argumento "mode" podemos obtener listados para nombres específicos:
+
+```{r eval=FALSE}
+# Listado de funciones
+ls.str(mode="function")
+
+# Listado de data.frames
+ls.str(mode="list")
+```
+**_Nota: En la sección 2 del curso se verá por qué una data.frame es una lista _**
+
+Se suele emplear `ls()` dentro de la función `rm()` (_"remove"_) para generar un espacio de trabajo en blanco de la siguiente manera:
+
+```{r eval=FALSE}
+rm(list=ls())
+```
+
+Sin embargo, esta acción es desaconsejada ya que sólo se limpia el espacio de trabajo actual pero los objetos guardados permanecen cuando abrimos una nueva sesión de **R**.Por ello, se sugiere nunca guardar imagen del área de trabajo" cuando concluimos sesión en **R** y desactivar la opción **"Restore .RData into workspace at startup"** en **R Studio**. La ruta a seguir es `Tools > Global options > General`. 
+
+Asimismo, se considera una buena práctica trabajar con rutas relativas usando `here` como vimos anteriormente o por "proyectos", en particular si nuestros códigos serán utilizados y/o replicados por terceros. Los proyectos son tratados en el capítulo 8 de ["R for Data Science"](https://r4ds.had.co.nz/workflow-projects.html) y en el [sitio web de R Studio](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects).
+
+## 6. La función str()
+
+En la sección anterior se hizo mención de `str()`. Se trata de una función denominada "genérica", lo que significa básicamente que su "salida" (resultado en consola) se "adapta" a cada tipo de dato (es decir, al objeto que se ingresa como argumento). Como se verá a lo largo de este curso, **`str()`** es la función por antonomasia para realizar el primer acercamiento a una base de datos. 
+
+¿Qué nos regresa `str()` para cada tipo de objeto? (Correr cada línea por separado)
+```{r eval=FALSE}
+str(5)
+str("5")
+str(NA)
+str(factor(c("A","B","C")))
+str(mtcars)
+```
+
+## 7. El uso de source()
+
+**`source()`** es una función que ejecuta el contenido de un archivo, principalmente scripts, con la extensión **.R**. La ventaja de utilizar **`source()`** es que nos permite cargar librerías y funciones que empleamos de forma recurrente. Su principal argumento es el nombre del archivo (entre comillas). Si el archivo se encuentra en el directorio de trabajo, bastará con indicar su nombre; si se halla en alguna subcarpeta, podemos hacer uso de los paths relativos con `here()`.
+```{r eval=FALSE}
+# Ejecutando un script desde el directorio de trabajo
+source("script.R")
+
+# Ejecutando un script desde un path relativo
+source(here("nombre_carpeta","script.R"))
+```
+
+## 8. Codificaciones 
+The heart of what I want to illustrate, though, is that:
+
+    Text is represented on computers by sequences of bytes;
+    An encoding is used to map sequences of bytes to the written language it represents;
+    The unicode standard is an effort to map written language to a single, standardized encoding;
+    UTF-8 is the most common way of encoding unicode characters, but it is not the only way.
+
+
+Un punto que solemos obviar cuando creamos y compartimos texto es la codificación. Sin embargo, podríamos experimentar problemas para leer archivos o scripts en otra configuración idiomática debido a la diversidad de formas en que se escriben los caracteres. Incluso sigue siendo común encontrar caracteres "extraños" en archivos tipo Excel o de texto debido justamente a problemas de codificación. 
+
+El tema de las codificaciones es amplio y únicamente abordaremos los aspectos que nos interesan para efectos de su uso en **R**. Una muy buena introducción puede encontrarse en [**este artículo**](https://pmoracho.github.io/blog/2019/06/04/Unicode/).
+Es fundamental recordar que la codificación se refiere a las formas en que se escriben los caracteres por lo que para efectos prácticos no existe el llamado "texto plano". Actualmente, las codificaciones más habituales son la llamada "Latin1" (también conocida como ANSI) y  la UTF-8. 
+
+UTF-8 es la abreviatura para "8-bit Unicode Transformation Format" y es sin duda la codificación más extendida, en particular en el entorno de la world wide web. UTF-8 es un estándar internacional que incluye signos de casi todo los idiomas para el procesamiento electrónico de datos. Por ese motivo, se sugiere configurar nuestro entorno en UTF-8. 
+
+En **RStudio** esto se logra mediante `Tools > Global options > Code > Saving `. Encontraremos las opciones de codificación en `Change`. En **R-GUI** para Windows esto no es posible debido a la interacción del programa con el sistema operativo que maneja su propia configuración "nativa". Por tanto, asumiendo que la mayoría de nosotros usamos Windows, si nos interesa compartir o utilizar nuestros archivos entre diferentes entornos (como Linux o MAC), lo ideal es valernos de **RStudio** (debido a su consistencia entre plataformas) y guardar nuestros scripts con la configuración de UTF-8 antes mencionada. 
+
+Si trabajamos exclusivamente en Windows y usamos de manera indistinta **R-GUI** y **RStudio**,se sugiere guardar los scripts con la codificación WINDOWS-1252 siguiendo la ruta `File > Save with Encoding...`. Esto permitirá guardar nuestro script con dicha configuración y no afectará las especificaciones globales. Con ello, aseguramos una lectura homogénea de los scripts entre ambas aplicaciones. 

@@ -17,8 +17,12 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   theme_elegante_std <- function(base_family) {}
 }
 
-covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
-
+# Para descarga de los datos actualizados
+# covid.data <- read_csv('https://docs.google.com/spreadsheets/d/16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA/export?format=csv&id=16-bnsDdmmgtSxdWbVMboIHo5FRuz76DBxsz_BbsEVWA&gid=0')
+# saveRDS(covid.data, './data/covid.casos.arg.Rda')
+# Dependiendo del horario, la última fila puede ser un placeholder si datos
+# covid.data <- covid.data[covid.data$dia_inicio != max(covid.data$dia_inicio),] 
+covid.data <- readRDS('./data/covid.casos.arg.Rda')
 last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
 
 covid.data %>% 
@@ -38,15 +42,15 @@ plot_data %>%
                               summarise(mediana = median(cantidad)),
                     aes(x = distrito, y = mediana, label=paste("Mediana:",mediana)),
                     family = "Ralleway",
-                    vjust= 8,
-                    hjust= -2) +
+                    vjust= 2,
+                    hjust= -1) +
     geom_text_repel(data = plot_data %>% 
                     group_by(distrito) %>%
                     summarise(maximo = max(cantidad)),
                   aes(x = distrito, y = maximo, label=paste("Cantidad máxima en un día:",maximo, "casos")),
                   family = "Ralleway",
-                  vjust= -8,
-                  hjust= 2) +
+                  vjust= -1,
+                  hjust= -1) +
     coord_flip() +
     scale_fill_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
     theme_elegante_std(base_family = "Ralleway")  +

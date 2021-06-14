@@ -479,9 +479,84 @@ Esto es a veces razonable en aplicaciones de control de procesos. El caso más
 común de estimar $\sigma$ de los datos conduce a intervalos en la distribución
 \textit{t} y es discutido en el Capítulo \ref{datosavanzados})
 
+Como se sabe que la distribución normal es simétrica, de tal forma que
+$N_{0.025} = -N_{0.975}$, es común escribir la fórmula para el intervalo de
+confianza como $\bar{x} \pm \sigma \sqrt{n} \times N_{0.975}$. El cuantil en sí
+a menudo se escribe $\phi^{-1}(0.975)$, donde $\phi$ es la notación estándar para la
+dunción de distribución acumulativa de la normal (\texttt{pnorm}).
 
+Otra aplicación de los cuantiles está relacionada con las gráficas $Q - Q$
+(consulte la Sección \ref{qqplots}), que puede usarse para evaluar si un
+conjunto de datos puede ser razonablemente suponer que proviene de una
+distribución dada.
 
-\subsection{Random numbers}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Numéros aleatorios}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Para muchas personas, suena como una contradicción generar números al azar en
+una computadora ya que se supone que sus resultados son predecibles y
+reproducibles. Lo que sí es posible es generar secuencias de números
+"pseudoaleatorios", que a efectos prácticos se comportan como si fueran números
+al azar
+
+Aquí se usan números aleatorios para darle al lector una idea de la forma en que
+el azar afecta las cantidades que se pueden calcular a partir de un conjunto de
+datos. En estadísticas profesionales, se utilizan para crear conjuntos de datos
+simulados para Estudiar la precisión de las aproximaciones matemáticas y el
+efecto de las suposiciones que se violan.
+
+El uso de las funciones que generan números aleatorios es sencillo. El primer
+parámetro especifica la cantida de números aleatorios a calcular, y el Los
+parámetros posteriores son similares a los de otras funciones relacionadas con
+a las mismasdistribuciones. Por ejemplo,
+
+\begin{lstlisting}[language=R]
+> rnorm(10)
+[1] -0.2996466 -0.1718510 -0.1955634  1.2280843 -2.6074190
+[6] -0.2999453 -0.4655102 -1.5680666  1.2545876 -1.8028839
+
+> rnorm(10)
+[1]  1.7082495  0.1432875 -1.0271750 -0.9246647  0.6402383
+[6]  0.7201677 -0.3071239  1.2090712  0.8699669  0.5882753
+
+> rnorm(10, mean=7, sd=5)
+[1]  8.934983  8.611855  4.675578  3.670129  4.223117  5.484290
+[7] 12.141946  8.057541 -2.893164 13.590586
+
+> rbinom(10, size=20, prob=.5)
+[1] 12 11 10  8 11  8 11  8  8 13
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicios}
-\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{enumerate}
+
+    \item[3.1]
+     Calcule la probabilidad de cada uno de los siguientes eventos:
+    (a) Una variable normalmente distribuida mayor a 3. (b) Una variable normalmente
+    distribuida con un media de 35 y una desviación estándar de 6 que es mayor que
+    42. (c) Obtención de 10 de 10 aciertos en una distribución binomial con
+    probabilidad 0.8. (d) $X < 0.9$ cuando $X$ tiene la distribución uniforme
+    estándar. (e) $X > 6.5$ en una distribución $\chi^{2}$ con 2 grados de libertad.
+
+    \item[3.2]
+    Una regla general es que el 5\% de la distribución normal se encuentra fuera de
+    un intervalo de aproximadamente $\pm2$ sobre la media. ¿Hasta qué punto esto es
+    cierto? Dónde están los límites correspondientes al 1\%, 0,5\% y 0,1\%? Cual es
+    la posición de los cuartiles medidos en unidades de desviación estándar?
+
+    \item[3.3]
+    Para una enfermedad que se sabe que tiene una frecuencia de complicaciones
+    posoperatorias del 20\%, el cirujano sugiere un nuevo procedimiento. Lo prueba
+    en 10 pacientes y no hay complicaciones. ¿Cuál es la probabilidad de operar con
+    éxito en 10 pacientes con el método tradicional?
+
+    \item[3.4]
+    Se puede realizar un lanzamiento de monedas simulado utilizando
+    \texttt{rbinom} en lugar de \texttt{sample}. Cómo ¿exactamente harías eso?
+
+
+\end{enumerate}

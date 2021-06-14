@@ -59,3 +59,4 @@ covid.data %>%
        x = "Human development Index (2013)"
   ) +
   theme_elegante_std(base_family = "Ralleway")
+

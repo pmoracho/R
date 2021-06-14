@@ -361,6 +361,7 @@ menor que -0.3449.) Sin embargo, también se puede observar el intervalo de
 confianza del 95\% para la media real. Este intervalo es bastante amplio, lo que
 indica que tenemos muy poca información sobre el verdadero promedio.
 
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Gráficos}\label{graficos}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -384,7 +385,7 @@ hace mediante:
   \label{fig-2}
 \end{figure}
 
-% pdf('doc/img/fig-2.pdf', height = 5, width = 7)
+% pdf('doc/img/fig-2.pdf', height = 5, width = 7.5)
 % weight <- c(60,72,57,90,95,72)
 % height <- c(1.75,1.80,1.65,1.90,1.74,1.91)
 % plot(height,weight)
@@ -1233,9 +1234,9 @@ con un valor desconocido es otro valor desconocido.
 \subsection{Indexado de data frames}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Ya hemos visto que podemos extraer variables de un \texttt{data.frame},
-por ejemplo: \texttt{d\$intake.post}. De cualquier forma, es
-posible también usar una notación que aprovecha la estructura matricial del
+Ya hemos visto que es posible puede extraer las variables de un
+\texttt{data.frame}, por ejemplo de: \texttt{d\$intake.post}. De cualquier forma,
+es posible también usar una notación que aprovecha la estructura matricial del
 \texttt{data.frame}:
 
 \begin{lstlisting}[language=R]
