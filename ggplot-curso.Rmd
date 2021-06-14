@@ -1,0 +1,297 @@
+---
+title: "GGPLOT2"
+subtitle: "Para principiantes\n"  
+author: 
+  - Patricio Moracho
+
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r xaringan-themer, include=FALSE}
+library(xaringanthemer)
+library("tidyverse")
+style_duo_accent(
+  primary_color = "#1381B0",
+  secondary_color = "#FF961C",
+  inverse_header_color = "#FFFFFF",
+
+)
+
+if ("ggelegant" %in% rownames(installed.packages())) {
+  library("ggelegant")
+  base_familiy = "Raleway"
+} else {
+  # devtools::install_github("pmoracho/ggelegant")
+  theme_elegante_std <- function(base_family) {}
+  base_familiy = ""
+}
+
+
+```
+class: inverse, center, middle
+
+# Empecemos
+
+## para principiantes       
+
+---
+# Cargamos **ggplot2**
+
+```{r fig.height=4, message=FALSE, warning=FALSE, dev='svg', eval=FALSE}
+library("ggplot2")
+
+# Pero mejor aún 
+
+library("tidyverse")
+
+# O por que no..
+
+library(tidyverse)
+```
+---
+# Lo mínimo de un gráfico
+
+```{r plot1, fig.height=2, dev='svg'}
+ggplot(data = faithful,
+       mapping = aes(x = eruptions,
+                     y = waiting)) +
+  geom_point()
+```
+* `faithful` {datasets}: Old Faithful Geyser Data. Waiting time between eruptions and the duration of the eruption for the Old Faithful geyser in Yellowstone National Park, Wyoming, USA.
+* Ayuda: `help(faithful)` o `?faithful`
+---
+```{r plot1.1, echo=TRUE, fig.height=2, dev='svg'}
+ggplot(data = faithful,
+       mapping = aes(x = eruptions,
+                     y = waiting)) +
+  geom_point()
+```
+
+Importante:
+
+* Data / Datos
+* Mapping / Mapeos
+* Geoms / Geometrias
+* nombres de variables en el mapping
+* `+` para combinar elementos
+* Etiquetado automático
+
+---
+# Mismo gráfico
+
+Tres formas diferentes de construirlo
+
+```{r, fig.height=4, dev='svg', eval=FALSE}
+# 1. Datos y maping globales
+ggplot(data = faithful,
+       mapping = aes(x = eruptions,
+                     y = waiting)) +
+  geom_point()
+
+# 2. Datos globales, mapping local a la geometria
+ggplot(data = faithful)
+  geom_point(mapping = aes(x = eruptions,
+                           y = waiting))
+  
+# 3. Datos y mapeos locales a la geometria
+ggplot()
+  geom_point(data = faithful,
+             mapping = aes(x = eruptions,
+                           y = waiting))
+```
+---
+# Agregando nuevas dimensiones
+
+```{r plot2, fig.height=3.5, dev='svg'}
+ggplot(data = faithful,
+       mapping = aes(x = eruptions,
+                     y = waiting,
+                     color = eruptions < 3)) +
+  geom_point()
+```
+* Condiciones en el mapping
+* Sin necesidad de construir variables adhoc
+---
+# Agregando nuevas dimensiones
+
+```{r plot3, fig.height=3, dev='svg'}
+ggplot(data = faithful,
+       mapping = aes(x = eruptions,
+                     y = waiting)) +
+  geom_density_2d() +
+  geom_point() 
+```
+---
+```{r plot4, fig.height=3, dev='svg'}
+ggplot(data = faithful,
+       mapping = aes(x = eruptions,
+                     y = waiting)) +
+  geom_point() +
+  geom_density_2d()
+
+```
+
+* Múltiples geometrías
+* Dos capas que se componenen en el orden en que se escribe
+* Las geometrías tienen sus propias estadísticas asociadas
+---
+class: inverse, center, middle
+
+# Estadísticas
+
+---
+```{r plot5, fig.height=3, dev='svg'}
+ggplot(mpg) +
+  geom_bar(aes(x = class))
+```
+
+* `help(mpg)` -> Fuel economy data from 1999 to 2008 for 38 popular models of cars
+* `geom_bar` usa `stat_count()`
+* Estadísticas -> funicones `stat_*`
+* Cada `geom_` tiene asociado una estadística por defecto.
+* Puede aplicarse directamente `stat_*` pero la convención es usar el `geom_*` correspondiente
+---
+
+### Datos precalculados
+
+```{r plot6, fig.height=3, dev='svg'}
+mpg %>% 
+  count(class, name = 'count') %>% 
+  ggplot() + 
+    geom_bar(aes(x = class, y = count),
+             stat = 'identity')
+
+```
+---
+### El equivalente `geom_col()`
+
+Se trata de un atajo a `geom_bar()`
+
+```{r plot7, fig.height=3, dev='svg'}
+mpg %>% 
+  count(class, name = 'count') %>% 
+  ggplot() + 
+    geom_col(aes(x = class, y = count))
+
+```
+---
+### modificar las estadísticas
+
+```{r plot8, fig.height=3, dev='svg'}
+mpg %>% 
+   ggplot() + 
+    geom_bar(aes(x = class,
+                  y = after_stat(100 * count / sum(count))
+                  )
+              )
+
+
+```
+---
+### modificar las estadísticas
+```{r plot8.1, fig.height=3, dev='svg'}
+ggplot(mpg) + 
+  geom_density(aes(x = hwy))
+
+ggplot(mpg) +
+  geom_density(aes(x = hwy,
+                   y = after_stat(scaled)))
+```
+---
+### Cada geometría tiene sus requerimientos esteticos 
+
+```{r plot9, fig.height=4, dev='svg'}
+ggplot(mpg) + 
+    geom_histogram(aes(x = hwy))
+```
+---
+### Cada geometría tiene sus requerimientos esteticos 
+
+```{r plot10, fig.height=34, dev='svg'}
+ggplot(mpg) +
+  geom_density(aes(x = hwy))
+```
+---
+class: inverse, center, middle
+
+# Escalas
+
+funciones `scale_*`
+
+
+
+---
+class: inverse, center, middle
+
+# Facetas
+---
+### Versión clásica
+
+```{r plot11, fig.height=4, dev='svg'}
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy, color=class)) +
+  scale_color_discrete (name="Clase") +
+  scale_x_continuous(name="engine displacement, in litres") +
+  scale_y_continuous(name="highway miles per gallon") 
+```
+---
+### Facetado por `clase` y con `facet_wrap()`
+
+```{r plot12, fig.height=4, dev='svg'}
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy, color=class)) +
+  scale_color_discrete (name="Clase") +
+  scale_x_continuous(name="engine displacement, in litres") +
+  scale_y_continuous(name="highway miles per gallon") +
+  facet_wrap(~ class)
+```
+---
+### Facetado por `clase` y con `facet_grid()`
+
+```{r plot13, fig.height=4, dev='svg'}
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy, color=class)) +
+  scale_color_discrete (name="Clase") +
+  scale_x_continuous(name="engine displacement, in litres") +
+  scale_y_continuous(name="highway miles per gallon") +
+  facet_wrap(year ~ class)
+```
+---
+### Configurar escalas
+
+```{r plot14, fig.height=4, dev='svg'}
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy)) +
+      scale_x_continuous(name="engine displacement, in litres") +
+  scale_y_continuous(name="highway miles per gallon") +
+  facet_wrap(~ drv, scales="free")
+```
+---
+### Características
+
+* Divide los datos en múliples paneles
+* Cada panel tiene la misma construcción gráfica
+* No aplica a gráficas distintas
+* Es una manera óptima de evitar el "overplotting"
+* Entendiendo un panel se entienden todos
+* Sintaxis de formula para definir el facetado
+---
+
+---
+class: inverse, center, middle
+
+# Coordenadas
+
+
