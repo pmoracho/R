@@ -88,13 +88,13 @@ En lo personal, mi idea es aprovechar este desafío para:
 
 ## Día 1: Gráfico de barras / Columnas
 
-Una gráfica de barras o columnas, tal vez una de las más clásicas, muestra comparaciones numéricas entre una variable discreta y los valores continuos que toma cada una de estas variables discretas o "categorías". A diferencia de un histograma, los gráficos de barra no muestran un desarrollo continuo entre las categorías.
+Una gráfica de barras o columnas, tal vez una de las más clásicas, muestra comparaciones numéricas entre una variable discreta y los valores continuos que toma cada una de estas variables o "categorías". A diferencia de un histograma, los gráficos de barra no muestran un desarrollo continuo entre las categorías.
 
 Este ejemplo muestra las diferencia de situación con respecto al **COVID-19** en Argentina y los países vecinos, en cuanto a cantidad de casos y fallecidos. Usamos una escala logarítmica en el caso del eje `y` para que los enormes números de Brasil no nos oculten los datos del resto. 
 
 ### Preparamos los datos:
 
-```{r dia1-data, fig.align="center", fig.height=8, fig.width=10, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia1-data, fig.align="center", fig.height=8, fig.width=10, message=FALSE, warning=FALSE}
 library("tidyverse")
 
 if ("ggelegant" %in% rownames(installed.packages())) {
@@ -158,7 +158,7 @@ En este ejemplo, la idea es mostrar la evolución de los casos de **COVID-19** e
 
 ### Los datos
 
-```{r dia2-data, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia2-data, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 
 if ("ggelegant" %in% rownames(installed.packages())) {
@@ -285,7 +285,7 @@ Las "Facetas" no es un tipo de gráfico sino más bien una forma de mostrar uno 
 
 ### Los datos
 
-```{r dia4-data, cache=TRUE, fig.height = 8, fig.width = 10, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia4-data, fig.height = 8, fig.width = 10, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 
 if ("ggelegant" %in% rownames(installed.packages())) {
@@ -342,7 +342,7 @@ plot_data %>%
 
 ### Una linda visualización mediante [geofaceteAR]:
 
-Este paquete permite facetar siguiendo la estructura geografica, en esta caso de las provincias, dando una visión muy atractiva.
+Este paquete permite facetar siguiendo la estructura geografica, en esta caso el de las provincias de Argentina, da una visión muy atractiva y clara de los datos, ya no es necesario iterar visualmente hasta encontrar la información de un estado, sino que accedemos a la gráfica de forma más directa.
 
 ```{r dia4b, cache=TRUE, fig.height = 20, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
 library("geofaceteAR")
@@ -380,7 +380,7 @@ Los gráficos de arco forman parte de los diagramas de red, en este caso los nod
 
 ### Los datos
 
-```{r dia5-data, cache=TRUE, fig.height = 5, fig.width = 10, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia5-data, fig.height = 5, fig.width = 10, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("tidygraph")
 library("ggraph")
@@ -442,7 +442,7 @@ Odio las donas, pero bueno, en realidad se llaman "donuts plots", una variante d
 
 ### Los datos
 
-```{r dia6-data, cache=TRUE, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia6-data, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("ggrepel")
 
@@ -518,11 +518,11 @@ data %>%
 
 ## Día 7: Gráficos "Ridgeline"
 
-Los graficos "ridgeline" mapean la distribución de múltiples variables continuas con un conjunto de variables categoricas en la forma de curvas "suaves" que permite comparar  cada categoría:
+Los graficos "ridgeline" mapean la distribución de múltiples variables continuas con un conjunto de variables categoricas en la forma de curvas "suaves" que permite comparar cada categoría:
 
 ### Los datos:
 
-```{r dia7-data, cache=TRUE, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia7-data, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("ggridges")
 
@@ -589,10 +589,9 @@ plot_data %>%
 
 ## Día 8: Gráfico de contornos
 
-Este tipo de gráficos básicamente une puntos x e y que comparte un mismo vlor de una tercer variable z, el caso típico, son los mapa cartográficos , cuyas lineas unen puntos de semejante altura.
+Este tipo de gráficos básicamente une puntos x e y que comparte un mismo valor de una tercer variable z, el caso típico, son los mapa cartográficos , cuyas lineas unen puntos de semejante altura.
 
-
-```{r dia8, cache=TRUE, fig.height = 8, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia8-data, fig.height = 8, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("ggrepel")
 
@@ -630,7 +629,15 @@ covid.data %>%
   ) %>% 
   mutate(pais = ifelse(countriesAndTerritories == 'United_States_of_America', 'EEUU', countriesAndTerritories)) %>% 
   select(pais, casos, fallecidos, HDI = value) %>% 
-  mutate(pais_etiquetado = ifelse(pais %in% paises_de_interes, paste0(pais, " (casos: ", format(casos, digits=0, big.mark = ',', trim=TRUE), " hdi: ", HDI, ")"), NA)) %>% 
+  mutate(pais_etiquetado = ifelse(pais %in% paises_de_interes, paste0(pais, " (casos: ", format(casos, digits=0, big.mark = ',', trim=TRUE), " hdi: ", HDI, ")"), NA)) -> plot_data
+  
+kable(head(plot_data))
+
+``` 
+### La gráfica:
+
+```{r dia8, cache=TRUE, fig.height = 9, fig.width = 9, fig.align = "center", warning=FALSE, message=FALSE}
+plot_data %>% 
   ggplot(aes(x=HDI, y=casos)) +
   geom_point(color = "#67a9cf", alpha=.5, size=3) +
   geom_smooth(method = 'lm',formula='y ~ x', se=FALSE, color="#ef8a62") +
@@ -655,7 +662,7 @@ covid.data %>%
 
 Es una variante del gráfico de areas, que a su vez es una variante del de lineas, solo que en este caso se "apilan" más de una variable, lo que es útil para compararlas.
   
-```{r dia9, cache=TRUE, fig.height = 6, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia9-data, fig.height = 6, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("ggrepel")
 
@@ -690,6 +697,13 @@ data %>%
 
 last_date <- max(as.Date(covid.data$fecha,"%d/%m/%Y"))
 
+kable(head(plot_data))
+```
+
+### La gráfica:
+
+```{r dia9, cache=TRUE, fig.height = 6, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+
 plot_data %>% 
   ggplot(aes(x=dia, y=cantidades, fill=metrica, color=metrica)) + 
   geom_area(alpha=0.6 , size=1) +
@@ -711,6 +725,7 @@ plot_data %>%
   scale_color_discrete(palette = function(x) c("#67a9cf", "#ef8a62")) +
   guides(color = FALSE, label=FALSE) +
   theme_elegante_std(base_family = "Assistant")
+
 ```
 
 ## Día 10: Exploración de paletas de colores
@@ -718,6 +733,7 @@ plot_data %>%
 Nada del otro mundo, un script para generar una gráfica de ejemplo de una paleta determinada de colores, en este ejemplo explorando la del paquete `[wesanderson]`
   
 ```{r dia10, cache=TRUE, fig.height = 12, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+
 library("tidyverse")
 library("wesanderson")
 library("gridExtra")
@@ -755,7 +771,7 @@ grid.arrange(grobs = plots, ncol = 2)
 
 Un mapa de calor muestra la variación en una determinada variable (por lo general continua) mediante el uso del color. En este ejemplo mapeamos tres variables, el distrito o provincia (categórica), la cantidad de días desde el primer contagio (categórica) y la variable continua de la cantidad de casos que es la que mapeamos a la dimensión del color. 
 
-```{r dia11, cache=TRUE, fig.height = 8, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia11-data, fig.height = 8, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("zoo")
 library("forcats")
@@ -801,7 +817,16 @@ dias %>%
          s_roll_casos_3 = replace_na((roll_casos_3-min(roll_casos_3))/(max(roll_casos_3)-min(roll_casos_3)),0),
          label_casos = casos
   ) %>% 
-  filter(dia >= ndias - dias_ventana ) %>% 
+  filter(dia >= ndias - dias_ventana ) -> plot_data
+
+kable(head(plot_data))
+```
+
+### La gráfica:
+
+```{r dia11, cache=TRUE, fig.height = 6, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+
+plot_data %>% 
   ggplot(aes(x = dia, y =   fct_reorder(distrito, casos), fill = s_roll_casos_3)) + 
     geom_tile(colour="gray80", size=0.2) +
     geom_text(aes(label=label_casos, color = s_roll_casos_3 > .7)) +
@@ -821,7 +846,9 @@ dias %>%
 
 ## Día 12: Un gráfico lolipop 
 
-```{r dia12, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+Es básicamente un gráfico de barras, pero se remplaza la barra por una línea que se completa con un punto al final dela barra.
+
+```{r dia12-data, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("forcats")
 library("countrycode")
@@ -854,7 +881,15 @@ media_fallecidos <- mean(data$fallecidos)
 data %>% 
   filter(nr <= 50) %>% 
   mutate(sobre_media = casos > media_casos,
-         pais = paste0(countrycode(code_pais, origin = 'iso3c', destination = 'un.name.es'), " (", nr, ")")) %>% 
+         pais = paste0(countrycode(code_pais, origin = 'iso3c', destination = 'un.name.es'), " (", nr, ")")) -> plot_data
+
+kable(head(plot_data))
+```
+
+### La gráfica:
+
+```{r dia12, cache=TRUE, fig.height = 8, fig.width = 12, fig.align = "center", warning=FALSE, message=FALSE}
+plot_data %>% 
   ggplot(aes(x=fct_reorder(pais, -nr), y=casos, color = sobre_media)) +
   geom_segment(aes( y=0 , xend = pais, yend = casos)) + 
   geom_point() +
@@ -880,7 +915,7 @@ data %>%
 
 Nada del otro mundo, el clásico gráfico de lineas, en el eje X tenemos el tiempo y en el Y un precio, en este caso el vaalor del dólar en Argentina en los últimos años, con algunas anotaciones, como ser los comiencos de cada presidencia.
 
-```{r dia13, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia13-plot, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("ggrepel")
 
@@ -899,6 +934,14 @@ presidencias <- data.frame(fecha = as.Date(c('2019-12-10', '2015-12-10')), presi
 dolar <- readRDS(url("https://github.com/pmoracho/R/raw/master/data/dolar.Rda","rb"))
 
 dolar$indice_tiempo = as.Date(dolar$indice_tiempo, format = "%Y-%m-%d")
+
+kable(head(dolar))
+```
+
+### La gráfica:
+
+```{r dia13, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+
 dolar %>% 
   ggplot(mapping = aes(x=indice_tiempo, y=tipo_cambio_bna_vendedor)) + 
   geom_line(size = 1, color="#67a9cf") +
@@ -933,7 +976,7 @@ dolar %>%
 
 Los diagramas de árbol o "treemap" mapean dos variables, una categorica y otra cuantitativa, visualmente se construyen áreas por cada categoría con una superficie consistente con la variable numérica. En este ejemplo mapeamos la cantidad de casos acumulada de COVID por provincia, destacando las provincias que suman 95% de los casos totales
 
-```{r dia14, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia14-data, cache=TRUE, fig.height = 8, fig.width = 14, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("ggrepel")
 library("treemapify")
@@ -966,8 +1009,15 @@ dias %>%
   group_by(distrito) %>% 
   summarise(casos = sum(casos)) %>% 
   arrange(-casos) %>% 
-  mutate(porc = cumsum(casos/sum(casos))) %>% 
+  mutate(porc = cumsum(casos/sum(casos))) -> plot_data
 
+kable(head(plot_data))
+```
+
+### La gráfica:
+
+```{r dia14, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
+plot_data %>%   
   ggplot(aes(area = casos, fill = casos, label=paste0(distrito, ": ", format(casos, big.mark = ".", decimal.mark = ",")),
              subgroup = ifelse(porc <= .95, "95%", ""))) +
   geom_treemap() +
@@ -1173,7 +1223,7 @@ Este gráfico, en su forma más básica, trabaja con una variable categoríca y 
 
 En este ejemplo, vemos como se distribuyen los casos de **COVID-19** en Argentina, facetado por sexo, en este caso cada cuadrado representa el 10% de su grupo y el 5% del total de casos.
 
-```{r dia16, cache=TRUE, fig.height = 8, fig.width = 10, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia16-data, echo=TRUE, fig.align="center", fig.height=8, fig.width=10, message=FALSE, warning=FALSE}
 library("tidyverse")
 library("waffle")
 
@@ -1211,7 +1261,15 @@ covid.data %>%
   group_by(sexo, clasif_edad) %>% 
   summarise(n = n()) %>%
   mutate(freq = round(100*(n / sum(n)),0),
-         clasif_edad = factor(clasif_edad, c('0 a 6', '7 a 14', '15 a 35', '36 a 65', '>= 66'))) %>%
+         clasif_edad = factor(clasif_edad, c('0 a 6', '7 a 14', '15 a 35', '36 a 65', '>= 66'))) -> plot_data
+
+kable(head(plot_data))
+```
+
+### La grafica:
+
+```{r dia16, echo=TRUE, fig.align="center", fig.height=8, fig.width=10, message=FALSE, warning=FALSE, cache=TRUE}
+plot_data %>% 
   ggplot(aes(fill = clasif_edad, values = freq)) +
   geom_waffle(n_rows = 10, size = 0.33, colour = "white", flip = TRUE) +
   scale_y_continuous(breaks = seq(0, 10, by = 1), labels = function(x) x * 10) +
@@ -1225,7 +1283,7 @@ covid.data %>%
        caption = "Fuente: datos.gob.ar",
        y = "",
        x = "") 
-  2# theme(axis.text.x=element_blank())
+  # theme(axis.text.x=element_blank())
 ```
 
 ## Día 17: Un Sankey o Alluvial
@@ -1234,7 +1292,7 @@ Los diagramas de Sankey muestran flujos entre distintas variables categorícas y
 
 En este ejemplo, tomamos los casos de **COVID-19** en Argentina y analizamos la evolución de los mismos. Los dos primeros niveles muestran como se componene los casos entre el sexo y el rango etario, y los siguientes muestran la evolución posterior de los casos. 
 
-```{r dia17, cache=TRUE, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia17-data, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("ggalluvial")
 if ("ggelegant" %in% rownames(installed.packages())) {
@@ -1276,6 +1334,12 @@ covid.data %>%
     summarise(n = n()) %>% 
   ungroup() -> plot_data
 
+kable(head(plot_data))
+```
+
+### La grafica:
+
+```{r dia17, cache=TRUE, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
 plot_data %>% 
   ggplot(mapping=aes(y = n,
                      axis1 = fallecido, axis2 = internado, axis3 = sexo, axis4 = clasif_edad)) +
@@ -1303,7 +1367,7 @@ plot_data %>%
 
 En este casos hacemos un mapa de puntos ("dot map") dónde cada punto es una coordenada geográfica y representa una ocurrencia de una variable categórica. Usamos el mapa de la Ciudad de Buenos Aires y la estadísticas de delitos del año 2018, para ubicar estos geográficamente.
 
-```{r dia18, cache=TRUE, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia18-data, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("sf")
 
@@ -1326,6 +1390,12 @@ delitos %>%
   st_as_sf(coords = c("long","lat"), remove = FALSE,  crs = 4326) %>% 
   st_join(comunas)-> delitos_puntos
 
+kable(head(plot_data))
+```
+
+### La grafica:
+
+```{r dia18, cache=TRUE, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
 ggplot(delitos_puntos) +
   geom_sf(data = comunas, fill = "white") +
   geom_sf(data = delitos_puntos, aes(color=tipo_delito, alpha = 1), size=1) +
@@ -1407,7 +1477,7 @@ dias %>%
 
 ## Día 20: Gráfico de redes
 
-```{r dia20, cache=TRUE, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
+```{r dia20-data, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
 library("tidyverse")
 library("ggraph")
 library("igraph")
@@ -1444,21 +1514,29 @@ covid.data %>%
                                  edad > 65 ~ '>= 66')) %>% 
   select(sexo, edad, clasif_edad, internado, cui, arm, fallecido) %>%
   group_by(clasif_edad, sexo, internado, fallecido) %>% 
-  summarise(n = n()) -> plot_data
+  summarise(n = n()) -> data
 
 
-plot_data %>% 
+data %>% 
   group_by(sexo, clasif_edad) %>% 
   summarise(n=sum(n)) %>% 
   select(from=sexo, to=clasif_edad, n) -> sexo_edad
 
-plot_data %>% 
+data %>% 
   group_by(internado, clasif_edad) %>% 
   summarise(n=sum(n)) %>% 
   select(to=internado, from=clasif_edad, n) -> internado_edad
 
 internado_edad %>%
-  rbind(sexo_edad) %>% 
+  rbind(sexo_edad) -> plot_data
+
+kable(head(plot_data))
+```
+
+### La grafica:
+
+```{r dia20, cache=TRUE, fig.height = 8, fig.width = 16, fig.align = "center", warning=FALSE, message=FALSE}
+plot_data %>% 
   graph_from_data_frame() %>% 
   ggraph(layout = 'stress') +
   geom_edge_link(aes(edge_width=n), show.legend = TRUE, alpha=0.5, color = "#67a9cf") +
@@ -1530,7 +1608,7 @@ df %>%
 
 Una clásica "nube de palabras", en este caso de mi cuenta de **twitter**. Bastante fácil de implementar con `ggwordcloud` para la gráfica y `rtweet` para la parte de extracción de **twitter**.
 
-```{r dia22, fig.align="center", fig.height=8, fig.width=16, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia22-data, fig.align="center", fig.height=8, fig.width=16, message=FALSE, warning=FALSE}
 library("tidyverse")
 library("rtweet")
 library("tidytext")
@@ -1543,14 +1621,13 @@ if ("ggelegant" %in% rownames(installed.packages())) {
   theme_elegante_std <- function(base_family) {}
 }
 
-# Twitter API Completar con los datos apropiados
-#   create_token(
-#     app = "",
-#     consumer_key = "",
-#     consumer_secret = "",
-#     access_token = "",
-#     access_secret = a"pi.security$access_secret""
-#   )
+# authenticate via web browser
+# token <- create_token(
+#   app = "MarloweApp",
+#   consumer_key = "",
+#   consumer_secret = "",
+#   access_token = "",
+#   access_secret = "")
 
 # Datos Originales
 # RAE_Corpus_1000 <- read.table(file="http://corpus.rae.es/frec/1000_formas.TXT", skip=1, header=FALSE,
@@ -1578,7 +1655,15 @@ my_words %>%
 my_words %>%
   inner_join(my_words_count %>% head(100), by = "word") %>% 
   # filter(!(word %in% c('https', 'http'))) %>% 
-  count(word) %>% 
+  count(word) -> plot_data
+
+kable(head(plot_data))
+```
+
+### La grafica:
+
+```{r dia22, fig.align="center", fig.height=8, fig.width=16, message=FALSE, warning=FALSE, cache=TRUE}
+plot_data %>% 
   ggplot(aes(label = word, size=n, color=n)) +
   geom_text_wordcloud() +
   scale_size_area(max_size = 20) +
@@ -1593,7 +1678,7 @@ my_words %>%
 
 ## Día 23: Sunburst
 
-```{r dia23, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia23-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library("tidyverse")
 
 if ("ggelegant" %in% rownames(installed.packages())) {
@@ -1629,6 +1714,13 @@ plot_data %>%
          text = paste0(cantidad),
          text2 = max(dia)-dia) -> label_data
 
+kable(head(plot_data))
+kable(head(label_data))
+```
+
+### La grafica:
+
+```{r dia23, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
 plot_data %>% 
   ggplot(aes(x=nr, y=cantidad+1, fill=distrito)) +
   geom_bar(stat="identity", alpha=0.5, color="black", size=.05) +
@@ -1673,7 +1765,7 @@ plot_data %>%
 
 ## Día 24: Coropletas
 
-```{r dia24, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia24-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library("tidyverse")
 library("sf")
 library("viridis")
@@ -1707,7 +1799,15 @@ delitos_puntos %>%
   select(barrios, comunas, nrank) -> ranking_comunas
 
 comunas %>% 
-  left_join(ranking_comunas,  by = "comunas") %>% 
+  left_join(ranking_comunas,  by = "comunas") -> plot_data
+
+kable(head(plot_data))
+```
+
+### La grafica:
+
+```{r dia24, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+plot_data %>% 
   ggplot() +
     geom_sf(aes(fill = nrank), color="gray60") +
   scale_fill_viridis(option = "inferno", direction = -1) +
@@ -1733,7 +1833,7 @@ comunas %>%
 
 ### Los datos:
 
-```{r dia25-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia25-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library("tidyverse")
 library("ggrepel")
 
@@ -1800,7 +1900,7 @@ plot_data %>%
 
 ### Los datos:
 
-```{r dia26-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia26-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library("tidyverse")
 library("ggmosaic") # devtools::install_github("haleyjeppson/ggmosaic")
 
@@ -1847,7 +1947,7 @@ Los gráficos animados son una muy útil herramienta para visualizar la evoluci�
 
 ### Los datos:
 
-```{r dia27-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia27-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library("tidyverse")
 library("countrycode")
 
@@ -1941,13 +2041,13 @@ system(paste0('ffmpeg -y -ss 30 -t 3 -i ', getwd(), '/dia27.mp4', '-vf "fps=10,s
 
 ## Día 28: Diagramas de cuerdas
 
-Los gráficos animados son una muy útil herramienta para visualizar la evolución de variables, por lo general en el tiempo. En este ejemplo, transformo una de las anteriores gráficas (lollipop) en una gráfica animada.
+Los diagramas de cuerda se usan para mostrar relaciones entre entidades (variables categoricas), la importancia de esa relación puede estar definido por una variable continua. De alguna manera es una variante de los diagramas de redes, pero organizado de forma circular. Este tipo de diagramas se popularizado en 2007 gracias a su uso en las infografías presentadas por el New York Times sobre el genoma humano.
 
 NOTA: Con este lamentablemente se murió la esperanza de resolver todo gon **ggplot2**
 
 ### Los datos:
 
-```{r dia28-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia28-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library("circlize")
 library("tidyverse")
 
@@ -1981,11 +2081,11 @@ covid.data %>%
   ) %>% 
   group_by(clasif_edad, sexo, internado, fallecido) %>% 
   summarise(n = n()) -> plot_data
+
+kable(head(plot_data))
 ```
 
 ### La gráfica:
-
-Los diagramas de cuerda se usan para mostrar relaciones entre entidades (variables categoricas), la importancia de esa relación puede estar definido por una variable continua. De alguna manera es una variante de los diagramas de redes, pero organizado de forma circular. Este tipo de diagramas se popularizado en 2007 gracias a su uso en las infografías presentadas por el New York Times sobre el genoma humano.
 
 ```{r dia28, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
 plot_data %>% 
@@ -1997,10 +2097,9 @@ plot_data %>%
 
 ## Día 29: gráficos de coordenadas paralelas
 
-
 ### Los datos:
 
-```{r dia29-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia29-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library("tidyverse")
 library("GGally")
 if ("ggelegant" %in% rownames(installed.packages())) {
@@ -2048,10 +2147,11 @@ plot_data %>%
 
 ## Día 30: diagramas de área polar o de Florence Nightingale
 
+Diagrama de la rosa, o también histograma circular.
 
 ### Los datos:
 
-```{r dia30-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE, cache=TRUE}
+```{r dia30-data, fig.align="center", fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library("tidyverse")
 
 if ("ggelegant" %in% rownames(installed.packages())) {
