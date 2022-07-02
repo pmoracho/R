@@ -63,10 +63,18 @@ hacemos para obtener los deciles:
     0.7846998  0.9057485  1.6282719  2.3352865
 \end{lstlisting}
 
+Tenga en cuenta que hay varias definiciones posibles de cuantiles empíricos.
+The one R uses by default is based on a sum polygon where the ith ranking
+observation is the ( i − 1 ) / ( n − 1 ) quantile and intermediate quantiles are
+obtained by linear interpolation. It sometimes confuses students that in
+a sample of 10 there will be 3 observations below the first quartile with
+this definition. Other definitions are available via the type argument to
+quantile.
+
+\section{Exhibición gráfica de distribuciones}
 
 
 
-\section{Graphical display of distributions}
 \subsection{Histograms}
 \subsection{Empirical cumulative distribution}
 \subsection{Q–Q plots}\label{qqplots}

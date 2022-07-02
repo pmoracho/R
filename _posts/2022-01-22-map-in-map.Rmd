@@ -1,0 +1,91 @@
+---
+title: "Mapas en Mapas"
+author: "Patricio Moracho"
+date: "22 de enero 2022"
+post_date: 2022-01-22
+layout: post
+categories: cat
+excerpt_separator: <!--more-->
+published: true
+show_meta: true
+comments: true
+mathjax: false
+gistembed: false
+noindex: false
+hide_printmsg: false
+sitemap: true
+summaryfeed: false
+description: Mapas dentro de otros mapas
+tags: 
+- desarrollo
+- R
+- ggplot2
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  github_page:    
+    jekyllthat::jekylldown
+---
+  
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+# knitr::opts_knit$set(base.url='/images/2020/')
+
+library("knitr")
+library("tidyverse")
+library("ggelegant")
+
+```
+
+A raiz de esta pregunta me puse a investigar en algo que sin dudas debiera ser un requerimiento bastante elemental pero que no tengo claro que la funcionalidad sea tan común. El escenario podría ser el siguiente: imaginemos que se busca hacer una grafica geoespacial de la argentina y queremos incluir todas las islas del atlantico sur.
+
+fuente de los mapas: https://www.ign.gob.ar/NuestrasActividades/InformacionGeoespacial/CapasSIG
+
+```{r mapa}
+library(rgdal)     # R wrapper around GDAL/OGR
+library(ggplot2)   # for general plotting
+library(sf)
+library("rnaturalearth")
+library("rnaturalearthdata")
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+unique(world$name)
+argentina <- world[world$name == 'Argentina',]
+
+ggplot(data = argentina) +
+    geom_sf() +
+    coord_sf(expand = FALSE)
+
+
+
+# First read in the shapefile, using the path to the shapefile and the shapefile name minus the
+# extension as arguments
+tmpdir <-  file.path(tempdir(), "municipio.zip")
+unzip("~/Descargas/municipio.zip", exdir=tmpdir)
+shapefile <- readOGR(tmpdir, "municipio")
+
+
+tmpdir <-  file.path(tempdir(), "doscientas_millas_sector_antartico.zip")
+unzip("~/Descargas/doscientas_millas_sector_antartico.zip", exdir=tmpdir)
+shapefile <- readOGR(tmpdir, "doscientas_millas_sector_antartico")
+# Now the shapefile can be plotted as either a geom_path or a geom_polygon.
+# Paths handle clipping better. Polygons can be filled.
+# You need the aesthetics long, lat, and group.
+
+lat <- -6
+lon <- -57
+ortho <- paste0('+proj=ortho +lat_0=', lat, ' +lon_0=', lon, ' +x_0=0 +y_0=0 +a=6371000 +b=6371000 +units=m +no_defs')
+
+
+shapefile %>% 
+  st_as_sf() %>% 
+  st_transform(crs = ortho) %>%
+  ggplot() +
+    geom_sf(aes(geometry = geometry))
+
+
+```
+
