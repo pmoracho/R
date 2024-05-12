@@ -15,6 +15,7 @@ completar_album <- function(x) {
 }
 paquetes_intentos <- sapply(1:CANTIDAD_DE_CORRIDAS,completar_album)
 
+azure_search_query_key = "dfsdf"
 
 min(paquetes_intentos)
 max(paquetes_intentos)
